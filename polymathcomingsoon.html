@@ -752,11 +752,18 @@ footer {
 </div>
 
 <script>
-const target = new Date(Date.now() + 125 * 24 * 60 * 60 * 1000);
+// Fixed target date — countdown to September 1, 2026
+const target = new Date('2026-09-01T00:00:00');
 
 function updateCountdown() {
   const diff = target - Date.now();
-  if (diff <= 0) return;
+  if (diff <= 0) {
+    document.getElementById('cd-days').textContent = '00';
+    document.getElementById('cd-hrs').textContent = '00';
+    document.getElementById('cd-min').textContent = '00';
+    document.getElementById('cd-sec').textContent = '00';
+    return;
+  }
   const d = Math.floor(diff / 86400000);
   const h = Math.floor((diff % 86400000) / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
@@ -768,8 +775,6 @@ function updateCountdown() {
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
-
-// Email form removed — using Google Form embed
 
 function openAbout() {
   const overlay = document.getElementById('aboutOverlay');
