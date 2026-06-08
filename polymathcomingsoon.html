@@ -260,6 +260,19 @@ h1 em {
   border: 1px solid var(--border);
   border-radius: 12px; overflow: hidden;
   max-width: 1000px; margin: 0 auto;
+  
+}
+
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .feature-cell {
