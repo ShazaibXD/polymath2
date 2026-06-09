@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Polymath OS — Coming Soon</title>
+<title>Polymath OS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Instrument+Serif:ital@0;1&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
@@ -23,6 +23,7 @@
   --border: #151D2E;
 }
 
+html { scroll-behavior: smooth; }
 html, body { height: 100%; }
 
 body {
@@ -33,7 +34,7 @@ body {
   cursor: default;
 }
 
-/* ── NOISE ── */
+/* NOISE */
 body::before {
   content: '';
   position: fixed; inset: 0;
@@ -41,7 +42,7 @@ body::before {
   pointer-events: none; z-index: 9999; opacity: 0.5;
 }
 
-/* ── GRID BG ── */
+/* GRID BG */
 .grid-bg {
   position: fixed; inset: 0; z-index: 0;
   background-image:
@@ -51,33 +52,31 @@ body::before {
   mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
 }
 
-/* ── GLOW ORBS ── */
+/* GLOW ORBS — will-change for GPU compositing */
 .orb {
   position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0;
+  will-change: transform;
 }
-.orb-1 { width: 600px; height: 600px; background: rgba(0,255,135,0.07); top: -200px; left: -200px; animation: drift1 12s ease-in-out infinite; }
-.orb-2 { width: 500px; height: 500px; background: rgba(123,143,255,0.06); bottom: -150px; right: -100px; animation: drift2 15s ease-in-out infinite; }
-.orb-3 { width: 300px; height: 300px; background: rgba(255,107,157,0.05); top: 40%; left: 60%; animation: drift3 10s ease-in-out infinite; }
+.orb-1 { width: 500px; height: 500px; background: rgba(0,255,135,0.07); top: -180px; left: -180px; animation: drift1 12s ease-in-out infinite; }
+.orb-2 { width: 420px; height: 420px; background: rgba(123,143,255,0.06); bottom: -130px; right: -80px; animation: drift2 15s ease-in-out infinite; }
+.orb-3 { width: 260px; height: 260px; background: rgba(255,107,157,0.05); top: 40%; left: 60%; animation: drift3 10s ease-in-out infinite; }
 
-@keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(60px,40px)} }
-@keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,-60px)} }
-@keyframes drift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,50px)} }
+@keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(50px,35px)} }
+@keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-35px,-50px)} }
+@keyframes drift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(25px,40px)} }
 
-/* ── LAYOUT ── */
-.page {
-  position: relative; z-index: 1;
-  min-height: 100vh;
-  display: flex; flex-direction: column;
-}
+/* PAGE WRAPPER */
+.page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
 
-/* ── NAV ── */
+/* NAV */
 nav {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 24px 48px;
+  padding: 20px 48px;
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   position: sticky; top: 0; z-index: 100;
-  background: rgba(6,8,12,0.7);
+  background: rgba(6,8,12,0.8);
 }
 
 .nav-logo {
@@ -86,735 +85,942 @@ nav {
   letter-spacing: 0.15em; text-transform: uppercase;
   color: var(--green);
   display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .nav-dot {
-  width: 8px; height: 8px;
+  width: 7px; height: 7px;
   background: var(--green); border-radius: 50%;
   box-shadow: 0 0 12px var(--green);
   animation: blink 2s ease-in-out infinite;
+  flex-shrink: 0;
 }
 
-@keyframes blink { 0%,100%{opacity:1;box-shadow:0 0 12px var(--green)} 50%{opacity:0.5;box-shadow:0 0 24px var(--green)} }
+@keyframes blink { 0%,100%{opacity:1;box-shadow:0 0 12px var(--green)} 50%{opacity:0.5;box-shadow:0 0 20px var(--green)} }
 
-.nav-right {
-  display: flex; align-items: center; gap: 20px;
+.nav-links {
+  display: flex; align-items: center; gap: 4px;
+}
+
+.nav-link {
   font-family: 'Space Mono', monospace;
-  font-size: 11px; color: var(--muted);
-  letter-spacing: 0.08em;
+  font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 7px 14px; border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  border: 1px solid transparent;
+  text-decoration: none;
 }
+
+.nav-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-link.active { color: var(--green); border-color: rgba(0,255,135,0.15); background: rgba(0,255,135,0.05); }
 
 .nav-tag {
   background: rgba(0,255,135,0.08);
   border: 1px solid rgba(0,255,135,0.15);
   color: var(--green);
   padding: 5px 12px; border-radius: 100px;
-  font-size: 10px;
-}
-
-/* ── HERO ── */
-.hero {
-  flex: 1;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 80px 24px 40px;
-  text-align: center;
-  gap: 0;
-}
-
-.eyebrow {
   font-family: 'Space Mono', monospace;
-  font-size: 11px; letter-spacing: 0.2em;
-  text-transform: uppercase; color: var(--muted);
-  margin-bottom: 28px;
+  font-size: 10px; letter-spacing: 0.08em;
+  margin-left: 8px;
+}
+
+/* HAMBURGER */
+.hamburger {
+  display: none; flex-direction: column; gap: 5px; cursor: pointer;
+  padding: 4px; border: none; background: transparent;
+}
+.hamburger span { display: block; width: 22px; height: 1px; background: var(--muted); transition: all 0.25s; }
+
+/* PAGE SECTIONS */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ───────────────────── INTRO ANIMATION ───────────────────── */
+#intro-screen {
+  position: fixed; inset: 0; z-index: 5000;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 20px;
+}
+
+.intro-logo {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(18px, 4vw, 28px);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text);
+  opacity: 0;
+  animation: introFade 0.6s 0.3s ease forwards;
+}
+
+.intro-logo span { color: var(--green); }
+
+.intro-bar-wrap {
+  width: 200px; height: 1px; background: var(--dim); overflow: hidden;
+  opacity: 0; animation: introFade 0.4s 0.7s ease forwards;
+}
+.intro-bar {
+  height: 100%; background: var(--green); width: 0%;
+  animation: introLoad 1.1s 0.9s cubic-bezier(0.77,0,0.18,1) forwards;
+  box-shadow: 0 0 8px var(--green);
+}
+
+.intro-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.15em; color: var(--muted);
+  opacity: 0; animation: introFade 0.4s 0.8s ease forwards;
+}
+
+@keyframes introFade { to { opacity: 1; } }
+@keyframes introLoad { to { width: 100%; } }
+
+/* ───────────────────── HOME ───────────────────── */
+#view-home {}
+
+/* SPLASH — full vh, fixed attention-hook */
+.splash {
+  height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  text-align: center; padding: 0 24px;
+}
+
+/* Animated ring */
+.splash-ring {
+  position: absolute;
+  border-radius: 50%; border: 1px solid;
+  pointer-events: none; will-change: transform, opacity;
+}
+.ring-1 { width: 340px; height: 340px; border-color: rgba(0,255,135,0.12); animation: ringPulse 4s ease-in-out infinite; }
+.ring-2 { width: 520px; height: 520px; border-color: rgba(0,255,135,0.06); animation: ringPulse 4s 1s ease-in-out infinite; }
+.ring-3 { width: 700px; height: 700px; border-color: rgba(0,255,135,0.03); animation: ringPulse 4s 2s ease-in-out infinite; }
+
+@keyframes ringPulse {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.04); opacity: 0.5; }
+}
+
+.splash-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 32px;
+  opacity: 0; animation: fadeUp 0.8s 0.2s ease forwards;
   display: flex; align-items: center; gap: 14px;
 }
-
-.eyebrow::before, .eyebrow::after {
-  content: ''; display: block;
-  width: 40px; height: 1px; background: var(--dim);
+.splash-eyebrow::before, .splash-eyebrow::after {
+  content: ''; display: block; width: 32px; height: 1px; background: var(--dim);
 }
 
-.hero-rank {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(255,181,71,0.08);
-  border: 1px solid rgba(255,181,71,0.2);
-  border-radius: 6px; padding: 6px 14px;
-  font-family: 'Space Mono', monospace;
-  font-size: 11px; color: var(--amber);
-  margin-bottom: 36px; letter-spacing: 0.06em;
-}
-
-.hero-rank-dot { width: 6px; height: 6px; background: var(--amber); border-radius: 50%; box-shadow: 0 0 8px var(--amber); }
-
-h1 {
+.splash-title {
   font-family: 'Instrument Serif', serif;
-  font-size: clamp(56px, 9vw, 120px);
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-  margin-bottom: 10px;
+  font-size: clamp(58px, 10vw, 130px);
+  line-height: 0.93; letter-spacing: -0.025em;
   color: var(--text);
-  animation: fadeUp 1s ease both;
+  opacity: 0; animation: fadeUp 0.9s 0.35s ease forwards;
+  position: relative; z-index: 1;
 }
+.splash-title em { font-style: italic; color: var(--green); text-shadow: 0 0 60px rgba(0,255,135,0.25); }
 
-h1 em {
-  font-style: italic;
-  color: var(--green);
-  text-shadow: 0 0 60px rgba(0,255,135,0.3);
-}
-
-.hero-sub-title {
+.splash-sub {
   font-family: 'Instrument Serif', serif;
-  font-size: clamp(40px, 6vw, 84px);
-  line-height: 1.0;
-  letter-spacing: -0.02em;
+  font-size: clamp(36px, 5.5vw, 72px);
+  line-height: 1; letter-spacing: -0.02em;
   color: var(--muted);
-  margin-bottom: 40px;
-  animation: fadeUp 1s 0.1s ease both;
-}
-
-@keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
-
-.hero-desc {
-  max-width: 520px;
-  font-family: 'Space Mono', monospace;
-  font-size: 13px; line-height: 1.8;
-  color: var(--muted);
-  margin-bottom: 52px;
-  animation: fadeUp 1s 0.2s ease both;
-}
-
-/* ── EMAIL FORM ── */
-.email-form {
-  display: flex; gap: 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-  width: 100%; max-width: 420px;
-  animation: fadeUp 1s 0.3s ease both;
-  transition: border-color 0.2s;
-}
-
-.email-form:focus-within { border-color: rgba(0,255,135,0.3); }
-
-.email-form input {
-  flex: 1; background: transparent; border: none; outline: none;
-  padding: 14px 18px;
-  color: var(--text);
-  font-family: 'Space Mono', monospace; font-size: 12px;
-}
-
-.email-form input::placeholder { color: var(--muted); }
-
-.email-form button {
-  background: var(--green);
-  border: none; outline: none;
-  padding: 14px 22px;
-  font-family: 'Space Mono', monospace;
-  font-size: 11px; font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #000; cursor: pointer;
-  text-transform: uppercase;
-  transition: background 0.15s;
-  white-space: nowrap;
-}
-
-.email-form button:hover { background: #00E87A; }
-
-.form-hint {
-  font-family: 'Space Mono', monospace;
-  font-size: 10px; color: var(--muted);
-  margin-top: 12px;
-  letter-spacing: 0.06em;
-  animation: fadeUp 1s 0.35s ease both;
-}
-
-.success-msg {
-  display: none;
-  font-family: 'Space Mono', monospace;
-  font-size: 12px; color: var(--green);
-  padding: 14px 18px;
-  background: rgba(0,255,135,0.06);
-  border: 1px solid rgba(0,255,135,0.15);
-  border-radius: 10px; max-width: 420px;
-}
-
-/* ── FEATURES STRIP ── */
-.features-strip {
-  padding: 80px 48px;
+  margin-top: 8px;
+  opacity: 0; animation: fadeUp 0.9s 0.45s ease forwards;
   position: relative; z-index: 1;
 }
 
+.splash-def {
+  display: flex; align-items: center; gap: 0;
+  font-family: 'Space Mono', monospace; font-size: 12px;
+  letter-spacing: 0.04em;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: 8px 18px; max-width: 500px; width: 100%;
+  margin-top: 24px; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp 0.8s 0.55s ease forwards;
+  position: relative; z-index: 1;
+}
+.def-phonetic { color: #6B7A99; font-style: italic; margin-right: 10px; flex-shrink: 0; }
+.def-pos { color: var(--blue); font-style: italic; margin-right: 10px; opacity: 0.7; flex-shrink: 0; }
+.def-text { color: #C8CEDE; }
+.def-cursor {
+  display: inline-block; width: 6px; height: 12px;
+  background: var(--green); box-shadow: 0 0 6px var(--green);
+  vertical-align: middle; margin-left: 3px; flex-shrink: 0;
+  animation: cursorBlink 0.8s step-end infinite;
+}
+.def-cursor.hidden { display: none; }
+@keyframes cursorBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.splash-scroll {
+  position: absolute; bottom: 36px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--dim);
+  opacity: 0; animation: fadeUp 0.8s 1.2s ease forwards;
+}
+.scroll-line {
+  width: 1px; height: 36px;
+  background: linear-gradient(var(--dim), transparent);
+  animation: scrollDrop 2s ease-in-out infinite;
+}
+@keyframes scrollDrop {
+  0%{transform:scaleY(0);transform-origin:top}
+  50%{transform:scaleY(1);transform-origin:top}
+  50.01%{transform-origin:bottom}
+  100%{transform:scaleY(0);transform-origin:bottom}
+}
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+/* HOME CONTENT */
+.home-content { position: relative; z-index: 1; }
+
+/* TICKER */
+.ticker-wrap {
+  width: 100%; overflow: hidden;
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  padding: 11px 0;
+}
+.ticker { display: flex; animation: ticker 28s linear infinite; width: max-content; }
+.ticker-item {
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--dim); padding: 0 36px; white-space: nowrap;
+}
+.ticker-item span { color: var(--green); margin-right: 8px; }
+@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* FEATURES */
+.features-strip { padding: 80px 48px; position: relative; z-index: 1; }
 .strip-label {
-  font-family: 'Space Mono', monospace;
-  font-size: 10px; letter-spacing: 0.2em;
-  text-transform: uppercase; color: var(--dim);
-  text-align: center; margin-bottom: 40px;
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--dim); text-align: center; margin-bottom: 40px;
 }
-
 .features-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: 12px; overflow: hidden;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
   max-width: 1000px; margin: 0 auto;
-  
 }
-
-@media (max-width: 768px) {
-  .features-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .features-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 .feature-cell {
-  background: var(--bg);
-  padding: 28px 24px;
-  transition: background 0.2s;
-  position: relative;
+  background: var(--bg); padding: 28px 24px;
+  transition: background 0.2s; position: relative;
 }
-
 .feature-cell:hover { background: var(--surface); }
-
 .feature-cell::before {
-  content: '';
-  position: absolute; top: 0; left: 0;
-  width: 100%; height: 2px;
-  opacity: 0;
-  transition: opacity 0.2s;
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 100%; height: 2px; opacity: 0; transition: opacity 0.2s;
 }
-
 .feature-cell:hover::before { opacity: 1; }
-
 .fc-1::before { background: var(--green); }
 .fc-2::before { background: var(--blue); }
 .fc-3::before { background: var(--amber); }
 .fc-4::before { background: var(--pink); }
+.feature-icon { font-size: 18px; margin-bottom: 14px; display: block; }
+.feature-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+.feature-desc { font-family: 'Space Mono', monospace; font-size: 11px; line-height: 1.7; color: var(--muted); }
 
-.feature-icon {
-  font-size: 20px; margin-bottom: 14px; display: block;
-}
-
-.feature-name {
-  font-family: 'Syne', sans-serif;
-  font-size: 14px; font-weight: 700; margin-bottom: 8px;
-  color: var(--text);
-}
-
-.feature-desc {
-  font-family: 'Space Mono', monospace;
-  font-size: 11px; line-height: 1.7;
-  color: var(--muted);
-}
-
-/* ── RANK SECTION ── */
-.rank-section {
-  padding: 80px 48px;
-  position: relative; z-index: 1;
-  border-top: 1px solid var(--border);
-}
-
-.rank-inner {
-  max-width: 900px; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 60px; align-items: center;
-}
-
-.rank-text {}
-
-.rank-label {
-  font-family: 'Space Mono', monospace;
-  font-size: 10px; letter-spacing: 0.2em;
-  text-transform: uppercase; color: var(--muted);
-  margin-bottom: 16px;
-}
-
-.rank-heading {
-  font-family: 'Instrument Serif', serif;
-  font-size: clamp(32px, 4vw, 52px);
-  line-height: 1.1;
-  margin-bottom: 20px;
-}
-
+/* RANK */
+.rank-section { padding: 80px 48px; border-top: 1px solid var(--border); position: relative; z-index: 1; }
+.rank-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+.rank-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.rank-heading { font-family: 'Instrument Serif', serif; font-size: clamp(30px, 4vw, 50px); line-height: 1.1; margin-bottom: 20px; }
 .rank-heading em { font-style: italic; color: var(--amber); }
-
-.rank-body {
-  font-family: 'Space Mono', monospace;
-  font-size: 12px; line-height: 1.9;
-  color: var(--muted);
-}
-
-/* ── RANK CARDS ── */
-.rank-ladder { display: flex; flex-direction: column; gap: 8px; }
-
+.rank-body { font-family: 'Space Mono', monospace; font-size: 11px; line-height: 1.9; color: var(--muted); }
+.rank-ladder { display: flex; flex-direction: column; gap: 7px; }
 .rank-tier {
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px 18px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  transition: all 0.2s;
-  cursor: default;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px;
+  transition: all 0.2s; cursor: default;
 }
-
-.rank-tier:hover {
-  border-color: var(--dim);
-  transform: translateX(6px);
-}
-
-.rank-tier.highlight {
-  border-color: rgba(255,181,71,0.3);
-  background: rgba(255,181,71,0.04);
-}
-
-.rank-badge {
-  font-size: 20px;
-  width: 36px; text-align: center;
-  flex-shrink: 0;
-}
-
+.rank-tier:hover { border-color: var(--dim); transform: translateX(5px); }
+.rank-tier.highlight { border-color: rgba(255,181,71,0.3); background: rgba(255,181,71,0.04); }
+.rank-badge { font-size: 18px; width: 32px; text-align: center; flex-shrink: 0; }
 .rank-info { flex: 1; }
-
-.rank-name {
-  font-family: 'Syne', sans-serif;
-  font-size: 13px; font-weight: 700;
-  margin-bottom: 2px;
-}
-
-.rank-pts {
-  font-family: 'Space Mono', monospace;
-  font-size: 10px; color: var(--muted);
-}
-
-.rank-perks {
-  font-family: 'Space Mono', monospace;
-  font-size: 9px; letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 3px 8px; border-radius: 4px;
-}
-
+.rank-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.rank-pts { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); }
+.rank-perks { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
 .perk-free { background: rgba(0,255,135,0.08); color: var(--green); }
 .perk-pro { background: rgba(255,181,71,0.1); color: var(--amber); }
 .perk-elite { background: rgba(123,143,255,0.1); color: var(--blue); }
 
-/* ── COMING SOON BANNER ── */
-.cs-banner {
-  position: relative; z-index: 1;
-  border-top: 1px solid var(--border);
-  padding: 60px 48px;
-  display: flex; flex-direction: column;
-  align-items: center; text-align: center;
-  gap: 24px;
-  overflow: hidden;
+/* FAQ */
+.faq-section { padding: 80px 48px; border-top: 1px solid var(--border); position: relative; z-index: 1; }
+.faq-inner { max-width: 680px; margin: 0 auto; }
+.faq-header { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); margin-bottom: 40px; text-align: center; }
+.faq-item { border-top: 1px solid var(--border); }
+.faq-item:last-child { border-bottom: 1px solid var(--border); }
+.faq-q {
+  width: 100%; background: transparent; border: none; outline: none;
+  padding: 22px 0; display: flex; justify-content: space-between; align-items: center;
+  cursor: pointer; gap: 16px; text-align: left;
+}
+.faq-q-text { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); }
+.faq-icon {
+  font-family: 'Space Mono', monospace; font-size: 16px; color: var(--muted);
+  flex-shrink: 0; transition: transform 0.25s; line-height: 1;
+}
+.faq-item.open .faq-icon { transform: rotate(45deg); color: var(--green); }
+.faq-a {
+  font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.85;
+  color: var(--muted); max-height: 0; overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.2s ease;
+}
+.faq-item.open .faq-a { max-height: 300px; padding-bottom: 22px; }
+
+/* WAITLIST STRIP */
+.waitlist-strip {
+  padding: 70px 48px; border-top: 1px solid var(--border);
+  position: relative; z-index: 1; text-align: center;
+  background: radial-gradient(ellipse 60% 80% at 50% 100%, rgba(0,255,135,0.03) 0%, transparent 70%);
+}
+.waitlist-heading { font-family: 'Instrument Serif', serif; font-size: clamp(28px, 3.5vw, 48px); margin-bottom: 10px; }
+.waitlist-heading em { font-style: italic; color: var(--green); }
+.waitlist-sub { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 28px; letter-spacing: 0.04em; }
+.tally-wrap { max-width: 420px; margin: 0 auto; }
+
+/* ───────────────────── ABOUT ───────────────────── */
+#view-about { position: relative; z-index: 1; }
+
+.about-hero {
+  padding: 100px 48px 60px;
+  max-width: 860px; margin: 0 auto;
+  border-bottom: 1px solid var(--border);
+}
+.about-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 5px 12px; margin-bottom: 32px;
+}
+.about-tag-dot { width: 6px; height: 6px; background: var(--blue); border-radius: 50%; }
+.about-headline {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(38px, 6vw, 78px); line-height: 0.97;
+  letter-spacing: -0.02em; margin-bottom: 28px;
+}
+.about-headline em { font-style: italic; color: var(--green); }
+.about-lead {
+  font-family: 'Space Mono', monospace; font-size: 13px;
+  line-height: 1.9; color: var(--muted); max-width: 600px;
 }
 
-.cs-banner::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse 60% 80% at 50% 100%, rgba(0,255,135,0.04) 0%, transparent 70%);
-  pointer-events: none;
+/* WHY SECTION */
+.why-section { padding: 80px 48px; border-bottom: 1px solid var(--border); }
+.why-inner { max-width: 860px; margin: 0 auto; }
+.section-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); margin-bottom: 48px; }
+.why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.why-cell { background: var(--bg); padding: 32px 28px; transition: background 0.2s; }
+.why-cell:hover { background: var(--surface); }
+.why-num { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); letter-spacing: 0.1em; margin-bottom: 14px; }
+.why-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+.why-body { font-family: 'Space Mono', monospace; font-size: 11px; line-height: 1.8; color: var(--muted); }
+
+/* FOUNDER */
+.founder-section { padding: 80px 48px; }
+.founder-inner { max-width: 860px; margin: 0 auto; display: grid; grid-template-columns: auto 1fr; gap: 52px; align-items: start; }
+.founder-avatar {
+  width: 88px; height: 88px; border-radius: 50%;
+  background: rgba(0,255,135,0.06); border: 1px solid rgba(0,255,135,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800;
+  color: var(--green); flex-shrink: 0;
+  box-shadow: 0 0 30px rgba(0,255,135,0.08);
 }
+.founder-role { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.founder-name { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.founder-handle { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--green); text-decoration: none; letter-spacing: 0.04em; }
+.founder-handle:hover { text-decoration: underline; }
+.founder-bio { font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.9; color: var(--muted); margin-top: 20px; }
+.founder-bio em { font-style: italic; color: var(--text); }
+.founder-stats { display: flex; gap: 28px; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+.fstat-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--text); }
+.fstat-val span { color: var(--green); }
+.fstat-lbl { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.06em; margin-top: 2px; }
+
+/* ───────────────────── PRODUCT ───────────────────── */
+#view-product { position: relative; z-index: 1; }
+
+.product-hero { padding: 100px 48px 60px; text-align: center; border-bottom: 1px solid var(--border); }
+.product-tag { display: inline-flex; align-items: center; gap: 8px; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--amber); border: 1px solid rgba(255,181,71,0.2); background: rgba(255,181,71,0.05); border-radius: 4px; padding: 5px 12px; margin-bottom: 32px; }
+.product-tag-dot { width: 6px; height: 6px; background: var(--amber); border-radius: 50%; box-shadow: 0 0 6px var(--amber); animation: blink 2s ease-in-out infinite; }
+.product-headline { font-family: 'Instrument Serif', serif; font-size: clamp(40px, 7vw, 90px); line-height: 0.97; letter-spacing: -0.025em; margin-bottom: 16px; }
+.product-headline em { font-style: italic; color: var(--amber); }
+.product-lead { font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.85; color: var(--muted); max-width: 500px; margin: 0 auto; }
+
+/* COUNTDOWN */
+.countdown-section { padding: 80px 48px; border-bottom: 1px solid var(--border); }
+.countdown-inner { max-width: 700px; margin: 0 auto; text-align: center; }
+.countdown-label-top { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); margin-bottom: 36px; }
 
 .cs-big {
-  font-family: 'Space Mono', monospace;
-  font-size: clamp(48px, 8vw, 96px);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--border);
-  text-transform: uppercase;
-  line-height: 1;
-  user-select: none;
-  position: relative;
+  font-family: 'Space Mono', monospace; font-size: clamp(40px, 7vw, 80px);
+  font-weight: 700; letter-spacing: -0.03em; color: var(--border);
+  text-transform: uppercase; line-height: 1; user-select: none;
+  position: relative; display: inline-block; margin-bottom: 40px;
 }
-
 .cs-big-over {
-  position: absolute; inset: 0;
-  color: var(--text);
+  position: absolute; inset: 0; color: var(--text);
   clip-path: inset(0 100% 0 0);
-  animation: reveal 3s 0.5s cubic-bezier(0.77,0,0.18,1) forwards;
+  animation: reveal 2.5s 0.5s cubic-bezier(0.77,0,0.18,1) forwards;
 }
-
 @keyframes reveal { to { clip-path: inset(0 0% 0 0); } }
 
-.cs-countdown {
-  display: flex; gap: 20px;
+.cs-countdown { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.countdown-unit { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px 22px; text-align: center; min-width: 80px; }
+.countdown-num { font-family: 'Space Mono', monospace; font-size: 32px; font-weight: 700; color: var(--green); line-height: 1; margin-bottom: 6px; }
+.countdown-lbl { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+.launch-date { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 28px; letter-spacing: 0.06em; }
+.launch-date span { color: var(--amber); }
+
+/* PRODUCT FEATURES */
+.product-features { padding: 80px 48px; border-bottom: 1px solid var(--border); }
+.pf-inner { max-width: 900px; margin: 0 auto; }
+.pf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 48px; }
+.pf-cell { background: var(--bg); padding: 30px 26px; transition: background 0.2s; border-left: 2px solid transparent; }
+.pf-cell:hover { background: var(--surface); }
+.pf-cell:nth-child(1):hover { border-left-color: var(--green); }
+.pf-cell:nth-child(2):hover { border-left-color: var(--blue); }
+.pf-cell:nth-child(3):hover { border-left-color: var(--amber); }
+.pf-cell:nth-child(4):hover { border-left-color: var(--pink); }
+.pf-cell:nth-child(5):hover { border-left-color: var(--green); }
+.pf-cell:nth-child(6):hover { border-left-color: var(--blue); }
+.pf-icon { font-size: 18px; margin-bottom: 14px; display: block; opacity: 0.8; }
+.pf-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.pf-desc { font-family: 'Space Mono', monospace; font-size: 11px; line-height: 1.7; color: var(--muted); }
+
+/* WAITLIST ON PRODUCT */
+.product-waitlist { padding: 70px 48px; text-align: center; }
+.pw-inner { max-width: 500px; margin: 0 auto; }
+.pw-heading { font-family: 'Instrument Serif', serif; font-size: clamp(26px, 3.5vw, 42px); margin-bottom: 10px; }
+.pw-heading em { font-style: italic; color: var(--green); }
+.pw-sub { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 28px; letter-spacing: 0.04em; }
+
+/* ───────────────────── CONTACT ───────────────────── */
+#view-contact { position: relative; z-index: 1; }
+.contact-page { padding: 100px 48px; max-width: 700px; margin: 0 auto; }
+.contact-tag { display: inline-flex; align-items: center; gap: 8px; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 5px 12px; margin-bottom: 32px; }
+.contact-headline { font-family: 'Instrument Serif', serif; font-size: clamp(40px, 6vw, 74px); line-height: 0.97; letter-spacing: -0.025em; margin-bottom: 20px; }
+.contact-headline em { font-style: italic; color: var(--pink); }
+.contact-lead { font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.9; color: var(--muted); margin-bottom: 60px; max-width: 480px; }
+.contact-items { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.contact-item {
+  background: var(--bg); padding: 28px 28px;
+  display: flex; align-items: center; gap: 20px;
+  transition: background 0.2s; text-decoration: none;
+  border-left: 2px solid transparent;
 }
+.contact-item:hover { background: var(--surface); }
+.contact-item:nth-child(1):hover { border-left-color: var(--pink); }
+.contact-item:nth-child(2):hover { border-left-color: var(--green); }
+.ci-icon { font-size: 22px; width: 44px; height: 44px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ci-body { flex: 1; }
+.ci-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--dim); margin-bottom: 4px; }
+.ci-val { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); }
+.ci-arrow { font-family: 'Space Mono', monospace; font-size: 14px; color: var(--muted); transition: transform 0.2s, color 0.2s; }
+.contact-item:hover .ci-arrow { transform: translateX(4px); color: var(--text); }
 
-.countdown-unit {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 8px; padding: 16px 20px;
-  text-align: center; min-width: 70px;
-}
+.contact-footer-note { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--dim); margin-top: 32px; letter-spacing: 0.04em; line-height: 1.7; }
 
-.countdown-num {
-  font-family: 'Space Mono', monospace;
-  font-size: 28px; font-weight: 700;
-  color: var(--green); line-height: 1;
-  margin-bottom: 4px;
-}
-
-.countdown-label {
-  font-family: 'Space Mono', monospace;
-  font-size: 9px; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--muted);
-}
-
-/* ── TICKER ── */
-.ticker-wrap {
-  width: 100%; overflow: hidden;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 0;
-  position: relative; z-index: 1;
-}
-
-.ticker {
-  display: flex; gap: 0;
-  animation: ticker 30s linear infinite;
-  width: max-content;
-}
-
-.ticker-item {
-  font-family: 'Space Mono', monospace;
-  font-size: 11px; letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--dim);
-  padding: 0 40px;
-  white-space: nowrap;
-}
-
-.ticker-item span { color: var(--green); margin-right: 8px; }
-
-@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-
-/* ── FOOTER ── */
+/* ───────────────────── FOOTER ───────────────────── */
 footer {
-  position: relative; z-index: 1;
-  padding: 28px 48px;
+  position: relative; z-index: 1; padding: 24px 48px;
   border-top: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
 }
-
-.footer-left {
-  font-family: 'Space Mono', monospace;
-  font-size: 10px; color: var(--dim);
-  letter-spacing: 0.08em;
-}
-
-.footer-right {
-  display: flex; gap: 24px;
-  font-family: 'Space Mono', monospace;
-  font-size: 10px; color: var(--muted);
-  letter-spacing: 0.06em;
-}
-
-.footer-right a { color: var(--muted); text-decoration: none; transition: color 0.15s; }
+.footer-left { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); letter-spacing: 0.08em; }
+.footer-right { display: flex; gap: 20px; font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); }
+.footer-right a { color: var(--muted); text-decoration: none; transition: color 0.15s; letter-spacing: 0.06em; }
 .footer-right a:hover { color: var(--green); }
 
-/* ── SCROLL INDICATOR ── */
-.scroll-hint {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 8px; margin-top: 60px;
-  font-family: 'Space Mono', monospace;
-  font-size: 9px; letter-spacing: 0.15em;
-  text-transform: uppercase; color: var(--dim);
-  animation: fadeUp 1s 0.6s ease both;
+/* SCROLL REVEAL */
+.sr { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.sr.revealed { opacity: 1; transform: translateY(0); }
+
+/* ───────────────────── MOBILE ───────────────────── */
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; position: fixed; top: 57px; left: 0; right: 0; background: rgba(6,8,12,0.97); border-bottom: 1px solid var(--border); flex-direction: column; padding: 12px 16px 20px; gap: 2px; z-index: 99; backdrop-filter: blur(12px); }
+  .nav-links.open { display: flex; }
+  .nav-link { padding: 11px 14px; }
+  .hamburger { display: flex; }
+  .nav-tag { display: none; }
+
+  .splash-ring { display: none; }
+  .features-grid { grid-template-columns: 1fr 1fr; }
+  .rank-inner { grid-template-columns: 1fr; gap: 40px; }
+  .why-grid { grid-template-columns: 1fr; }
+  .founder-inner { grid-template-columns: 1fr; gap: 24px; }
+  .pf-grid { grid-template-columns: 1fr 1fr; }
+  .features-strip, .rank-section, .faq-section, .waitlist-strip, .about-hero, .why-section, .founder-section, .product-hero, .countdown-section, .product-features, .product-waitlist, .contact-page { padding-left: 20px; padding-right: 20px; }
+  footer { padding: 20px; flex-direction: column; gap: 10px; text-align: center; }
+  .cs-countdown { gap: 10px; }
+  .countdown-unit { min-width: 64px; padding: 14px 16px; }
+  .countdown-num { font-size: 24px; }
+  .founder-stats { gap: 20px; flex-wrap: wrap; }
 }
 
-.scroll-line {
-  width: 1px; height: 40px;
-  background: linear-gradient(var(--dim), transparent);
-  animation: scrollDrop 2s ease-in-out infinite;
+@media (max-width: 480px) {
+  .features-grid { grid-template-columns: 1fr; }
+  .pf-grid { grid-template-columns: 1fr; }
 }
 
-@keyframes scrollDrop { 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 50.01%{transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
 </style>
 </head>
 <body>
 
+<!-- BACKGROUND -->
 <div class="grid-bg"></div>
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 <div class="orb orb-3"></div>
 
-<div class="page">
+<!-- INTRO SCREEN -->
+<div id="intro-screen">
+  <div class="intro-logo">POLYMATH <span>OS</span></div>
+  <div class="intro-label">Initializing system...</div>
+  <div class="intro-bar-wrap"><div class="intro-bar"></div></div>
+</div>
+
+<div class="page" id="app" style="opacity:0;transition:opacity 0.5s ease;">
 
   <!-- NAV -->
   <nav>
-    <div class="nav-logo">
+    <div class="nav-logo" onclick="navigate('home')">
       <div class="nav-dot"></div>
       POLYMATH OS
     </div>
-    <div class="nav-right">
-      <span>v0.1 // ALPHA</span>
-      <button onclick="openAbout()" style="background:transparent;border:1px solid var(--border);border-radius:100px;padding:6px 18px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);cursor:pointer;letter-spacing:0.08em;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--green)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">About</button>
-      <span class="nav-tag">Coming Soon</span>
+    <div class="nav-links" id="navLinks">
+      <a class="nav-link active" data-view="home" onclick="navigate('home')">Home</a>
+      <a class="nav-link" data-view="about" onclick="navigate('about')">About Us</a>
+      <a class="nav-link" data-view="product" onclick="navigate('product')">Product</a>
+      <a class="nav-link" data-view="contact" onclick="navigate('contact')">Contact Us</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="nav-tag">Coming Sept 1</span>
+      <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="eyebrow">Building the next era</div>
-    <div class="hero-rank">
-      <div class="hero-rank-dot"></div>
-      RANK SYSTEM • ROADMAPS • SKILL TRACKER • LEARN ANYTHING
-    </div>
-    <h1>Become a <em>Polymath.</em></h1>
-    <div class="hero-sub-title">Not just a specialist.</div>
-    <p class="hero-desc">
-      One OS to learn everything — code, AI, communication, influence.<br>
-      Climb ranks. Track streaks. Compete. Ship.
-    </p>
+  <!-- ═══════════════ HOME ═══════════════ -->
+  <div class="view active" id="view-home">
 
-    <div style="width:100%;max-width:420px;" id="tallyWrap">
-      <iframe data-tally-src="https://tally.so/embed/xXzN6E?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="180" frameborder="0" marginheight="0" marginwidth="0" title="Waitlist"></iframe>
-    </div>
-    <p class="form-hint">Early access. No spam. Ever.</p>
+    <!-- SPLASH — attention hook -->
+    <section class="splash">
+      <div class="splash-ring ring-1"></div>
+      <div class="splash-ring ring-2"></div>
+      <div class="splash-ring ring-3"></div>
 
-    <div class="scroll-hint">
-      <div class="scroll-line"></div>
-      Scroll
-    </div>
-  </section>
+      <div class="splash-eyebrow">Building the next era</div>
+      <h1 class="splash-title">Become a <em>Polymath.</em></h1>
+      <div class="splash-sub">Not just a specialist.</div>
 
-  <!-- TICKER -->
-  <div class="ticker-wrap">
-    <div class="ticker">
-      <div class="ticker-item"><span>◈</span> Python Mastery</div>
-      <div class="ticker-item"><span>◈</span> AI / ML</div>
-      <div class="ticker-item"><span>◈</span> Public Speaking</div>
-      <div class="ticker-item"><span>◈</span> Personal Finance</div>
-      <div class="ticker-item"><span>◈</span> Fitness & Health</div>
-      <div class="ticker-item"><span>◈</span> UI/UX Design</div>
-      <div class="ticker-item"><span>◈</span> Database Mastery</div>
-      <div class="ticker-item"><span>◈</span> Language Learning</div>
-      <div class="ticker-item"><span>◈</span> Rank & XP System</div>
-      <div class="ticker-item"><span>◈</span> Creative Writing</div>
-      <div class="ticker-item"><span>◈</span> Photography</div>
-      <div class="ticker-item"><span>◈</span> Music Theory</div>
-      <div class="ticker-item"><span>◈</span> Leadership</div>
-      <div class="ticker-item"><span>◈</span> Meta-Learning</div>
-      <div class="ticker-item"><span>◈</span> Negotiation</div>
-      <div class="ticker-item"><span>◈</span> Daily Streaks</div>
-      <div class="ticker-item"><span>◈</span> Python Mastery</div>
-      <div class="ticker-item"><span>◈</span> AI / ML</div>
-      <div class="ticker-item"><span>◈</span> Public Speaking</div>
-      <div class="ticker-item"><span>◈</span> Personal Finance</div>
-      <div class="ticker-item"><span>◈</span> Fitness & Health</div>
-      <div class="ticker-item"><span>◈</span> UI/UX Design</div>
-      <div class="ticker-item"><span>◈</span> Database Mastery</div>
-      <div class="ticker-item"><span>◈</span> Language Learning</div>
-      <div class="ticker-item"><span>◈</span> Rank & XP System</div>
-      <div class="ticker-item"><span>◈</span> Creative Writing</div>
-      <div class="ticker-item"><span>◈</span> Photography</div>
-      <div class="ticker-item"><span>◈</span> Music Theory</div>
-      <div class="ticker-item"><span>◈</span> Leadership</div>
-      <div class="ticker-item"><span>◈</span> Meta-Learning</div>
-      <div class="ticker-item"><span>◈</span> Negotiation</div>
-      <div class="ticker-item"><span>◈</span> Daily Streaks</div>
+      <div class="splash-def">
+        <span class="def-phonetic">pol·y·math &nbsp;/ˈpälēˌmaTH/&nbsp;</span>
+        <span class="def-pos">noun —&nbsp;</span>
+        <span class="def-text" id="defText"></span>
+        <span class="def-cursor" id="defCursor"></span>
+      </div>
+
+      <div class="splash-scroll">
+        <div class="scroll-line"></div>
+        Scroll
+      </div>
+    </section>
+
+    <!-- HOME CONTENT (below fold) -->
+    <div class="home-content">
+
+      <!-- TICKER -->
+      <div class="ticker-wrap">
+        <div class="ticker">
+          <div class="ticker-item"><span>◈</span> Python Mastery</div>
+          <div class="ticker-item"><span>◈</span> AI / ML</div>
+          <div class="ticker-item"><span>◈</span> Public Speaking</div>
+          <div class="ticker-item"><span>◈</span> Personal Finance</div>
+          <div class="ticker-item"><span>◈</span> Fitness & Health</div>
+          <div class="ticker-item"><span>◈</span> UI/UX Design</div>
+          <div class="ticker-item"><span>◈</span> Database Mastery</div>
+          <div class="ticker-item"><span>◈</span> Language Learning</div>
+          <div class="ticker-item"><span>◈</span> Rank & XP System</div>
+          <div class="ticker-item"><span>◈</span> Creative Writing</div>
+          <div class="ticker-item"><span>◈</span> Leadership</div>
+          <div class="ticker-item"><span>◈</span> Meta-Learning</div>
+          <div class="ticker-item"><span>◈</span> Negotiation</div>
+          <div class="ticker-item"><span>◈</span> Daily Streaks</div>
+          <!-- duplicate for seamless loop -->
+          <div class="ticker-item"><span>◈</span> Python Mastery</div>
+          <div class="ticker-item"><span>◈</span> AI / ML</div>
+          <div class="ticker-item"><span>◈</span> Public Speaking</div>
+          <div class="ticker-item"><span>◈</span> Personal Finance</div>
+          <div class="ticker-item"><span>◈</span> Fitness & Health</div>
+          <div class="ticker-item"><span>◈</span> UI/UX Design</div>
+          <div class="ticker-item"><span>◈</span> Database Mastery</div>
+          <div class="ticker-item"><span>◈</span> Language Learning</div>
+          <div class="ticker-item"><span>◈</span> Rank & XP System</div>
+          <div class="ticker-item"><span>◈</span> Creative Writing</div>
+          <div class="ticker-item"><span>◈</span> Leadership</div>
+          <div class="ticker-item"><span>◈</span> Meta-Learning</div>
+          <div class="ticker-item"><span>◈</span> Negotiation</div>
+          <div class="ticker-item"><span>◈</span> Daily Streaks</div>
+        </div>
+      </div>
+
+      <!-- FEATURES -->
+      <section class="features-strip sr">
+        <div class="strip-label">What's being built</div>
+        <div class="features-grid">
+          <div class="feature-cell fc-1">
+            <span class="feature-icon">◈</span>
+            <div class="feature-name">Skill Roadmaps</div>
+            <div class="feature-desc">Structured paths for anything — coding, AI, fitness, finance, design, languages. If it's a skill, there's a roadmap.</div>
+          </div>
+          <div class="feature-cell fc-2">
+            <span class="feature-icon">◉</span>
+            <div class="feature-name">Rank & XP System</div>
+            <div class="feature-desc">Earn points for completing skills, streaks, and challenges. Climb from Novice to Polymath.</div>
+          </div>
+          <div class="feature-cell fc-3">
+            <span class="feature-icon">⊞</span>
+            <div class="feature-name">Daily Tracker</div>
+            <div class="feature-desc">Code. Study. Build. Sleep. Log habits, protect streaks, and see weekly compounding.</div>
+          </div>
+          <div class="feature-cell fc-4">
+            <span class="feature-icon">▶</span>
+            <div class="feature-name">Curated Library</div>
+            <div class="feature-desc">Handpicked resources — no noise. Every video, article, and course earns you XP.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RANK -->
+      <section class="rank-section sr">
+        <div class="rank-inner">
+          <div class="rank-text">
+            <div class="rank-label">The Hierarchy</div>
+            <h2 class="rank-heading">Earn your <em>rank.</em><br>Own your stack.</h2>
+            <p class="rank-body">
+              Every skill you complete, every streak you protect, every challenge you ship — earns XP and moves you up the ladder.<br><br>
+              Free users get the foundation. Pro unlocks the full system. Elite competes for the top of the board.
+            </p>
+          </div>
+          <div class="rank-ladder">
+            <div class="rank-tier"><div class="rank-badge">🌱</div><div class="rank-info"><div class="rank-name">Novice</div><div class="rank-pts">0 – 500 XP</div></div><span class="rank-perks perk-free">Free</span></div>
+            <div class="rank-tier"><div class="rank-badge">⚙️</div><div class="rank-info"><div class="rank-name">Builder</div><div class="rank-pts">500 – 2,000 XP</div></div><span class="rank-perks perk-free">Free</span></div>
+            <div class="rank-tier highlight"><div class="rank-badge">🔥</div><div class="rank-info"><div class="rank-name">Specialist</div><div class="rank-pts">2,000 – 6,000 XP</div></div><span class="rank-perks perk-pro">Pro</span></div>
+            <div class="rank-tier"><div class="rank-badge">⚡</div><div class="rank-info"><div class="rank-name">Expert</div><div class="rank-pts">6,000 – 15,000 XP</div></div><span class="rank-perks perk-pro">Pro</span></div>
+            <div class="rank-tier"><div class="rank-badge">🧠</div><div class="rank-info"><div class="rank-name">Polymath</div><div class="rank-pts">15,000+ XP</div></div><span class="rank-perks perk-elite">Elite</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="faq-section sr">
+        <div class="faq-inner">
+          <div class="faq-header">Frequently Asked</div>
+          <div class="faq-item" id="faq-1">
+            <button class="faq-q" onclick="toggleFaq('faq-1')">
+              <span class="faq-q-text">Is Polymath OS only for tech skills?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-a">No. The whole point is breadth. Polymath OS covers technical skills like coding and AI, but also communication, finance, fitness, creativity, and leadership. The system doesn't care what you're learning — it rewards the act of learning itself.</div>
+          </div>
+          <div class="faq-item" id="faq-2">
+            <button class="faq-q" onclick="toggleFaq('faq-2')">
+              <span class="faq-q-text">How is this different from Duolingo or Coursera?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-a">Those platforms teach one thing in isolation. Polymath OS is an operating system for your growth — it tracks every skill, every habit, every streak across every domain in one place. Think of it as a dashboard for your entire self-development, not a single course.</div>
+          </div>
+          <div class="faq-item" id="faq-3">
+            <button class="faq-q" onclick="toggleFaq('faq-3')">
+              <span class="faq-q-text">When does it launch, and what does it cost?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-a">September 1, 2026. Early waitlist members will get first access and a locked-in rate before public pricing is announced. There will be a free tier. Pro and Elite tiers unlock the full competitive system. Get on the list now — spots are limited.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- WAITLIST -->
+      <section class="waitlist-strip sr">
+        <h2 class="waitlist-heading">Get in <em>early.</em></h2>
+        <p class="waitlist-sub">Join the waitlist. No spam. Ever.</p>
+        <div class="tally-wrap">
+          <iframe data-tally-src="https://tally.so/embed/xXzN6E?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="180" frameborder="0" marginheight="0" marginwidth="0" title="Waitlist"></iframe>
+        </div>
+      </section>
+
+    </div><!-- /home-content -->
+  </div><!-- /view-home -->
+
+  <!-- ═══════════════ ABOUT ═══════════════ -->
+  <div class="view" id="view-about">
+
+    <div class="about-hero sr">
+      <div class="about-tag"><div class="about-tag-dot"></div> Why we exist</div>
+      <h1 class="about-headline">Built for people who<br>refuse to <em>specialize.</em></h1>
+      <p class="about-lead">Most platforms assume you want to master one thing. Polymath OS is for the person who wants to master many — and wants a system that keeps up.</p>
+    </div>
+
+    <section class="why-section sr">
+      <div class="why-inner">
+        <div class="section-label">Why Polymath</div>
+        <div class="why-grid">
+          <div class="why-cell">
+            <div class="why-num">01</div>
+            <div class="why-title">Platforms reward passive consumption</div>
+            <div class="why-body">Watch a video, get a certificate. That's the model. It doesn't track whether you applied anything, built anything, or improved at all. We track actual progress.</div>
+          </div>
+          <div class="why-cell">
+            <div class="why-num">02</div>
+            <div class="why-title">Specialization is becoming a trap</div>
+            <div class="why-body">The most dangerous people in any room can do multiple things well. Narrow specialists get replaced. Polymaths get leverage. We build for the latter.</div>
+          </div>
+          <div class="why-cell">
+            <div class="why-num">03</div>
+            <div class="why-title">No system for cross-domain growth</div>
+            <div class="why-body">You use one app for fitness, another for coding, a notebook for habits. There's no unified layer. Polymath OS is that layer — one XP system across everything.</div>
+          </div>
+          <div class="why-cell">
+            <div class="why-num">04</div>
+            <div class="why-title">Accountability needs stakes</div>
+            <div class="why-body">Journaling doesn't make you consistent. Rank does. Public leaderboards, streak penalties, and XP loss if you drop off — we make growth competitive and real.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="founder-section sr">
+      <div class="founder-inner">
+        <div>
+          <div class="founder-avatar">S</div>
+        </div>
+        <div>
+          <div class="founder-role">Founder &amp; Builder</div>
+          <div class="founder-name">Shaz</div>
+          <a class="founder-handle" href="https://www.instagram.com/mdshaz_/" target="_blank" rel="noopener">@mdshaz_ ↗</a>
+          <p class="founder-bio">
+            18 years old. Deep in AI/ML.<br><br>
+            I built Polymath OS because most learning platforms are built for passive consumers — not people who actually want to <em>become dangerous</em> at multiple things. I kept looking for something that tracked all my skills — code, fitness, finance, communication — in one place with real stakes attached.<br><br>
+            It didn't exist. So I'm building it.
+          </p>
+          <div class="founder-stats">
+            <div><div class="fstat-val">18<span>y</span></div><div class="fstat-lbl">Founder's age</div></div>
+            <div><div class="fstat-val">5<span>+</span></div><div class="fstat-lbl">Skills tracked daily</div></div>
+            <div><div class="fstat-val">Sept<span> 1</span></div><div class="fstat-lbl">Launch target</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /view-about -->
+
+  <!-- ═══════════════ PRODUCT ═══════════════ -->
+  <div class="view" id="view-product">
+
+    <div class="product-hero sr">
+      <div class="product-tag"><div class="product-tag-dot"></div> In development</div>
+      <h1 class="product-headline">The OS for your<br><em>growth.</em></h1>
+      <p class="product-lead">One system. Every domain. Real stakes. Launching September 1, 2026.</p>
+    </div>
+
+    <section class="countdown-section sr">
+      <div class="countdown-inner">
+        <div class="countdown-label-top">Time until launch</div>
+        <div class="cs-big">
+          COMING SOON
+          <div class="cs-big-over">COMING SOON</div>
+        </div>
+        <div class="cs-countdown">
+          <div class="countdown-unit"><div class="countdown-num" id="cd-days">00</div><div class="countdown-lbl">Days</div></div>
+          <div class="countdown-unit"><div class="countdown-num" id="cd-hrs">00</div><div class="countdown-lbl">Hours</div></div>
+          <div class="countdown-unit"><div class="countdown-num" id="cd-min">00</div><div class="countdown-lbl">Minutes</div></div>
+          <div class="countdown-unit"><div class="countdown-num" id="cd-sec">00</div><div class="countdown-lbl">Seconds</div></div>
+        </div>
+        <p class="launch-date">Target launch: <span>September 1, 2026</span> &nbsp;·&nbsp; Be first in line.</p>
+      </div>
+    </section>
+
+    <section class="product-features sr">
+      <div class="pf-inner">
+        <div class="section-label">What's shipping</div>
+        <div class="pf-grid">
+          <div class="pf-cell"><span class="pf-icon">◈</span><div class="pf-name">Skill Roadmaps</div><div class="pf-desc">Structured learning paths across every domain — code, fitness, finance, communication, creativity.</div></div>
+          <div class="pf-cell"><span class="pf-icon">◉</span><div class="pf-name">XP & Rank System</div><div class="pf-desc">Earn XP for every completed task, streak, and challenge. Climb through five distinct ranks.</div></div>
+          <div class="pf-cell"><span class="pf-icon">⊞</span><div class="pf-name">Daily Habit Tracker</div><div class="pf-desc">Log and protect daily habits with streak mechanics that actually hurt when you break them.</div></div>
+          <div class="pf-cell"><span class="pf-icon">▶</span><div class="pf-name">Curated Library</div><div class="pf-desc">Every resource is handpicked. No filler. Completing them rewards you with XP and progress.</div></div>
+          <div class="pf-cell"><span class="pf-icon">⌬</span><div class="pf-name">Leaderboards</div><div class="pf-desc">See where you stand. Compete publicly. Elite tier puts you on the global board.</div></div>
+          <div class="pf-cell"><span class="pf-icon">⬡</span><div class="pf-name">Progress Dashboard</div><div class="pf-desc">One view for all your skills, streaks, XP history, and growth velocity across every domain.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="product-waitlist sr">
+      <div class="pw-inner">
+        <h2 class="pw-heading">Lock in <em>early access.</em></h2>
+        <p class="pw-sub">Waitlist members get first entry and locked-in pricing.</p>
+        <div class="tally-wrap">
+          <iframe data-tally-src="https://tally.so/embed/xXzN6E?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="180" frameborder="0" marginheight="0" marginwidth="0" title="Waitlist"></iframe>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /view-product -->
+
+  <!-- ═══════════════ CONTACT ═══════════════ -->
+  <div class="view" id="view-contact">
+    <div class="contact-page sr">
+      <div class="contact-tag">Get in touch</div>
+      <h1 class="contact-headline">Say<br><em>hello.</em></h1>
+      <p class="contact-lead">Have a question, a collab idea, or just want to talk about building things? Reach out — we reply to everything.</p>
+      <div class="contact-items">
+        <a class="contact-item" href="https://www.instagram.com/polymath01os/" target="_blank" rel="noopener">
+          <div class="ci-icon">📸</div>
+          <div class="ci-body">
+            <div class="ci-label">Instagram</div>
+            <div class="ci-val">@polymath01os</div>
+          </div>
+          <div class="ci-arrow">→</div>
+        </a>
+        <a class="contact-item" href="mailto:mohamedshazaib111@gmail.com">
+          <div class="ci-icon">✉️</div>
+          <div class="ci-body">
+            <div class="ci-label">Email</div>
+            <div class="ci-val">mohamedshazaib111@gmail.com</div>
+          </div>
+          <div class="ci-arrow">→</div>
+        </a>
+      </div>
+      <p class="contact-footer-note">We're a small team moving fast. Expect a response within 48 hours.</p>
     </div>
   </div>
-
-  <!-- FEATURES -->
-  <section class="features-strip">
-    <div class="strip-label">What's being built</div>
-    <div class="features-grid">
-      <div class="feature-cell fc-1">
-        <span class="feature-icon">◈</span>
-        <div class="feature-name">Skill Roadmaps</div>
-        <div class="feature-desc">Structured paths for anything — coding, AI, fitness, finance, design, languages, creativity. If it's a skill, there's a roadmap.</div>
-      </div>
-      <div class="feature-cell fc-2">
-        <span class="feature-icon">◉</span>
-        <div class="feature-name">Rank & XP System</div>
-        <div class="feature-desc">Earn points for completing skills, streaks, and challenges. Climb from Novice to Polymath.</div>
-      </div>
-      <div class="feature-cell fc-3">
-        <span class="feature-icon">⊞</span>
-        <div class="feature-name">Daily Tracker</div>
-        <div class="feature-desc">Code. Study. Build. Sleep. Log habits, protect streaks, and see weekly compounding.</div>
-      </div>
-      <div class="feature-cell fc-4">
-        <span class="feature-icon">▶</span>
-        <div class="feature-name">Curated Library</div>
-        <div class="feature-desc">Handpicked resources — no noise. Every video, article, and course earns you XP.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- RANK SECTION -->
-  <section class="rank-section">
-    <div class="rank-inner">
-      <div class="rank-text">
-        <div class="rank-label">The Hierarchy</div>
-        <h2 class="rank-heading">Earn your <em>rank.</em><br>Own your stack.</h2>
-        <p class="rank-body">
-          Every skill you complete, every streak you protect, every challenge you ship — earns XP and moves you up the ladder.<br><br>
-          Free users get the foundation. Pro unlocks the full system. Elite competes for the top of the board.
-        </p>
-      </div>
-
-      <div class="rank-ladder">
-        <div class="rank-tier">
-          <div class="rank-badge">🌱</div>
-          <div class="rank-info">
-            <div class="rank-name">Novice</div>
-            <div class="rank-pts">0 – 500 XP</div>
-          </div>
-          <span class="rank-perks perk-free">Free</span>
-        </div>
-        <div class="rank-tier">
-          <div class="rank-badge">⚙️</div>
-          <div class="rank-info">
-            <div class="rank-name">Builder</div>
-            <div class="rank-pts">500 – 2,000 XP</div>
-          </div>
-          <span class="rank-perks perk-free">Free</span>
-        </div>
-        <div class="rank-tier highlight">
-          <div class="rank-badge">🔥</div>
-          <div class="rank-info">
-            <div class="rank-name">Specialist</div>
-            <div class="rank-pts">2,000 – 6,000 XP</div>
-          </div>
-          <span class="rank-perks perk-pro">Pro</span>
-        </div>
-        <div class="rank-tier">
-          <div class="rank-badge">⚡</div>
-          <div class="rank-info">
-            <div class="rank-name">Expert</div>
-            <div class="rank-pts">6,000 – 15,000 XP</div>
-          </div>
-          <span class="rank-perks perk-pro">Pro</span>
-        </div>
-        <div class="rank-tier">
-          <div class="rank-badge">🧠</div>
-          <div class="rank-info">
-            <div class="rank-name">Polymath</div>
-            <div class="rank-pts">15,000+ XP</div>
-          </div>
-          <span class="rank-perks perk-elite">Elite</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- COMING SOON BANNER -->
-  <section class="cs-banner">
-    <div class="cs-big">
-      COMING SOON
-      <div class="cs-big-over">COMING SOON</div>
-    </div>
-    <div class="cs-countdown">
-      <div class="countdown-unit">
-        <div class="countdown-num" id="cd-days">00</div>
-        <div class="countdown-label">Days</div>
-      </div>
-      <div class="countdown-unit">
-        <div class="countdown-num" id="cd-hrs">00</div>
-        <div class="countdown-label">Hours</div>
-      </div>
-      <div class="countdown-unit">
-        <div class="countdown-num" id="cd-min">00</div>
-        <div class="countdown-label">Minutes</div>
-      </div>
-      <div class="countdown-unit">
-        <div class="countdown-num" id="cd-sec">00</div>
-        <div class="countdown-label">Seconds</div>
-      </div>
-    </div>
-    <p style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:0.08em;">Target launch: Q3 2026 &nbsp;·&nbsp; Be first in line.</p>
-  </section>
 
   <!-- FOOTER -->
   <footer>
     <div class="footer-left">© 2026 POLYMATH OS — ALL SYSTEMS GO</div>
     <div class="footer-right">
       <a href="https://www.instagram.com/polymath01os/" target="_blank" rel="noopener">Instagram</a>
+      <a href="mailto:mohamedshazaib111@gmail.com">Email</a>
     </div>
   </footer>
 
-  <!-- ABOUT MODAL -->
-  <div id="aboutOverlay" onclick="closeAbout()" style="display:none;position:fixed;inset:0;z-index:1000;backdrop-filter:blur(0px);transition:backdrop-filter 0.35s ease,background 0.35s ease;">
-    <div id="aboutModal" onclick="event.stopPropagation()" style="position:fixed;top:70px;right:48px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 28px 24px;width:300px;opacity:0;transform:translateY(-12px) scale(0.97);transition:all 0.35s cubic-bezier(0.34,1.4,0.64,1);box-shadow:0 24px 60px rgba(0,0,0,0.6);">
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
-        <div style="width:46px;height:46px;border-radius:50%;background:rgba(0,255,135,0.1);border:1px solid rgba(0,255,135,0.2);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:var(--green);">S</div>
-        <div>
-          <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);">Shaz</div>
-          <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.06em;">Founder &amp; Builder</div>
-        </div>
-      </div>
-      <div style="font-family:'Space Mono',monospace;font-size:11px;line-height:1.85;color:var(--muted);margin-bottom:18px;">
-        18 years old. Deep in AI/ML. Building Polymath OS because most learning platforms are built for passive consumers — not people who actually want to <span style="color:var(--text);font-style:italic;">become dangerous</span> at multiple things.<br><br>This is the OS I wish existed when I started.
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;padding-top:14px;border-top:1px solid var(--border);">
-        <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);">Find me</div>
-        <a href="https://www.instagram.com/mdshaz_/" target="_blank" rel="noopener" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--green);text-decoration:none;letter-spacing:0.06em;">@mdshaz_ ↗</a>
-      </div>
-    </div>
-  </div>
+</div><!-- /app -->
 
-</div>
+<script src="https://tally.so/widgets/embed.js"></script>
 
 <script>
-// Fixed target date — countdown to September 1, 2026
-const target = new Date('2026-09-01T00:00:00');
+// ── INTRO ──
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const intro = document.getElementById('intro-screen');
+    const app = document.getElementById('app');
+    intro.style.transition = 'opacity 0.5s ease';
+    intro.style.opacity = '0';
+    app.style.opacity = '1';
+    setTimeout(() => { intro.style.display = 'none'; }, 550);
+    runTypewriter();
+  }, 2200);
+});
+
+// ── TYPEWRITER ──
+function runTypewriter() {
+  const fullText = 'a person whose knowledge, mastery, and curiosity refuse to be contained by a single discipline.';
+  const target = document.getElementById('defText');
+  const cursor = document.getElementById('defCursor');
+  if (!target) return;
+  let i = 0;
+  function type() {
+    if (i <= fullText.length) { target.textContent = fullText.slice(0, i); i++; setTimeout(type, 38); }
+    else { setTimeout(() => { cursor.classList.add('hidden'); }, 1600); }
+  }
+  setTimeout(type, 400);
+}
+
+// ── NAV ROUTING ──
+function navigate(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  const el = document.getElementById('view-' + view);
+  if (el) { el.classList.add('active'); window.scrollTo(0,0); }
+  const lnk = document.querySelector('[data-view="' + view + '"]');
+  if (lnk) lnk.classList.add('active');
+  // close mobile menu
+  document.getElementById('navLinks').classList.remove('open');
+  // re-trigger SR on newly visible elements
+  setTimeout(initSR, 60);
+  // re-trigger countdown reveal animation
+  if (view === 'product') startCountdown();
+}
+
+// ── HAMBURGER ──
+function toggleMenu() {
+  document.getElementById('navLinks').classList.toggle('open');
+}
+
+// ── SCROLL REVEAL ──
+function initSR() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.view.active .sr').forEach(el => {
+    if (!el.classList.contains('revealed')) obs.observe(el);
+  });
+}
+window.addEventListener('load', () => setTimeout(initSR, 2300));
+
+// ── FAQ ──
+function toggleFaq(id) {
+  const item = document.getElementById(id);
+  item.classList.toggle('open');
+}
+
+// ── COUNTDOWN ──
+const launchDate = new Date('2026-09-01T00:00:00');
+let countdownInterval = null;
+
+function startCountdown() {
+  if (countdownInterval) clearInterval(countdownInterval);
+  updateCountdown();
+  countdownInterval = setInterval(updateCountdown, 1000);
+}
 
 function updateCountdown() {
-  const diff = target - Date.now();
+  const diff = launchDate - Date.now();
   if (diff <= 0) {
-    document.getElementById('cd-days').textContent = '00';
-    document.getElementById('cd-hrs').textContent = '00';
-    document.getElementById('cd-min').textContent = '00';
-    document.getElementById('cd-sec').textContent = '00';
+    ['cd-days','cd-hrs','cd-min','cd-sec'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = '00';
+    });
     return;
   }
   const d = Math.floor(diff / 86400000);
   const h = Math.floor((diff % 86400000) / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
   const s = Math.floor((diff % 60000) / 1000);
-  document.getElementById('cd-days').textContent = String(d).padStart(2,'0');
-  document.getElementById('cd-hrs').textContent = String(h).padStart(2,'0');
-  document.getElementById('cd-min').textContent = String(m).padStart(2,'0');
-  document.getElementById('cd-sec').textContent = String(s).padStart(2,'0');
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val).padStart(2,'0'); };
+  set('cd-days', d); set('cd-hrs', h); set('cd-min', m); set('cd-sec', s);
 }
-updateCountdown();
-setInterval(updateCountdown, 1000);
-
-function openAbout() {
-  const overlay = document.getElementById('aboutOverlay');
-  const modal = document.getElementById('aboutModal');
-  overlay.style.display = 'block';
-  overlay.style.background = 'rgba(0,0,0,0)';
-  overlay.style.backdropFilter = 'blur(0px)';
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      overlay.style.background = 'rgba(0,0,0,0.45)';
-      overlay.style.backdropFilter = 'blur(6px)';
-      modal.style.opacity = '1';
-      modal.style.transform = 'translateY(0) scale(1)';
-    });
-  });
-}
-
-function closeAbout() {
-  const overlay = document.getElementById('aboutOverlay');
-  const modal = document.getElementById('aboutModal');
-  overlay.style.background = 'rgba(0,0,0,0)';
-  overlay.style.backdropFilter = 'blur(0px)';
-  modal.style.opacity = '0';
-  modal.style.transform = 'translateY(-12px) scale(0.97)';
-  setTimeout(() => { overlay.style.display = 'none'; }, 350);
-}
+startCountdown();
 </script>
-<script src="https://tally.so/widgets/embed.js"></script>
 </body>
 </html>
