@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polymath OS — Hiring</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Instrument+Serif:ital@0;1&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #06080C;
+  --green: #00FF87;
+  --green2: #00CC6A;
+  --amber: #FFB547;
+  --pink: #FF6B9D;
+  --blue: #7B8FFF;
+  --text: #EEF0F6;
+  --muted: #5A6480;
+  --dim: #2A3045;
+  --surface: #0D111A;
+  --border: #151D2E;
+}
+
+html { scroll-behavior: smooth; }
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* NOISE */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999; opacity: 0.5;
+}
+
+/* GRID BG */
+.grid-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,255,135,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,135,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+}
+
+/* GLOW ORBS */
+.orb {
+  position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0;
+  will-change: transform;
+}
+.orb-1 { width: 500px; height: 500px; background: rgba(0,255,135,0.07); top: -180px; left: -180px; animation: drift1 12s ease-in-out infinite; }
+.orb-2 { width: 420px; height: 420px; background: rgba(123,143,255,0.06); bottom: -130px; right: -80px; animation: drift2 15s ease-in-out infinite; }
+.orb-3 { width: 260px; height: 260px; background: rgba(255,107,157,0.05); top: 40%; left: 60%; animation: drift3 10s ease-in-out infinite; }
+
+@keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(50px,35px)} }
+@keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-35px,-50px)} }
+@keyframes drift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(25px,40px)} }
+
+/* PAGE WRAPPER */
+.page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+/* NAV */
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 48px;
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(6,8,12,0.8);
+}
+
+.nav-logo {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--green);
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nav-dot {
+  width: 7px; height: 7px;
+  background: var(--green); border-radius: 50%;
+  box-shadow: 0 0 12px var(--green);
+  animation: blink 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes blink { 0%,100%{opacity:1;box-shadow:0 0 12px var(--green)} 50%{opacity:0.5;box-shadow:0 0 20px var(--green)} }
+
+.nav-links {
+  display: flex; align-items: center; gap: 4px;
+}
+
+.nav-link {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 7px 14px; border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.nav-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-link.active { color: var(--green); border-color: rgba(0,255,135,0.15); background: rgba(0,255,135,0.05); }
+
+.nav-tag {
+  background: rgba(0,255,135,0.08);
+  border: 1px solid rgba(0,255,135,0.15);
+  color: var(--green);
+  padding: 5px 12px; border-radius: 100px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.08em;
+  margin-left: 8px;
+}
+
+/* HAMBURGER */
+.hamburger {
+  display: none; flex-direction: column; gap: 5px; cursor: pointer;
+  padding: 4px; border: none; background: transparent;
+}
+.hamburger span { display: block; width: 22px; height: 1px; background: var(--muted); transition: all 0.25s; }
+
+/* HIRING SECTION */
+.hiring-section {
+  padding: 80px 48px 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hiring-header {
+  text-align: center;
+  max-width: 800px;
+  margin-bottom: 48px;
+}
+
+.hiring-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--green);
+  border: 1px solid rgba(0, 255, 135, 0.2);
+  background: rgba(0, 255, 135, 0.05);
+  border-radius: 4px;
+  padding: 5px 12px;
+  margin-bottom: 32px;
+}
+
+.hiring-tag-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--green);
+}
+
+.hiring-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(40px, 7vw, 90px);
+  line-height: 0.97;
+  letter-spacing: -0.025em;
+  margin-bottom: 24px;
+}
+.hiring-title em {
+  font-style: italic;
+  color: var(--green);
+}
+
+.hiring-lead {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  line-height: 1.85;
+  color: var(--muted);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.hiring-form-container {
+  width: 100%;
+  max-width: 700px;
+  background: rgba(13, 17, 26, 0.4);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 12px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.hiring-iframe {
+  width: 100%;
+  height: 3300px;
+  border: none;
+  border-radius: 8px;
+  display: block;
+}
+
+/* FOOTER */
+footer {
+  position: relative; z-index: 1; padding: 24px 48px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: auto;
+}
+.footer-left { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); letter-spacing: 0.08em; }
+.footer-right { display: flex; gap: 20px; font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); }
+.footer-right a { color: var(--muted); text-decoration: none; transition: color 0.15s; letter-spacing: 0.06em; }
+.footer-right a:hover { color: var(--green); }
+
+/* MOBILE */
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; position: fixed; top: 57px; left: 0; right: 0; background: rgba(6,8,12,0.97); border-bottom: 1px solid var(--border); flex-direction: column; padding: 12px 16px 20px; gap: 2px; z-index: 99; backdrop-filter: blur(12px); }
+  .nav-links.open { display: flex; }
+  .nav-link { padding: 11px 14px; }
+  .hamburger { display: flex; }
+  .nav-tag { display: none; }
+
+  .hiring-section { padding-left: 20px; padding-right: 20px; }
+  .hiring-form-container { padding: 4px; }
+  footer { padding: 20px; flex-direction: column; gap: 10px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND -->
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="page" id="app">
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" id="nav-logo" href="index.html">
+      <div class="nav-dot"></div>
+      POLYMATH OS
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a class="nav-link" id="nav-home" href="index.html">Home</a>
+      <a class="nav-link" id="nav-about" href="index.html#about">About Us</a>
+      <a class="nav-link" id="nav-product" href="index.html#product">Product</a>
+      <a class="nav-link" id="nav-contact" href="index.html#contact">Contact Us</a>
+      <a class="nav-link active" href="hiring.html">Hiring</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="nav-tag">Coming Sept 1</span>
+      <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HIRING SECTION -->
+  <main class="hiring-section">
+    <header class="hiring-header">
+      <div class="hiring-tag">
+        <div class="hiring-tag-dot"></div>
+        Careers
+      </div>
+      <h1 class="hiring-title">Join the <em>Team.</em></h1>
+      <p class="hiring-lead">We are looking for builders, polymaths, and people who refuse to specialize. Tell us what you want to create.</p>
+    </header>
+
+    <div class="hiring-form-container">
+      <iframe class="hiring-iframe" src="https://docs.google.com/forms/d/e/1FAIpQLSfnY5I_-eU8hp8u1MRxxmZJqxEdYB_mLnzbKzhC35wmun4Gtg/viewform?embedded=true" marginheight="0" marginwidth="0">Loading...</iframe>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-left">© 2026 POLYMATH OS — ALL SYSTEMS GO</div>
+    <div class="footer-right">
+      <a href="https://www.instagram.com/polymath01os/" target="_blank" rel="noopener">Instagram</a>
+      <a href="mailto:mohamedshazaib111@gmail.com">Email</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+// ── DYNAMIC NAVIGATION ROUTING ──
+const path = window.location.pathname;
+const isLocalDraft = path.includes('index%20%2825%29.html') || path.includes('index (25).html') || path.includes('polym%20drafts') || path.includes('polym drafts');
+const homePage = isLocalDraft ? 'index (25).html' : 'index.html';
+
+document.getElementById('nav-logo').href = `${homePage}?view=home`;
+document.getElementById('nav-home').href = `${homePage}?view=home`;
+document.getElementById('nav-about').href = `${homePage}?view=about`;
+document.getElementById('nav-product').href = `${homePage}?view=product`;
+document.getElementById('nav-contact').href = `${homePage}?view=contact`;
+
+// ── HAMBURGER ──
+function toggleMenu() {
+  document.getElementById('navLinks').classList.toggle('open');
+}
+</script>
+</body>
+</html>
