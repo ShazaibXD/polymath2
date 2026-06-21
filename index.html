@@ -118,6 +118,18 @@ nav {
 .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
 .nav-link.active { color: var(--green); border-color: rgba(0,255,135,0.15); background: rgba(0,255,135,0.05); }
 
+.nav-link-beta {
+  color: var(--blue);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.nav-link-beta:hover { color: var(--blue); background: rgba(123,143,255,0.08); }
+.nav-beta-pulse {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--blue); box-shadow: 0 0 8px var(--blue);
+  animation: blink 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
 .nav-tag {
   background: rgba(0,255,135,0.08);
   border: 1px solid rgba(0,255,135,0.15);
@@ -181,28 +193,75 @@ nav {
 /* ───────────────────── HOME ───────────────────── */
 #view-home {}
 
-/* SPLASH — full vh, fixed attention-hook */
+/* SPLASH — full vh, fixed attention-hook, now a layered 3D scene */
 .splash {
   height: 100vh;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   position: relative; overflow: hidden;
   text-align: center; padding: 0 24px;
+  perspective: 1400px;
 }
 
-/* Animated ring */
+.splash-scene {
+  position: absolute; inset: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+/* Animated ring — now true depth layers floating at different z */
 .splash-ring {
   position: absolute;
   border-radius: 50%; border: 1px solid;
   pointer-events: none; will-change: transform, opacity;
+  left: 50%; top: 50%;
+  transform-style: preserve-3d;
 }
-.ring-1 { width: 340px; height: 340px; border-color: rgba(0,255,135,0.12); animation: ringPulse 4s ease-in-out infinite; }
-.ring-2 { width: 520px; height: 520px; border-color: rgba(0,255,135,0.06); animation: ringPulse 4s 1s ease-in-out infinite; }
-.ring-3 { width: 700px; height: 700px; border-color: rgba(0,255,135,0.03); animation: ringPulse 4s 2s ease-in-out infinite; }
+.ring-1 { width: 340px; height: 340px; margin: -170px 0 0 -170px; border-color: rgba(0,255,135,0.14); animation: ringPulse 4s ease-in-out infinite; transform: translateZ(40px); }
+.ring-2 { width: 520px; height: 520px; margin: -260px 0 0 -260px; border-color: rgba(0,255,135,0.07); animation: ringPulse 4s 1s ease-in-out infinite; transform: translateZ(-60px); }
+.ring-3 { width: 700px; height: 700px; margin: -350px 0 0 -350px; border-color: rgba(0,255,135,0.03); animation: ringPulse 4s 2s ease-in-out infinite; transform: translateZ(-160px); }
 
 @keyframes ringPulse {
-  0%,100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.04); opacity: 0.5; }
+  0%,100% { transform: translateZ(var(--rz,0)) scale(1); opacity: 1; }
+  50% { transform: translateZ(var(--rz,0)) scale(1.04); opacity: 0.5; }
+}
+.ring-1 { --rz: 40px; }
+.ring-2 { --rz: -60px; }
+.ring-3 { --rz: -160px; }
+
+/* Floating depth shards — pure CSS 3D, ambient ISO-style cards drifting around the headline */
+.shard {
+  position: absolute;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+  backdrop-filter: blur(2px);
+  transform-style: preserve-3d;
+  will-change: transform;
+  box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
+}
+.shard::after {
+  content: attr(data-label);
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--shard-color, var(--green));
+  opacity: 0.55;
+  text-align: center; padding: 6px;
+}
+.shard-a { width: 92px; height: 60px; top: 16%; left: 13%; --shard-color: var(--green); border-color: rgba(0,255,135,0.18); animation: floatA 7s ease-in-out infinite; }
+.shard-b { width: 78px; height: 78px; top: 64%; left: 10%; --shard-color: var(--blue); border-color: rgba(123,143,255,0.2); animation: floatB 8.5s ease-in-out infinite; }
+.shard-c { width: 100px; height: 56px; top: 22%; right: 11%; --shard-color: var(--amber); border-color: rgba(255,181,71,0.2); animation: floatC 6.5s ease-in-out infinite; }
+.shard-d { width: 70px; height: 70px; top: 68%; right: 14%; --shard-color: var(--pink); border-color: rgba(255,107,157,0.2); animation: floatD 9s ease-in-out infinite; }
+
+@keyframes floatA { 0%,100%{ transform: translateZ(90px) rotateX(12deg) rotateY(-14deg) translateY(0); } 50%{ transform: translateZ(110px) rotateX(8deg) rotateY(-10deg) translateY(-16px); } }
+@keyframes floatB { 0%,100%{ transform: translateZ(60px) rotateX(-10deg) rotateY(16deg) translateY(0); } 50%{ transform: translateZ(80px) rotateX(-14deg) rotateY(12deg) translateY(14px); } }
+@keyframes floatC { 0%,100%{ transform: translateZ(100px) rotateX(10deg) rotateY(14deg) translateY(0); } 50%{ transform: translateZ(120px) rotateX(14deg) rotateY(10deg) translateY(-12px); } }
+@keyframes floatD { 0%,100%{ transform: translateZ(70px) rotateX(-8deg) rotateY(-16deg) translateY(0); } 50%{ transform: translateZ(90px) rotateX(-12deg) rotateY(-12deg) translateY(16px); } }
+
+@media (max-width: 900px) {
+  .shard { display: none; }
 }
 
 .splash-eyebrow {
@@ -212,6 +271,7 @@ nav {
   margin-bottom: 32px;
   opacity: 0; animation: fadeUp 0.8s 0.2s ease forwards;
   display: flex; align-items: center; gap: 14px;
+  position: relative; z-index: 2;
 }
 .splash-eyebrow::before, .splash-eyebrow::after {
   content: ''; display: block; width: 32px; height: 1px; background: var(--dim);
@@ -223,7 +283,7 @@ nav {
   line-height: 0.93; letter-spacing: -0.025em;
   color: var(--text);
   opacity: 0; animation: fadeUp 0.9s 0.35s ease forwards;
-  position: relative; z-index: 1;
+  position: relative; z-index: 2;
 }
 .splash-title em { font-style: italic; color: var(--green); text-shadow: 0 0 60px rgba(0,255,135,0.25); }
 
@@ -234,7 +294,7 @@ nav {
   color: var(--muted);
   margin-top: 8px;
   opacity: 0; animation: fadeUp 0.9s 0.45s ease forwards;
-  position: relative; z-index: 1;
+  position: relative; z-index: 2;
 }
 
 .splash-def {
@@ -246,7 +306,7 @@ nav {
   padding: 8px 18px; max-width: 500px; width: 100%;
   margin-top: 24px; flex-wrap: wrap;
   opacity: 0; animation: fadeUp 0.8s 0.55s ease forwards;
-  position: relative; z-index: 1;
+  position: relative; z-index: 2;
 }
 .def-phonetic { color: #6B7A99; font-style: italic; margin-right: 10px; flex-shrink: 0; }
 .def-pos { color: var(--blue); font-style: italic; margin-right: 10px; opacity: 0.7; flex-shrink: 0; }
@@ -260,12 +320,31 @@ nav {
 .def-cursor.hidden { display: none; }
 @keyframes cursorBlink { 0%,100%{opacity:1} 50%{opacity:0} }
 
+/* Beta pill under definition */
+.splash-beta-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 22px;
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--blue);
+  border: 1px solid rgba(123,143,255,0.25);
+  background: rgba(123,143,255,0.06);
+  padding: 8px 16px; border-radius: 100px;
+  text-decoration: none;
+  opacity: 0; animation: fadeUp 0.8s 0.65s ease forwards;
+  position: relative; z-index: 2;
+  transition: background 0.2s, transform 0.2s, border-color 0.2s;
+}
+.splash-beta-pill:hover { background: rgba(123,143,255,0.12); border-color: rgba(123,143,255,0.4); transform: translateY(-2px); }
+.splash-beta-pill .nav-beta-pulse { background: var(--blue); }
+
 .splash-scroll {
   position: absolute; bottom: 36px;
   display: flex; flex-direction: column; align-items: center; gap: 8px;
   font-family: 'Space Mono', monospace; font-size: 9px;
   letter-spacing: 0.15em; text-transform: uppercase; color: var(--dim);
   opacity: 0; animation: fadeUp 0.8s 1.2s ease forwards;
+  z-index: 2;
 }
 .scroll-line {
   width: 1px; height: 36px;
@@ -299,7 +378,7 @@ nav {
 .ticker-item span { color: var(--green); margin-right: 8px; }
 @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
-/* FEATURES */
+/* FEATURES — now tilt-on-hover 3D cards */
 .features-strip { padding: 80px 48px; position: relative; z-index: 1; }
 .strip-label {
   font-family: 'Space Mono', monospace; font-size: 10px;
@@ -311,12 +390,21 @@ nav {
   gap: 1px; background: var(--border);
   border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
   max-width: 1000px; margin: 0 auto;
+  perspective: 1200px;
 }
 .feature-cell {
   background: var(--bg); padding: 28px 24px;
-  transition: background 0.2s; position: relative;
+  transition: background 0.2s, transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s;
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
-.feature-cell:hover { background: var(--surface); }
+.feature-cell:hover {
+  background: var(--surface);
+  transform: translateZ(18px) rotateX(3deg);
+  box-shadow: 0 26px 50px -18px rgba(0,0,0,0.65);
+  z-index: 2;
+}
 .feature-cell::before {
   content: ''; position: absolute; top: 0; left: 0;
   width: 100%; height: 2px; opacity: 0; transition: opacity 0.2s;
@@ -326,7 +414,8 @@ nav {
 .fc-2::before { background: var(--blue); }
 .fc-3::before { background: var(--amber); }
 .fc-4::before { background: var(--pink); }
-.feature-icon { font-size: 18px; margin-bottom: 14px; display: block; }
+.feature-icon { font-size: 18px; margin-bottom: 14px; display: block; transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); }
+.feature-cell:hover .feature-icon { transform: translateZ(10px) scale(1.08); }
 .feature-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
 .feature-desc { font-family: 'Space Mono', monospace; font-size: 11px; line-height: 1.7; color: var(--muted); }
 
@@ -337,14 +426,15 @@ nav {
 .rank-heading { font-family: 'Instrument Serif', serif; font-size: clamp(30px, 4vw, 50px); line-height: 1.1; margin-bottom: 20px; }
 .rank-heading em { font-style: italic; color: var(--amber); }
 .rank-body { font-family: 'Space Mono', monospace; font-size: 11px; line-height: 1.9; color: var(--muted); }
-.rank-ladder { display: flex; flex-direction: column; gap: 7px; }
+.rank-ladder { display: flex; flex-direction: column; gap: 7px; perspective: 1000px; }
 .rank-tier {
   display: flex; align-items: center; gap: 12px;
   padding: 12px 16px; background: var(--surface);
   border: 1px solid var(--border); border-radius: 8px;
-  transition: all 0.2s; cursor: default;
+  transition: all 0.25s cubic-bezier(0.16,1,0.3,1); cursor: default;
+  transform-style: preserve-3d;
 }
-.rank-tier:hover { border-color: var(--dim); transform: translateX(5px); }
+.rank-tier:hover { border-color: var(--dim); transform: translateX(5px) translateZ(12px) rotateY(-2deg); box-shadow: -10px 16px 36px -16px rgba(0,0,0,0.6); }
 .rank-tier.highlight { border-color: rgba(255,181,71,0.3); background: rgba(255,181,71,0.04); }
 .rank-badge { font-size: 18px; width: 32px; text-align: center; flex-shrink: 0; }
 .rank-info { flex: 1; }
@@ -390,6 +480,113 @@ nav {
 .waitlist-sub { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 28px; letter-spacing: 0.04em; }
 .tally-wrap { max-width: 420px; margin: 0 auto; }
 
+/* ───────────────────── BETA SECTION (new) ───────────────────── */
+.beta-section {
+  padding: 90px 48px; border-top: 1px solid var(--border);
+  position: relative; z-index: 1;
+  background: radial-gradient(ellipse 70% 100% at 50% 0%, rgba(123,143,255,0.05) 0%, transparent 65%);
+}
+.beta-inner {
+  max-width: 900px; margin: 0 auto;
+  perspective: 1400px;
+}
+.beta-card {
+  position: relative;
+  border: 1px solid rgba(123,143,255,0.18);
+  background: linear-gradient(160deg, rgba(123,143,255,0.06), rgba(13,17,26,0.4));
+  border-radius: 16px;
+  padding: 48px;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.5s;
+  box-shadow: 0 40px 80px -40px rgba(123,143,255,0.15), 0 20px 50px -20px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+.beta-card::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(123,143,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(123,143,255,0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 70% 70% at 30% 30%, black, transparent 75%);
+  pointer-events: none;
+}
+.beta-card-glow {
+  position: absolute; width: 320px; height: 320px; border-radius: 50%;
+  background: rgba(123,143,255,0.18); filter: blur(90px);
+  top: -120px; right: -80px; pointer-events: none;
+  transform: translateZ(-1px);
+}
+.beta-top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap; margin-bottom: 28px;
+  position: relative; transform: translateZ(30px);
+}
+.beta-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--blue);
+  border: 1px solid rgba(123,143,255,0.25);
+  background: rgba(123,143,255,0.08);
+  border-radius: 100px; padding: 6px 14px;
+}
+.beta-status {
+  font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
+}
+.beta-heading {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(30px, 4vw, 50px); line-height: 1.05;
+  letter-spacing: -0.02em; margin-bottom: 16px;
+  position: relative; transform: translateZ(30px);
+}
+.beta-heading em { font-style: italic; color: var(--blue); }
+.beta-body {
+  font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.9;
+  color: var(--muted); max-width: 560px; margin-bottom: 32px;
+  position: relative; transform: translateZ(20px);
+}
+.beta-cta-row {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  margin-bottom: 32px; position: relative; transform: translateZ(36px);
+}
+.beta-cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--blue); color: #06080C;
+  font-family: 'Space Mono', monospace; font-weight: 700; font-size: 11px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 14px 24px; border-radius: 8px; text-decoration: none;
+  transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s, background 0.2s;
+  box-shadow: 0 14px 30px -10px rgba(123,143,255,0.5);
+}
+.beta-cta:hover { transform: translateY(-3px) translateZ(8px); box-shadow: 0 20px 40px -10px rgba(123,143,255,0.65); background: #93A4FF; }
+.beta-cta-arrow { transition: transform 0.25s; }
+.beta-cta:hover .beta-cta-arrow { transform: translateX(3px); }
+.beta-url {
+  font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted);
+  letter-spacing: 0.04em;
+}
+.beta-url span { color: var(--blue); }
+
+/* Disclaimer block */
+.beta-disclaimer {
+  position: relative; transform: translateZ(16px);
+  border: 1px solid rgba(255,181,71,0.2);
+  background: rgba(255,181,71,0.04);
+  border-radius: 10px; padding: 18px 20px;
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.beta-disclaimer-icon {
+  font-size: 14px; color: var(--amber); flex-shrink: 0;
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 1px solid rgba(255,181,71,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Mono', monospace; font-weight: 700;
+}
+.beta-disclaimer-text {
+  font-family: 'Space Mono', monospace; font-size: 10.5px; line-height: 1.8;
+  color: #B8A78A;
+}
+.beta-disclaimer-text strong { color: var(--amber); font-weight: 700; }
+
 /* ───────────────────── ABOUT ───────────────────── */
 #view-about { position: relative; z-index: 1; }
 
@@ -422,9 +619,9 @@ nav {
 .why-section { padding: 80px 48px; border-bottom: 1px solid var(--border); }
 .why-inner { max-width: 860px; margin: 0 auto; }
 .section-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); margin-bottom: 48px; }
-.why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-.why-cell { background: var(--bg); padding: 32px 28px; transition: background 0.2s; }
-.why-cell:hover { background: var(--surface); }
+.why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; perspective: 1200px; }
+.why-cell { background: var(--bg); padding: 32px 28px; transition: background 0.2s, transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s; transform-style: preserve-3d; }
+.why-cell:hover { background: var(--surface); transform: translateZ(14px); box-shadow: 0 22px 44px -20px rgba(0,0,0,0.6); }
 .why-num { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); letter-spacing: 0.1em; margin-bottom: 14px; }
 .why-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
 .why-body { font-family: 'Space Mono', monospace; font-size: 11px; line-height: 1.8; color: var(--muted); }
@@ -479,8 +676,9 @@ nav {
 }
 @keyframes reveal { to { clip-path: inset(0 0% 0 0); } }
 
-.cs-countdown { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-.countdown-unit { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px 22px; text-align: center; min-width: 80px; }
+.cs-countdown { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; perspective: 900px; }
+.countdown-unit { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px 22px; text-align: center; min-width: 80px; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s; transform-style: preserve-3d; }
+.countdown-unit:hover { transform: translateZ(10px) rotateX(4deg); box-shadow: 0 18px 36px -16px rgba(0,0,0,0.6); }
 .countdown-num { font-family: 'Space Mono', monospace; font-size: 32px; font-weight: 700; color: var(--green); line-height: 1; margin-bottom: 6px; }
 .countdown-lbl { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 
@@ -490,9 +688,9 @@ nav {
 /* PRODUCT FEATURES */
 .product-features { padding: 80px 48px; border-bottom: 1px solid var(--border); }
 .pf-inner { max-width: 900px; margin: 0 auto; }
-.pf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 48px; }
-.pf-cell { background: var(--bg); padding: 30px 26px; transition: background 0.2s; border-left: 2px solid transparent; }
-.pf-cell:hover { background: var(--surface); }
+.pf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 48px; perspective: 1200px; }
+.pf-cell { background: var(--bg); padding: 30px 26px; transition: background 0.2s, transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s; border-left: 2px solid transparent; transform-style: preserve-3d; }
+.pf-cell:hover { background: var(--surface); transform: translateZ(16px); box-shadow: 0 24px 48px -20px rgba(0,0,0,0.6); }
 .pf-cell:nth-child(1):hover { border-left-color: var(--green); }
 .pf-cell:nth-child(2):hover { border-left-color: var(--blue); }
 .pf-cell:nth-child(3):hover { border-left-color: var(--amber); }
@@ -587,12 +785,14 @@ footer {
   .why-grid { grid-template-columns: 1fr; }
   .founder-inner { grid-template-columns: 1fr; gap: 24px; }
   .pf-grid { grid-template-columns: 1fr 1fr; }
-  .features-strip, .rank-section, .faq-section, .waitlist-strip, .about-hero, .why-section, .founder-section, .product-hero, .countdown-section, .product-features, .product-waitlist, .contact-page { padding-left: 20px; padding-right: 20px; }
+  .features-strip, .rank-section, .faq-section, .waitlist-strip, .about-hero, .why-section, .founder-section, .product-hero, .countdown-section, .product-features, .product-waitlist, .contact-page, .beta-section { padding-left: 20px; padding-right: 20px; }
   footer { padding: 20px; flex-direction: column; gap: 10px; text-align: center; }
   .cs-countdown { gap: 10px; }
   .countdown-unit { min-width: 64px; padding: 14px 16px; }
   .countdown-num { font-size: 24px; }
   .founder-stats { gap: 20px; flex-wrap: wrap; }
+  .beta-card { padding: 32px 24px; }
+  .beta-top { flex-direction: column; }
 }
 
 @media (max-width: 480px) {
@@ -634,6 +834,7 @@ footer {
       <a class="nav-link" data-view="product" onclick="navigate('product')">Product</a>
       <a class="nav-link" data-view="contact" onclick="navigate('contact')">Contact Us</a>
       <a class="nav-link" href="hiring.html">Hiring</a>
+      <a class="nav-link nav-link-beta" href="https://web.polymathos.xyz" target="_blank" rel="noopener"><span class="nav-beta-pulse"></span>Beta</a>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
       <span class="nav-tag">Coming Sept 1</span>
@@ -646,11 +847,17 @@ footer {
   <!-- ═══════════════ HOME ═══════════════ -->
   <div class="view active" id="view-home">
 
-    <!-- SPLASH — attention hook -->
-    <section class="splash">
-      <div class="splash-ring ring-1"></div>
-      <div class="splash-ring ring-2"></div>
-      <div class="splash-ring ring-3"></div>
+    <!-- SPLASH — attention hook, layered 3D scene -->
+    <section class="splash" id="splashScene">
+      <div class="splash-scene" id="splashParallax">
+        <div class="splash-ring ring-1"></div>
+        <div class="splash-ring ring-2"></div>
+        <div class="splash-ring ring-3"></div>
+        <div class="shard shard-a" data-label="Python · 92%"></div>
+        <div class="shard shard-b" data-label="Day 14 streak"></div>
+        <div class="shard shard-c" data-label="Rank: Builder"></div>
+        <div class="shard shard-d" data-label="+120 XP"></div>
+      </div>
 
       <div class="splash-eyebrow">Building the next era</div>
       <h1 class="splash-title">Become a <em>Polymath.</em></h1>
@@ -662,6 +869,10 @@ footer {
         <span class="def-text" id="defText"></span>
         <span class="def-cursor" id="defCursor"></span>
       </div>
+
+      <a class="splash-beta-pill" href="https://web.polymathos.xyz" target="_blank" rel="noopener">
+        <span class="nav-beta-pulse"></span> Beta is live — try it at web.polymathos.xyz
+      </a>
 
       <div class="splash-scroll">
         <div class="scroll-line"></div>
@@ -755,6 +966,35 @@ footer {
         </div>
       </section>
 
+      <!-- BETA TESTER CTA -->
+      <section class="beta-section sr" id="betaSection">
+        <div class="beta-inner">
+          <div class="beta-card" id="betaCard">
+            <div class="beta-card-glow"></div>
+            <div class="beta-top">
+              <span class="beta-tag"><span class="nav-beta-pulse"></span> Beta Access Open</span>
+              <span class="beta-status">v0.3 · actively patched</span>
+            </div>
+            <h2 class="beta-heading">Skip the waitlist.<br>Run the <em>live build.</em></h2>
+            <p class="beta-body">
+              The early build of Polymath OS is live right now at <strong style="color:var(--text)">web.polymathos.xyz</strong>. Track real skills, log real streaks, and help shape the system before the September 1 launch. Beta testers get founding-member recognition and locked-in pricing at launch.
+            </p>
+            <div class="beta-cta-row">
+              <a class="beta-cta" href="https://web.polymathos.xyz" target="_blank" rel="noopener">
+                Enter the beta <span class="beta-cta-arrow">→</span>
+              </a>
+              <span class="beta-url">web.polymathos.xyz</span>
+            </div>
+            <div class="beta-disclaimer">
+              <div class="beta-disclaimer-icon">!</div>
+              <div class="beta-disclaimer-text">
+                <strong>This is a beta.</strong> Expect bugs, incomplete features, and occasional resets as we ship fast and iterate. Data and progress may not carry over to the final release. Feedback shapes what we build next — break things and tell us about it.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- FAQ -->
       <section class="faq-section sr">
         <div class="faq-inner">
@@ -779,6 +1019,13 @@ footer {
               <span class="faq-icon">+</span>
             </button>
             <div class="faq-a">September 1, 2026. Early waitlist members will get first access and a locked-in rate before public pricing is announced. There will be a free tier. Pro and Elite tiers unlock the full competitive system. Get on the list now — spots are limited.</div>
+          </div>
+          <div class="faq-item" id="faq-4">
+            <button class="faq-q" onclick="toggleFaq('faq-4')">
+              <span class="faq-q-text">Can I use the product before launch?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-a">Yes — the beta is live at web.polymathos.xyz. It's an early, actively changing build, so expect bugs and incomplete features. Beta testers help us shape the final release and get founding-member perks at launch.</div>
           </div>
         </div>
       </section>
@@ -897,6 +1144,35 @@ footer {
       </div>
     </section>
 
+    <!-- BETA TESTER CTA (product page) -->
+    <section class="beta-section sr">
+      <div class="beta-inner">
+        <div class="beta-card beta-card-tilt">
+          <div class="beta-card-glow"></div>
+          <div class="beta-top">
+            <span class="beta-tag"><span class="nav-beta-pulse"></span> Beta Access Open</span>
+            <span class="beta-status">v0.3 · actively patched</span>
+          </div>
+          <h2 class="beta-heading">Don't wait for <em>September.</em></h2>
+          <p class="beta-body">
+            A working build of Polymath OS is already live. Beta testers get early access to skill roadmaps, the XP system, and the daily tracker — plus founding-member status when the full product ships.
+          </p>
+          <div class="beta-cta-row">
+            <a class="beta-cta" href="https://web.polymathos.xyz" target="_blank" rel="noopener">
+              Enter the beta <span class="beta-cta-arrow">→</span>
+            </a>
+            <span class="beta-url">web.polymathos.xyz</span>
+          </div>
+          <div class="beta-disclaimer">
+            <div class="beta-disclaimer-icon">!</div>
+            <div class="beta-disclaimer-text">
+              <strong>This is a beta.</strong> Expect bugs, incomplete features, and occasional resets as we ship fast and iterate. Data and progress may not carry over to the final release.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="product-waitlist sr">
       <div class="pw-inner">
         <h2 class="pw-heading">Lock in <em>early access.</em></h2>
@@ -916,6 +1192,14 @@ footer {
       <h1 class="contact-headline">Say<br><em>hello.</em></h1>
       <p class="contact-lead">Have a question, a collab idea, or just want to talk about building things? Reach out — we reply to everything.</p>
       <div class="contact-items">
+        <a class="contact-item" href="https://web.polymathos.xyz" target="_blank" rel="noopener">
+          <div class="ci-icon">🧪</div>
+          <div class="ci-body">
+            <div class="ci-label">Beta</div>
+            <div class="ci-val">web.polymathos.xyz</div>
+          </div>
+          <div class="ci-arrow">→</div>
+        </a>
         <a class="contact-item" href="https://www.instagram.com/polymath01os/" target="_blank" rel="noopener">
           <div class="ci-icon">📸</div>
           <div class="ci-body">
@@ -933,7 +1217,7 @@ footer {
           <div class="ci-arrow">→</div>
         </a>
       </div>
-      <p class="contact-footer-note">We're a small team moving fast. Expect a response within 48 hours.</p>
+      <p class="contact-footer-note">We're a small team moving fast. Expect a response within 48 hours. Note: web.polymathos.xyz is a beta build and may be unstable — see the Beta section on the home page for details before reporting issues.</p>
     </div>
   </div>
 
@@ -941,6 +1225,7 @@ footer {
   <footer>
     <div class="footer-left">© 2026 POLYMATH OS — ALL SYSTEMS GO</div>
     <div class="footer-right">
+      <a href="https://web.polymathos.xyz" target="_blank" rel="noopener">Beta</a>
       <a href="privacy.html">Privacy</a>
       <a href="terms.html">Terms</a>
       <a href="https://www.instagram.com/polymath01os/" target="_blank" rel="noopener">Instagram</a>
@@ -1076,6 +1361,51 @@ function updateCountdown() {
   set('cd-days', d); set('cd-hrs', h); set('cd-min', m); set('cd-sec', s);
 }
 startCountdown();
+
+// ── 3D HERO PARALLAX (mouse-driven depth tilt) ──
+(function () {
+  const scene = document.getElementById('splashParallax');
+  const wrap = document.getElementById('splashScene');
+  if (!scene || !wrap) return;
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+
+  let targetX = 0, targetY = 0, curX = 0, curY = 0;
+
+  wrap.addEventListener('mousemove', (e) => {
+    const rect = wrap.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    targetX = px * 14;
+    targetY = py * 14;
+  });
+  wrap.addEventListener('mouseleave', () => { targetX = 0; targetY = 0; });
+
+  function raf() {
+    curX += (targetX - curX) * 0.06;
+    curY += (targetY - curY) * 0.06;
+    scene.style.transform = `rotateY(${curX}deg) rotateX(${-curY}deg)`;
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+})();
+
+// ── 3D TILT ON CARD HOVER (beta card + feature cells already use CSS, this adds subtle pointer-follow tilt to the beta card) ──
+(function () {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+  document.querySelectorAll('.beta-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width - 0.5;
+      const py = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = `rotateY(${px * 4}deg) rotateX(${-py * 4}deg) translateZ(0)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'rotateY(0deg) rotateX(0deg)';
+    });
+  });
+})();
 </script>
 </body>
 </html>
