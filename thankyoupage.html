@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Access Granted — Polymath OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --black:    #000000;
+      --surface:  #0d0d0d;
+      --border:   #1c1c1c;
+      --muted:    #3a3a3a;
+      --dim:      #666666;
+      --body:     #a0a0a0;
+      --white:    #f0f0f0;
+      --green:    #22c55e;
+      --green-dim: #166534;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--black);
+      color: var(--body);
+      font-family: 'Space Mono', monospace;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+
+    /* Scanline overlay — the one atmospheric touch */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,0,0,0.08) 3px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .page {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      gap: 0;
+    }
+
+    /* ── Terminal window ── */
+    .terminal {
+      width: 100%;
+      max-width: 620px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow:
+        0 0 0 1px rgba(34,197,94,0.04),
+        0 32px 80px rgba(0,0,0,0.8),
+        0 0 60px rgba(34,197,94,0.03);
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.5s ease 0.1s forwards;
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Title bar */
+    .titlebar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #111;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .dot-red    { background: #ff5f57; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green  { background: #28c840; }
+
+    .titlebar-label {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: 0.08em;
+      margin-right: 36px; /* offset for dots */
+    }
+
+    /* Terminal body */
+    .terminal-body {
+      padding: 28px 28px 32px;
+      min-height: 240px;
+    }
+
+    .line {
+      font-size: 13px;
+      line-height: 1.9;
+      white-space: pre;
+      overflow: hidden;
+      opacity: 0;
+    }
+
+    .line.prompt::before {
+      content: '> ';
+      color: var(--green);
+    }
+
+    .line.output {
+      color: var(--dim);
+      padding-left: 16px;
+    }
+
+    .line.success {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .line.blank {
+      opacity: 1;
+      min-height: 1.9em;
+    }
+
+    /* cursor blink */
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      background: var(--green);
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
+      opacity: 0;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    /* ── Hero text below terminal ── */
+    .hero {
+      margin-top: 40px;
+      text-align: center;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 2.8s forwards;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 14px;
+    }
+
+    .hero-title {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: clamp(32px, 6vw, 52px);
+      color: var(--white);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .hero-sub {
+      font-size: 13px;
+      color: var(--dim);
+      line-height: 1.7;
+      max-width: 380px;
+      margin: 0 auto 36px;
+    }
+
+    /* ── Button ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 28px;
+      background: transparent;
+      border: 1px solid var(--green);
+      color: var(--green);
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn:hover {
+      background: var(--green);
+      color: var(--black);
+      box-shadow: 0 0 24px rgba(34,197,94,0.25);
+    }
+
+    .btn-arrow {
+      transition: transform 0.15s ease;
+    }
+
+    .btn:hover .btn-arrow {
+      transform: translateX(3px);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .terminal-body {
+        padding: 20px 18px 24px;
+      }
+      .line {
+        font-size: 12px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .terminal, .hero {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+      .line { opacity: 1; }
+      .cursor { animation: none; opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="terminal" role="region" aria-label="Terminal output">
+    <div class="titlebar">
+      <span class="dot dot-red"></span>
+      <span class="dot dot-yellow"></span>
+      <span class="dot dot-green"></span>
+      <span class="titlebar-label">polymath-os — auth@core</span>
+    </div>
+
+    <div class="terminal-body">
+      <div class="line prompt" id="l1"></div>
+      <div class="line output"  id="l2"></div>
+      <div class="line output"  id="l3"></div>
+      <div class="line blank"></div>
+      <div class="line prompt" id="l4"></div>
+      <div class="line success" id="l5"></div>
+      <div class="line blank"></div>
+      <div class="line prompt" id="l6">
+        <span id="cursor-line"></span><span class="cursor" id="cursor"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <p class="hero-eyebrow">Email confirmed</p>
+    <h1 class="hero-title">You're in.</h1>
+    <p class="hero-sub">
+      Your spot is locked in. We're putting the final touches on Polymath OS — you'll hear from us before launch.
+    </p>
+    <a href="https://polymathos.xyz" class="btn">
+      Back to home
+      <span class="btn-arrow">→</span>
+    </a>
+  </div>
+
+</div>
+
+<script>
+  const sequence = [
+    { id: 'l1', type: 'type',  text: 'verify --token $EMAIL_TOKEN',  delay: 400  },
+    { id: 'l2', type: 'show',  text: 'Checking signature…',          delay: 900  },
+    { id: 'l3', type: 'show',  text: 'Token valid. Activating user.', delay: 1300 },
+    { id: 'l4', type: 'type',  text: 'grant-access --scope beta',    delay: 1900 },
+    { id: 'l5', type: 'show',  text: '✓ ACCESS GRANTED',             delay: 2400 },
+  ];
+
+  const cursorLine = document.getElementById('cursor-line');
+  const cursor     = document.getElementById('cursor');
+
+  function typeText(el, text, cb) {
+    let i = 0;
+    el.style.opacity = '1';
+    const iv = setInterval(() => {
+      el.textContent += text[i];
+      i++;
+      if (i >= text.length) {
+        clearInterval(iv);
+        if (cb) cb();
+      }
+    }, 38);
+  }
+
+  function showLine(el, text, cb) {
+    el.style.opacity = '1';
+    el.textContent = text;
+    if (cb) setTimeout(cb, 120);
+  }
+
+  let idx = 0;
+  function runNext() {
+    if (idx >= sequence.length) {
+      // show blinking cursor on final line
+      setTimeout(() => { cursor.style.opacity = '1'; }, 300);
+      return;
+    }
+    const step = sequence[idx++];
+    const el   = document.getElementById(step.id);
+
+    setTimeout(() => {
+      if (step.type === 'type') {
+        typeText(el, step.text, runNext);
+      } else {
+        showLine(el, step.text, runNext);
+      }
+    }, step.delay);
+  }
+
+  // Kick off after terminal fades in
+  setTimeout(runNext, 600);
+</script>
+
+</body>
+</html>
