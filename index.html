@@ -1160,7 +1160,7 @@ footer {
                 <span class="donate-symbol" id="donateSymbol">₹</span>
                 <input type="number" class="donate-input" id="donateAmount" inputmode="decimal" placeholder="Enter an amount" oninput="onDonateInput()" />
               </div>
-              <div class="donate-hint" id="donateHint">Anything from ₹1 up to ₹99,99,999.</div>
+              <div class="donate-hint" id="donateHint">Even ₹100 helps — give what it's worth to you.</div>
 
               <button type="button" class="donate-btn" id="donateBtn" onclick="submitDonation()" disabled>
                 Contribute <span class="donate-btn-amount" id="donateBtnAmount"></span>
@@ -1364,15 +1364,15 @@ footer {
   <!-- ═══════════════ PRO ═══════════════ -->
   <div class="view" id="view-pro">
     <div class="pro-hero sr">
-      <div class="pro-tag"><span class="pro-tag-dot"></span> Founding offer · limited</div>
+      <div class="pro-tag"><span class="pro-tag-dot"></span> Early-bird · limited time</div>
       <h1 class="pro-headline">Polymath OS <em>Pro.</em><br>Once. Forever.</h1>
-      <p class="pro-lead">Pay one time. Unlock every roadmap, the full XP &amp; rank system, and every feature we ever ship — for life. No subscription, no renewals.</p>
+      <p class="pro-lead">Pay one time. Unlock every roadmap, the full XP &amp; rank system, and every feature we ever ship — for life. No subscription, no renewals. <strong style="color:var(--amber)">Lifetime access is an early-bird offer — once we launch, it's gone for good.</strong></p>
     </div>
 
     <section class="pro-pricing sr">
       <div class="pro-card">
         <div class="pro-card-glow"></div>
-        <div class="pro-badge">★ Lifetime Access</div>
+        <div class="pro-badge">★ Lifetime Access · Early-Bird Only</div>
         <div class="pro-price-row">
           <span class="pro-price-old">₹19,980</span>
           <span class="pro-discount">90% OFF</span>
@@ -1381,7 +1381,7 @@ footer {
           <span class="pro-currency">₹</span>1,999
           <span class="pro-price-unit">/ lifetime</span>
         </div>
-        <p class="pro-price-sub">One-time payment · No recurring charges · Founding-member price</p>
+        <p class="pro-price-sub">One-time payment · No recurring charges · Early-bird price, ends at launch</p>
 
         <ul class="pro-feature-list">
           <li><span class="pro-check">✓</span> All 27+ skill roadmaps, unlocked forever</li>
@@ -1563,9 +1563,9 @@ function buyPro() {
 // query params so the backend (Razorpay) can open the right checkout.
 const DONATE_CHECKOUT_URL = 'https://web.polymathos.xyz/?donate=1';
 const DONATE_CONFIG = {
-  INR: { symbol: '₹', min: 1,   max: 9999999, step: 1,   presets: [99, 499, 999, 2999], fmt: 'en-IN' },
-  USD: { symbol: '$', min: 0.5, max: 999999,  step: 0.5, presets: [5, 10, 25, 100],     fmt: 'en-US' },
-  EUR: { symbol: '€', min: 0.5, max: 999999,  step: 0.5, presets: [5, 10, 25, 100],     fmt: 'en-US' },
+  INR: { symbol: '₹', min: 1,   max: 9999999, step: 1,   presets: [99, 499, 999, 2999], fmt: 'en-IN', nudge: "Even ₹100 helps — give what it's worth to you." },
+  USD: { symbol: '$', min: 0.5, max: 999999,  step: 0.5, presets: [5, 10, 25, 100],     fmt: 'en-US', nudge: "Even $5 helps — give what it's worth to you." },
+  EUR: { symbol: '€', min: 0.5, max: 999999,  step: 0.5, presets: [5, 10, 25, 100],     fmt: 'en-US', nudge: "Even €5 helps — give what it's worth to you." },
 };
 let donateCur = 'INR';
 
@@ -1611,7 +1611,7 @@ function onDonateInput() {
   // highlight a matching preset
   document.querySelectorAll('.donate-preset').forEach(p => p.classList.toggle('active', parseFloat(p.dataset.amt) === val));
 
-  const defaultHint = `Anything from ${cfg.symbol}${fmtAmount(donateCur, cfg.min)} up to ${cfg.symbol}${fmtAmount(donateCur, cfg.max)}.`;
+  const defaultHint = cfg.nudge;
 
   if (raw === '') {
     hint.textContent = defaultHint; hint.classList.remove('error');
