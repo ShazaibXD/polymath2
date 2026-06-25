@@ -1165,7 +1165,7 @@ footer {
               <button type="button" class="donate-btn" id="donateBtn" onclick="submitDonation()" disabled>
                 Contribute <span class="donate-btn-amount" id="donateBtnAmount"></span>
               </button>
-              <div class="donate-note">Secure checkout · One-time · Thank you 🙏</div>
+              <div class="donate-note">Powered by Razorpay · Processed in ₹INR · You'll confirm the amount on the secure page 🙏</div>
             </div>
           </div>
         </div>
@@ -1559,9 +1559,10 @@ function buyPro() {
 }
 
 // ── DONATE ──
-// Where the donation hands off for payment. The amount + currency ride along as
-// query params so the backend (Razorpay) can open the right checkout.
-const DONATE_CHECKOUT_URL = 'https://web.polymathos.xyz/?donate=1';
+// Donations are collected via the Razorpay.me page. It's INR-only and doesn't
+// support pre-filling the amount via the URL, so we open the page and the donor
+// confirms the amount there. The widget's amount is shown as a suggestion.
+const DONATE_CHECKOUT_URL = 'https://razorpay.me/@1426';
 const DONATE_CONFIG = {
   INR: { symbol: '₹', min: 1,   max: 9999999, step: 1,   presets: [99, 499, 999, 2999], fmt: 'en-IN', nudge: "Even ₹100 helps — give what it's worth to you." },
   USD: { symbol: '$', min: 0.5, max: 999999,  step: 0.5, presets: [5, 10, 25, 100],     fmt: 'en-US', nudge: "Even $5 helps — give what it's worth to you." },
@@ -1634,8 +1635,9 @@ function submitDonation() {
   const cfg = DONATE_CONFIG[donateCur];
   const val = parseFloat(document.getElementById('donateAmount').value);
   if (isNaN(val) || val < cfg.min || val > cfg.max) { onDonateInput(); return; }
-  const url = `${DONATE_CHECKOUT_URL}&currency=${donateCur}&amount=${encodeURIComponent(val)}`;
-  window.open(url, '_blank', 'noopener');
+  // Razorpay.me is INR-only and can't pre-fill the amount, so the donor enters
+  // the final amount on the Razorpay page. We just open it.
+  window.open(DONATE_CHECKOUT_URL, '_blank', 'noopener');
 }
 
 // init donate presets on load
