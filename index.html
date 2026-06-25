@@ -140,6 +140,31 @@ nav {
   margin-left: 8px;
 }
 
+/* PRO NAV LINK */
+.nav-link-pro { color: var(--amber); display: inline-flex; align-items: center; gap: 6px; }
+.nav-link-pro:hover { color: var(--amber); background: rgba(255,181,71,0.08); }
+.nav-link-pro.active { color: var(--amber); border-color: rgba(255,181,71,0.2); background: rgba(255,181,71,0.06); }
+.nav-pro-star { font-size: 9px; line-height: 1; }
+
+/* WAITLIST CTA BUTTON */
+.nav-waitlist {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #06080C; background: var(--green);
+  padding: 9px 16px; border-radius: 100px;
+  cursor: pointer; text-decoration: none;
+  border: 1px solid var(--green);
+  box-shadow: 0 8px 22px -10px rgba(0,255,135,0.6);
+  transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s, background 0.2s;
+}
+.nav-waitlist:hover { transform: translateY(-2px); background: #2bffa0; box-shadow: 0 12px 28px -10px rgba(0,255,135,0.75); }
+.nav-waitlist-arrow { transition: transform 0.2s; }
+.nav-waitlist:hover .nav-waitlist-arrow { transform: translateX(3px); }
+/* the in-menu copy only shows on mobile */
+.nav-waitlist-mobile { display: none; }
+
 /* HAMBURGER */
 .hamburger {
   display: none; flex-direction: column; gap: 5px; cursor: pointer;
@@ -587,6 +612,142 @@ nav {
 }
 .beta-disclaimer-text strong { color: var(--amber); font-weight: 700; }
 
+/* ───────────────────── DONATE ───────────────────── */
+.donate-section {
+  padding: 80px 48px; border-top: 1px solid var(--border);
+  position: relative; z-index: 1;
+  background: radial-gradient(ellipse 70% 100% at 50% 0%, rgba(0,255,135,0.04) 0%, transparent 65%);
+}
+.donate-inner { max-width: 680px; margin: 0 auto; }
+.donate-card {
+  position: relative; overflow: hidden;
+  border: 1px solid rgba(0,255,135,0.18);
+  background: linear-gradient(160deg, rgba(0,255,135,0.05), rgba(13,17,26,0.5));
+  border-radius: 16px; padding: 44px;
+  box-shadow: 0 40px 80px -40px rgba(0,255,135,0.12), 0 20px 50px -20px rgba(0,0,0,0.5);
+}
+.donate-glow {
+  position: absolute; width: 300px; height: 300px; border-radius: 50%;
+  background: rgba(0,255,135,0.14); filter: blur(90px);
+  top: -120px; left: -60px; pointer-events: none;
+}
+.donate-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; position: relative; }
+.donate-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--green);
+  border: 1px solid rgba(0,255,135,0.25); background: rgba(0,255,135,0.08);
+  border-radius: 100px; padding: 6px 14px;
+}
+.donate-pulse { width: 5px; height: 5px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: blink 1.8s ease-in-out infinite; }
+.donate-status { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.donate-heading { font-family: 'Instrument Serif', serif; font-size: clamp(30px, 4vw, 50px); line-height: 1.05; margin-bottom: 14px; position: relative; }
+.donate-heading em { font-style: italic; color: var(--green); }
+.donate-body { font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.9; color: var(--muted); max-width: 540px; margin-bottom: 30px; position: relative; }
+
+.donate-form { position: relative; }
+.donate-cur-row { display: flex; gap: 8px; margin-bottom: 18px; }
+.donate-cur {
+  flex: 1; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.06em; color: var(--muted);
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 11px 0; cursor: pointer; transition: all 0.2s;
+}
+.donate-cur:hover { color: var(--text); border-color: var(--dim); }
+.donate-cur.active { color: var(--green); border-color: rgba(0,255,135,0.4); background: rgba(0,255,135,0.06); }
+.donate-presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.donate-preset {
+  font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted);
+  background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 100px;
+  padding: 7px 16px; cursor: pointer; transition: all 0.2s;
+}
+.donate-preset:hover { color: var(--text); border-color: var(--dim); }
+.donate-preset.active { color: var(--green); border-color: rgba(0,255,135,0.4); background: rgba(0,255,135,0.06); }
+.donate-input-wrap {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 0 18px; transition: border-color 0.2s;
+}
+.donate-input-wrap:focus-within { border-color: rgba(0,255,135,0.4); }
+.donate-input-wrap.invalid { border-color: rgba(255,107,157,0.5); }
+.donate-symbol { font-family: 'Space Mono', monospace; font-size: 20px; color: var(--green); flex-shrink: 0; }
+.donate-input {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-family: 'Space Mono', monospace; font-size: 20px; color: var(--text);
+  padding: 16px 0;
+}
+.donate-input::-webkit-outer-spin-button, .donate-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.donate-input { -moz-appearance: textfield; }
+.donate-hint { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); margin: 10px 2px 22px; letter-spacing: 0.03em; }
+.donate-hint.error { color: var(--pink); }
+.donate-btn {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--green); color: #06080C;
+  font-family: 'Space Mono', monospace; font-weight: 700; font-size: 12px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 16px; border: none; border-radius: 10px; cursor: pointer;
+  box-shadow: 0 14px 30px -10px rgba(0,255,135,0.5);
+  transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s, background 0.2s, opacity 0.2s;
+}
+.donate-btn:hover:not(:disabled) { transform: translateY(-2px); background: #2bffa0; box-shadow: 0 20px 40px -10px rgba(0,255,135,0.65); }
+.donate-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+.donate-note { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); text-align: center; margin-top: 14px; letter-spacing: 0.04em; }
+
+/* ───────────────────── PRO ───────────────────── */
+#view-pro { position: relative; z-index: 1; }
+.pro-hero { padding: 100px 48px 50px; text-align: center; }
+.pro-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--amber);
+  border: 1px solid rgba(255,181,71,0.25); background: rgba(255,181,71,0.06);
+  border-radius: 100px; padding: 6px 14px; margin-bottom: 30px;
+}
+.pro-tag-dot { width: 6px; height: 6px; background: var(--amber); border-radius: 50%; box-shadow: 0 0 6px var(--amber); animation: blink 2s ease-in-out infinite; }
+.pro-headline { font-family: 'Instrument Serif', serif; font-size: clamp(40px, 7vw, 84px); line-height: 0.97; letter-spacing: -0.025em; margin-bottom: 18px; }
+.pro-headline em { font-style: italic; color: var(--amber); }
+.pro-lead { font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.85; color: var(--muted); max-width: 520px; margin: 0 auto; }
+
+.pro-pricing { padding: 20px 48px 90px; }
+.pro-card {
+  position: relative; overflow: hidden; max-width: 460px; margin: 0 auto;
+  border: 1px solid rgba(255,181,71,0.22);
+  background: linear-gradient(160deg, rgba(255,181,71,0.06), rgba(13,17,26,0.55));
+  border-radius: 18px; padding: 44px 40px;
+  box-shadow: 0 50px 100px -45px rgba(255,181,71,0.18), 0 24px 60px -25px rgba(0,0,0,0.55);
+}
+.pro-card-glow { position: absolute; width: 320px; height: 320px; border-radius: 50%; background: rgba(255,181,71,0.16); filter: blur(95px); top: -130px; right: -70px; pointer-events: none; }
+.pro-badge {
+  display: inline-block; position: relative;
+  font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber);
+  border: 1px solid rgba(255,181,71,0.3); background: rgba(255,181,71,0.08);
+  border-radius: 100px; padding: 6px 14px; margin-bottom: 24px;
+}
+.pro-price-row { display: flex; align-items: center; gap: 14px; position: relative; margin-bottom: 4px; }
+.pro-price-old { font-family: 'Space Mono', monospace; font-size: 20px; color: var(--muted); text-decoration: line-through; text-decoration-color: var(--pink); }
+.pro-discount { font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--pink); border: 1px solid rgba(255,107,157,0.35); background: rgba(255,107,157,0.08); border-radius: 100px; padding: 4px 10px; }
+.pro-price-now { font-family: 'Syne', sans-serif; font-size: clamp(48px, 9vw, 68px); font-weight: 800; color: var(--text); line-height: 1; position: relative; }
+.pro-currency { color: var(--amber); }
+.pro-price-unit { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 400; color: var(--muted); letter-spacing: 0.04em; }
+.pro-price-sub { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); margin: 14px 0 28px; letter-spacing: 0.03em; position: relative; }
+.pro-feature-list { list-style: none; display: flex; flex-direction: column; gap: 13px; margin-bottom: 32px; position: relative; }
+.pro-feature-list li { font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.5; color: #C8CEDE; display: flex; align-items: flex-start; gap: 12px; }
+.pro-check { color: var(--green); font-weight: 700; flex-shrink: 0; }
+.pro-buy {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px;
+  background: var(--amber); color: #06080C;
+  font-family: 'Space Mono', monospace; font-weight: 700; font-size: 12px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 17px; border: none; border-radius: 10px; cursor: pointer; position: relative;
+  box-shadow: 0 16px 34px -12px rgba(255,181,71,0.55);
+  transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s, background 0.2s;
+}
+.pro-buy:hover { transform: translateY(-2px); background: #ffc56b; box-shadow: 0 22px 44px -12px rgba(255,181,71,0.7); }
+.pro-buy-arrow { transition: transform 0.2s; }
+.pro-buy:hover .pro-buy-arrow { transform: translateX(3px); }
+.pro-buy-note { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); text-align: center; margin-top: 14px; letter-spacing: 0.04em; position: relative; }
+
 /* ───────────────────── ABOUT ───────────────────── */
 #view-about { position: relative; z-index: 1; }
 
@@ -778,6 +939,8 @@ footer {
   .nav-link { padding: 11px 14px; }
   .hamburger { display: flex; }
   .nav-tag { display: none; }
+  .nav-waitlist-desktop { display: none; }
+  .nav-waitlist-mobile { display: inline-flex; justify-content: center; margin-top: 8px; }
 
   .splash-ring { display: none; }
   .features-grid { grid-template-columns: 1fr 1fr; }
@@ -785,7 +948,9 @@ footer {
   .why-grid { grid-template-columns: 1fr; }
   .founder-inner { grid-template-columns: 1fr; gap: 24px; }
   .pf-grid { grid-template-columns: 1fr 1fr; }
-  .features-strip, .rank-section, .faq-section, .waitlist-strip, .about-hero, .why-section, .founder-section, .product-hero, .countdown-section, .product-features, .product-waitlist, .contact-page, .beta-section { padding-left: 20px; padding-right: 20px; }
+  .features-strip, .rank-section, .faq-section, .waitlist-strip, .about-hero, .why-section, .founder-section, .product-hero, .countdown-section, .product-features, .product-waitlist, .contact-page, .beta-section, .donate-section, .pro-hero, .pro-pricing { padding-left: 20px; padding-right: 20px; }
+  .donate-card { padding: 32px 22px; }
+  .pro-card { padding: 36px 24px; }
   footer { padding: 20px; flex-direction: column; gap: 10px; text-align: center; }
   .cs-countdown { gap: 10px; }
   .countdown-unit { min-width: 64px; padding: 14px 16px; }
@@ -832,12 +997,14 @@ footer {
       <a class="nav-link active" data-view="home" onclick="navigate('home')">Home</a>
       <a class="nav-link" data-view="about" onclick="navigate('about')">About Us</a>
       <a class="nav-link" data-view="product" onclick="navigate('product')">Product</a>
+      <a class="nav-link nav-link-pro" data-view="pro" onclick="navigate('pro')"><span class="nav-pro-star">★</span>Pro</a>
       <a class="nav-link" data-view="contact" onclick="navigate('contact')">Contact Us</a>
       <a class="nav-link" href="hiring.html">Hiring</a>
       <a class="nav-link nav-link-beta" href="https://web.polymathos.xyz" target="_blank" rel="noopener"><span class="nav-beta-pulse"></span>Beta</a>
+      <a class="nav-waitlist nav-waitlist-mobile" onclick="goWaitlist()">Join Waitlist</a>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
-      <span class="nav-tag">Coming Sept 1</span>
+      <a class="nav-waitlist nav-waitlist-desktop" onclick="goWaitlist()">Join Waitlist <span class="nav-waitlist-arrow">→</span></a>
       <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -966,30 +1133,39 @@ footer {
         </div>
       </section>
 
-      <!-- BETA TESTER CTA -->
-      <section class="beta-section sr" id="betaSection">
-        <div class="beta-inner">
-          <div class="beta-card" id="betaCard">
-            <div class="beta-card-glow"></div>
-            <div class="beta-top">
-              <span class="beta-tag"><span class="nav-beta-pulse"></span> Beta Access Open</span>
-              <span class="beta-status">v0.3 · actively patched</span>
+      <!-- DONATE -->
+      <section class="donate-section sr" id="donate">
+        <div class="donate-inner">
+          <div class="donate-card">
+            <div class="donate-glow"></div>
+            <div class="donate-head">
+              <span class="donate-tag"><span class="donate-pulse"></span> Pay it forward</span>
+              <span class="donate-status">100% goes into the build</span>
             </div>
-            <h2 class="beta-heading">Skip the waitlist.<br>Run the <em>live build.</em></h2>
-            <p class="beta-body">
-              The early build of Polymath OS is live right now at <strong style="color:var(--text)">web.polymathos.xyz</strong>. Track real skills, log real streaks, and help shape the system before the September 1 launch. Beta testers get founding-member recognition and locked-in pricing at launch.
+            <h2 class="donate-heading">Fuel the <em>Build.</em></h2>
+            <p class="donate-body">
+              Polymath OS is built by one 18-year-old, in the open, with no investors. Every contribution buys server time, coffee, and late nights — and keeps the core free for everyone. Give whatever it's worth to you.
             </p>
-            <div class="beta-cta-row">
-              <a class="beta-cta" href="https://web.polymathos.xyz" target="_blank" rel="noopener">
-                Enter the beta <span class="beta-cta-arrow">→</span>
-              </a>
-              <span class="beta-url">web.polymathos.xyz</span>
-            </div>
-            <div class="beta-disclaimer">
-              <div class="beta-disclaimer-icon">!</div>
-              <div class="beta-disclaimer-text">
-                <strong>This is a beta.</strong> Expect bugs, incomplete features, and occasional resets as we ship fast and iterate. Data and progress may not carry over to the final release. Feedback shapes what we build next — break things and tell us about it.
+
+            <div class="donate-form">
+              <div class="donate-cur-row" id="donateCurRow">
+                <button type="button" class="donate-cur active" data-cur="INR" onclick="setDonateCur('INR')">₹ INR</button>
+                <button type="button" class="donate-cur" data-cur="USD" onclick="setDonateCur('USD')">$ USD</button>
+                <button type="button" class="donate-cur" data-cur="EUR" onclick="setDonateCur('EUR')">€ EUR</button>
               </div>
+
+              <div class="donate-presets" id="donatePresets"></div>
+
+              <div class="donate-input-wrap">
+                <span class="donate-symbol" id="donateSymbol">₹</span>
+                <input type="number" class="donate-input" id="donateAmount" inputmode="decimal" placeholder="Enter an amount" oninput="onDonateInput()" />
+              </div>
+              <div class="donate-hint" id="donateHint">Anything from ₹1 up to ₹99,99,999.</div>
+
+              <button type="button" class="donate-btn" id="donateBtn" onclick="submitDonation()" disabled>
+                Contribute <span class="donate-btn-amount" id="donateBtnAmount"></span>
+              </button>
+              <div class="donate-note">Secure checkout · One-time · Thank you 🙏</div>
             </div>
           </div>
         </div>
@@ -1031,7 +1207,7 @@ footer {
       </section>
 
       <!-- WAITLIST -->
-      <section class="waitlist-strip sr">
+      <section class="waitlist-strip sr" id="waitlist">
         <h2 class="waitlist-heading">Get in <em>early.</em></h2>
         <p class="waitlist-sub">Join the waitlist. No spam. Ever.</p>
         <div class="tally-wrap">
@@ -1185,6 +1361,46 @@ footer {
 
   </div><!-- /view-product -->
 
+  <!-- ═══════════════ PRO ═══════════════ -->
+  <div class="view" id="view-pro">
+    <div class="pro-hero sr">
+      <div class="pro-tag"><span class="pro-tag-dot"></span> Founding offer · limited</div>
+      <h1 class="pro-headline">Polymath OS <em>Pro.</em><br>Once. Forever.</h1>
+      <p class="pro-lead">Pay one time. Unlock every roadmap, the full XP &amp; rank system, and every feature we ever ship — for life. No subscription, no renewals.</p>
+    </div>
+
+    <section class="pro-pricing sr">
+      <div class="pro-card">
+        <div class="pro-card-glow"></div>
+        <div class="pro-badge">★ Lifetime Access</div>
+        <div class="pro-price-row">
+          <span class="pro-price-old">₹19,980</span>
+          <span class="pro-discount">90% OFF</span>
+        </div>
+        <div class="pro-price-now">
+          <span class="pro-currency">₹</span>1,999
+          <span class="pro-price-unit">/ lifetime</span>
+        </div>
+        <p class="pro-price-sub">One-time payment · No recurring charges · Founding-member price</p>
+
+        <ul class="pro-feature-list">
+          <li><span class="pro-check">✓</span> All 27+ skill roadmaps, unlocked forever</li>
+          <li><span class="pro-check">✓</span> Full XP &amp; 5-tier rank system</li>
+          <li><span class="pro-check">✓</span> Unlimited habit tracking &amp; streaks</li>
+          <li><span class="pro-check">✓</span> Curated library — every resource</li>
+          <li><span class="pro-check">✓</span> Leaderboards &amp; global board access</li>
+          <li><span class="pro-check">✓</span> Founding-member badge &amp; early features</li>
+          <li><span class="pro-check">✓</span> Every future update, included</li>
+        </ul>
+
+        <button type="button" class="pro-buy" onclick="buyPro()">
+          Get Pro for life <span class="pro-buy-arrow">→</span>
+        </button>
+        <div class="pro-buy-note">Secure checkout · Lifetime guarantee · Cancel anytime before purchase</div>
+      </div>
+    </section>
+  </div><!-- /view-pro -->
+
   <!-- ═══════════════ CONTACT ═══════════════ -->
   <div class="view" id="view-contact">
     <div class="contact-page sr">
@@ -1274,7 +1490,7 @@ window.addEventListener('load', () => {
     const hashParam = window.location.hash.replace('#', '');
     const targetView = viewParam || hashParam;
     
-    if (targetView && ['home', 'about', 'product', 'contact'].includes(targetView)) {
+    if (targetView && ['home', 'about', 'product', 'contact', 'pro'].includes(targetView)) {
       navigate(targetView);
     } else {
       runTypewriter();
@@ -1316,6 +1532,114 @@ function navigate(view) {
 function toggleMenu() {
   document.getElementById('navLinks').classList.toggle('open');
 }
+
+// ── WAITLIST CTA ──
+function goWaitlist() {
+  document.getElementById('navLinks').classList.remove('open');
+  const scrollToForm = () => {
+    const el = document.getElementById('waitlist');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+  // make sure we're on the home view first
+  const home = document.getElementById('view-home');
+  if (!home.classList.contains('active')) {
+    navigate('home');
+    setTimeout(scrollToForm, 120);
+  } else {
+    scrollToForm();
+  }
+}
+
+// ── PRO CHECKOUT ──
+// Checkout is handled by the app's payment backend (Razorpay). The landing
+// page hands off the chosen plan; swap this URL when the live checkout is ready.
+const PRO_CHECKOUT_URL = 'https://web.polymathos.xyz/?checkout=pro-lifetime';
+function buyPro() {
+  window.open(PRO_CHECKOUT_URL, '_blank', 'noopener');
+}
+
+// ── DONATE ──
+// Where the donation hands off for payment. The amount + currency ride along as
+// query params so the backend (Razorpay) can open the right checkout.
+const DONATE_CHECKOUT_URL = 'https://web.polymathos.xyz/?donate=1';
+const DONATE_CONFIG = {
+  INR: { symbol: '₹', min: 1,   max: 9999999, step: 1,   presets: [99, 499, 999, 2999], fmt: 'en-IN' },
+  USD: { symbol: '$', min: 0.5, max: 999999,  step: 0.5, presets: [5, 10, 25, 100],     fmt: 'en-US' },
+  EUR: { symbol: '€', min: 0.5, max: 999999,  step: 0.5, presets: [5, 10, 25, 100],     fmt: 'en-US' },
+};
+let donateCur = 'INR';
+
+function fmtAmount(cur, n) {
+  return new Intl.NumberFormat(DONATE_CONFIG[cur].fmt, { maximumFractionDigits: 2 }).format(n);
+}
+
+function renderDonatePresets() {
+  const cfg = DONATE_CONFIG[donateCur];
+  const wrap = document.getElementById('donatePresets');
+  wrap.innerHTML = cfg.presets.map(p =>
+    `<button type="button" class="donate-preset" data-amt="${p}" onclick="pickPreset(${p})">${cfg.symbol}${fmtAmount(donateCur, p)}</button>`
+  ).join('');
+}
+
+function setDonateCur(cur) {
+  donateCur = cur;
+  document.querySelectorAll('.donate-cur').forEach(b => b.classList.toggle('active', b.dataset.cur === cur));
+  document.getElementById('donateSymbol').textContent = DONATE_CONFIG[cur].symbol;
+  const cfg = DONATE_CONFIG[cur];
+  document.getElementById('donateAmount').step = cfg.step;
+  renderDonatePresets();
+  // clear current amount when switching currency to avoid cross-currency confusion
+  document.getElementById('donateAmount').value = '';
+  onDonateInput();
+}
+
+function pickPreset(amt) {
+  document.getElementById('donateAmount').value = amt;
+  onDonateInput();
+}
+
+function onDonateInput() {
+  const cfg = DONATE_CONFIG[donateCur];
+  const input = document.getElementById('donateAmount');
+  const wrap = input.closest('.donate-input-wrap');
+  const hint = document.getElementById('donateHint');
+  const btn = document.getElementById('donateBtn');
+  const btnAmt = document.getElementById('donateBtnAmount');
+  const raw = input.value.trim();
+  const val = parseFloat(raw);
+
+  // highlight a matching preset
+  document.querySelectorAll('.donate-preset').forEach(p => p.classList.toggle('active', parseFloat(p.dataset.amt) === val));
+
+  const defaultHint = `Anything from ${cfg.symbol}${fmtAmount(donateCur, cfg.min)} up to ${cfg.symbol}${fmtAmount(donateCur, cfg.max)}.`;
+
+  if (raw === '') {
+    hint.textContent = defaultHint; hint.classList.remove('error');
+    wrap.classList.remove('invalid'); btn.disabled = true; btnAmt.textContent = ''; return;
+  }
+  if (isNaN(val) || val < cfg.min) {
+    hint.textContent = `Minimum is ${cfg.symbol}${fmtAmount(donateCur, cfg.min)}.`;
+    hint.classList.add('error'); wrap.classList.add('invalid'); btn.disabled = true; btnAmt.textContent = ''; return;
+  }
+  if (val > cfg.max) {
+    hint.textContent = `Max is ${cfg.symbol}${fmtAmount(donateCur, cfg.max)}.`;
+    hint.classList.add('error'); wrap.classList.add('invalid'); btn.disabled = true; btnAmt.textContent = ''; return;
+  }
+  hint.textContent = defaultHint; hint.classList.remove('error');
+  wrap.classList.remove('invalid'); btn.disabled = false;
+  btnAmt.textContent = `${cfg.symbol}${fmtAmount(donateCur, val)}`;
+}
+
+function submitDonation() {
+  const cfg = DONATE_CONFIG[donateCur];
+  const val = parseFloat(document.getElementById('donateAmount').value);
+  if (isNaN(val) || val < cfg.min || val > cfg.max) { onDonateInput(); return; }
+  const url = `${DONATE_CHECKOUT_URL}&currency=${donateCur}&amount=${encodeURIComponent(val)}`;
+  window.open(url, '_blank', 'noopener');
+}
+
+// init donate presets on load
+window.addEventListener('load', () => setDonateCur('INR'));
 
 // ── SCROLL REVEAL ──
 function initSR() {
