@@ -348,53 +348,14 @@ nav {
 .ticker-item span { margin-right: 8px; }
 @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
-/* FEATURES — now tilt-on-hover 3D cards */
-.features-strip { padding: 80px 48px; position: relative; z-index: 1; }
-.strip-label {
-  font-family: 'Space Mono', monospace; font-size: 10px;
-  letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--dim); text-align: center; margin-bottom: 40px;
-}
-.features-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 1px; background: var(--border);
-  border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
-  max-width: 1000px; margin: 0 auto;
-  perspective: 1200px;
-}
-.feature-cell {
-  background: var(--bg); padding: 28px 24px;
-  transition: background 0.2s, transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s;
-  position: relative;
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-.feature-cell:hover {
-  background: var(--surface);
-  transform: translateZ(18px) rotateX(3deg);
-  box-shadow: 0 26px 50px -18px rgba(0,0,0,0.65);
-  z-index: 2;
-}
-.feature-cell::before {
-  content: ''; position: absolute; top: 0; left: 0;
-  width: 100%; height: 2px; opacity: 0; transition: opacity 0.2s;
-}
-.feature-cell:hover::before { opacity: 1; }
-.fc-1::before, .fc-2::before, .fc-3::before, .fc-4::before { background: rgba(255,255,255,0.45); }
-.feature-icon { font-size: 18px; margin-bottom: 14px; display: block; transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); }
-.feature-cell:hover .feature-icon { transform: translateZ(10px) scale(1.08); }
-
 /* ICONS (Lucide, inlined) */
 svg.licon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
-.feature-icon svg.licon { width: 24px; height: 24px; }
 .pf-icon svg.licon { width: 22px; height: 22px; }
 .ci-icon svg.licon { width: 20px; height: 20px; }
 .founder-handle svg.licon { width: 12px; height: 12px; vertical-align: -1px; }
 .beta-cta-arrow svg.licon, .nav-waitlist-arrow svg.licon, .ci-arrow svg.licon { width: 15px; height: 15px; }
 /* ticker separator dot (replaces ◈ glyph) */
 .ticker-dot { display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--muted); margin-right: 12px; vertical-align: middle; }
-.feature-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
-.feature-desc { font-family: 'Space Mono', monospace; font-size: 11px; line-height: 1.7; color: var(--muted); }
 
 /* FAQ */
 .faq-section { padding: 80px 48px; border-top: 1px solid var(--border); position: relative; z-index: 1; }
@@ -791,11 +752,10 @@ footer {
   .nav-waitlist-mobile { display: inline-flex; justify-content: center; margin-top: 8px; }
 
   .splash-ring { display: none; }
-  .features-grid { grid-template-columns: 1fr 1fr; }
   .why-grid { grid-template-columns: 1fr; }
   .founder-inner { grid-template-columns: 1fr; gap: 24px; }
   .pf-grid { grid-template-columns: 1fr 1fr; }
-  .features-strip, .faq-section, .waitlist-strip, .about-hero, .why-section, .founder-section, .product-hero, .countdown-section, .product-features, .product-waitlist, .contact-page, .beta-section, .donate-section { padding-left: 20px; padding-right: 20px; }
+  .faq-section, .waitlist-strip, .about-hero, .why-section, .founder-section, .product-hero, .countdown-section, .product-features, .product-waitlist, .contact-page, .beta-section, .donate-section { padding-left: 20px; padding-right: 20px; }
   .donate-card { padding: 32px 22px; }
   footer { padding: 20px; flex-direction: column; gap: 10px; text-align: center; }
   .cs-countdown { gap: 10px; }
@@ -807,7 +767,6 @@ footer {
 }
 
 @media (max-width: 480px) {
-  .features-grid { grid-template-columns: 1fr; }
   .pf-grid { grid-template-columns: 1fr; }
 }
 
@@ -923,32 +882,6 @@ footer {
         </div>
       </div>
 
-      <!-- FEATURES -->
-      <section class="features-strip sr">
-        <div class="strip-label">What's being built</div>
-        <div class="features-grid">
-          <div class="feature-cell fc-1">
-            <span class="feature-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg></span>
-            <div class="feature-name">Skill Roadmaps</div>
-            <div class="feature-desc">Structured paths for anything — coding, AI, fitness, finance, design, languages. If it's a skill, there's a roadmap.</div>
-          </div>
-          <div class="feature-cell fc-2">
-            <span class="feature-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg></span>
-            <div class="feature-name">Rank & XP System</div>
-            <div class="feature-desc">Earn points for completing skills, streaks, and challenges. Climb from Novice to Polymath.</div>
-          </div>
-          <div class="feature-cell fc-3">
-            <span class="feature-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg></span>
-            <div class="feature-name">Daily Tracker</div>
-            <div class="feature-desc">Code. Study. Build. Sleep. Log habits, protect streaks, and see weekly compounding.</div>
-          </div>
-          <div class="feature-cell fc-4">
-            <span class="feature-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg></span>
-            <div class="feature-name">Curated Library</div>
-            <div class="feature-desc">Hand-picked videos, articles, and courses tied to each roadmap step. Finish one, earn XP.</div>
-          </div>
-        </div>
-      </section>
 
       <!-- DONATE -->
       <section class="donate-section sr" id="donate">
@@ -1011,7 +944,7 @@ footer {
               <span class="faq-q-text">When does it launch, and what does it cost?</span>
               <span class="faq-icon">+</span>
             </button>
-            <div class="faq-a">September 1, 2026. Early waitlist members will get first access and a locked-in rate before public pricing is announced. There will be a free tier. Pro and Elite tiers unlock the full competitive system. Get on the list now — spots are limited.</div>
+            <div class="faq-a">September 1, 2026. Polymath OS is free to use and supported by optional donations. A Pro upgrade unlocks the full system, and an Elite tier — adding an AI coach and AI mentor — is coming soon. Join the waitlist for early access.</div>
           </div>
           <div class="faq-item" id="faq-4">
             <button class="faq-q" onclick="toggleFaq('faq-4')">
@@ -1026,7 +959,7 @@ footer {
       <!-- WAITLIST -->
       <section class="waitlist-strip sr" id="waitlist">
         <h2 class="waitlist-heading">Get in early.</h2>
-        <p class="waitlist-sub">Get early access and locked-in launch pricing on September 1.</p>
+        <p class="waitlist-sub">Get early access when Polymath OS launches on September 1.</p>
         <div class="tally-wrap">
           <iframe data-tally-src="https://tally.so/embed/xXzN6E?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="180" frameborder="0" marginheight="0" marginwidth="0" title="Waitlist"></iframe>
         </div>
@@ -1131,7 +1064,7 @@ footer {
           <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg></span><div class="pf-name">XP & Rank System</div><div class="pf-desc">Earn XP for every completed task, streak, and challenge. Climb through five distinct ranks.</div></div>
           <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg></span><div class="pf-name">Daily Habit Tracker</div><div class="pf-desc">Log and protect daily habits with streak mechanics that actually hurt when you break them.</div></div>
           <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg></span><div class="pf-name">Curated Library</div><div class="pf-desc">Every resource maps to a roadmap step, and completing it adds to your XP and progress.</div></div>
-          <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg></span><div class="pf-name">Leaderboards</div><div class="pf-desc">See where you stand. Compete publicly. Elite tier puts you on the global board.</div></div>
+          <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg></span><div class="pf-name">Leaderboards</div><div class="pf-desc">Track your rank and compete with others on the public leaderboard.</div></div>
           <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span><div class="pf-name">Progress Dashboard</div><div class="pf-desc">One view for all your skills, streaks, XP history, and growth velocity across every domain.</div></div>
         </div>
       </div>
@@ -1169,7 +1102,7 @@ footer {
     <section class="product-waitlist sr">
       <div class="pw-inner">
         <h2 class="pw-heading">Lock in early access.</h2>
-        <p class="pw-sub">Waitlist members get first entry and locked-in pricing.</p>
+        <p class="pw-sub">Waitlist members get first access when we launch.</p>
         <div class="tally-wrap">
           <iframe data-tally-src="https://tally.so/embed/xXzN6E?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="180" frameborder="0" marginheight="0" marginwidth="0" title="Waitlist"></iframe>
         </div>
