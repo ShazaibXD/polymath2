@@ -181,6 +181,12 @@ svg.licon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 .role-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
 .role-desc { font-family: 'Space Mono', monospace; font-size: 11px; line-height: 1.7; color: var(--muted); }
 
+/* staggered reveal */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+.reveal.revealed { opacity: 1; transform: none; }
+.stagger > * { opacity: 0; transform: translateY(16px); transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
+.stagger.revealed > * { opacity: 1; transform: none; }
+
 .hiring-form-container {
   width: 100%; max-width: 700px;
   background: rgba(13, 17, 26, 0.4);
@@ -257,7 +263,7 @@ footer {
 
   <!-- HIRING SECTION -->
   <main class="hiring-section">
-    <header class="hiring-header">
+    <header class="hiring-header reveal">
       <div class="hiring-tag">
         <div class="hiring-tag-dot"></div>
         Build with me
@@ -266,7 +272,7 @@ footer {
       <p class="hiring-lead">I'm building Polymath OS solo. Right now I'm looking for video and content people to help it reach more learners — filming and short-form editing for Instagram and YouTube. It's an unpaid collaboration on a startup nearing launch, with room for that to change as it grows.</p>
     </header>
 
-    <div class="roles-grid">
+    <div class="roles-grid stagger">
       <div class="role-cell">
         <div class="role-name">Video editing</div>
         <div class="role-desc">Cut short-form clips for Instagram and YouTube that actually hold attention.</div>
@@ -305,6 +311,25 @@ footer {
 function toggleMenu() {
   document.getElementById('navLinks').classList.toggle('open');
 }
+
+// ── SCROLL REVEAL (fade + stagger) ──
+(function () {
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      el.classList.add('revealed');
+      if (el.classList.contains('stagger') && !reduced) {
+        const kids = [...el.children];
+        kids.forEach((c, i) => { c.style.transitionDelay = Math.min(i * 70, 420) + 'ms'; });
+        setTimeout(() => kids.forEach(c => { c.style.transitionDelay = ''; }), 1500);
+      }
+      obs.unobserve(el);
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal, .stagger').forEach(el => obs.observe(el));
+})();
 </script>
 </body>
 </html>

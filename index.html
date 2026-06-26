@@ -379,6 +379,31 @@ nav {
 .rank-row.active .rank-row-name { color: var(--green); }
 .rank-row-xp { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
 
+/* SCROLL PROGRESS BAR */
+.scroll-prog {
+  position: fixed; top: 0; left: 0; height: 2px; width: 0;
+  background: linear-gradient(90deg, var(--green2), var(--green));
+  z-index: 200; box-shadow: 0 0 10px rgba(163,230,53,0.5);
+  transition: width 0.1s linear; pointer-events: none;
+}
+
+/* STAGGERED REVEAL (for non-tilt elements: chips, rows) */
+.stagger > * { opacity: 0; transform: translateY(16px); transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
+.stagger.revealed > * { opacity: 1; transform: none; }
+
+/* STREAK DEMO */
+.streak-section { padding: var(--sp-5) 48px; border-bottom: 1px solid var(--border); }
+.streak-inner { max-width: 900px; margin: 0 auto; }
+.streak-top { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 18px; margin-bottom: 28px; }
+.streak-heading { font-family: 'Instrument Serif', serif; font-size: var(--step-2); line-height: 1.05; }
+.streak-count { font-family: 'Space Mono', monospace; font-size: clamp(28px, 4vw, 42px); font-weight: 700; color: var(--green); line-height: 1; font-variant-numeric: tabular-nums; }
+.streak-count-lbl { font-family: 'Space Mono', monospace; font-size: var(--step--1); color: var(--muted); letter-spacing: 0.08em; margin-top: 6px; text-align: right; }
+.streak-grid { display: grid; grid-template-columns: repeat(26, 1fr); gap: 5px; }
+.streak-cell { aspect-ratio: 1; border-radius: 3px; background: var(--surface); border: 1px solid var(--border); }
+.streak-cell.on { background: rgba(163,230,53,0.08); }
+.streak-cell.lit { background: var(--green); border-color: var(--green); box-shadow: 0 0 8px rgba(163,230,53,0.4); transition: background 0.25s var(--ease), box-shadow 0.25s var(--ease), border-color 0.25s var(--ease); }
+.streak-foot { font-family: 'Space Mono', monospace; font-size: var(--step-0); line-height: 1.9; color: var(--muted); max-width: 560px; margin-top: 24px; }
+
 /* ICONS (Lucide, inlined) */
 svg.licon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 .pf-icon svg.licon { width: 22px; height: 22px; }
@@ -810,6 +835,9 @@ footer {
 </head>
 <body>
 
+<!-- SCROLL PROGRESS -->
+<div class="scroll-prog" id="scrollProg"></div>
+
 <!-- BACKGROUND -->
 <div class="grid-bg"></div>
 <div class="orb orb-1"></div>
@@ -876,7 +904,7 @@ footer {
       <section class="skills-section sr">
         <div class="skills-inner">
           <div class="skills-label">27 roadmaps · one XP system</div>
-          <div class="skills-grid">
+          <div class="skills-grid stagger">
             <span class="skill-chip">Coding</span>
             <span class="skill-chip">AI / ML</span>
             <span class="skill-chip">Python</span>
@@ -1069,8 +1097,8 @@ footer {
             It didn't exist. So I'm building it.
           </p>
           <div class="founder-stats">
-            <div><div class="fstat-val">27</div><div class="fstat-lbl">Skill roadmaps</div></div>
-            <div><div class="fstat-val">7</div><div class="fstat-lbl">Ranks to climb</div></div>
+            <div><div class="fstat-val" data-countup="27">0</div><div class="fstat-lbl">Skill roadmaps</div></div>
+            <div><div class="fstat-val" data-countup="7">0</div><div class="fstat-lbl">Ranks to climb</div></div>
             <div><div class="fstat-val">Sept<span> 1</span></div><div class="fstat-lbl">Launch target</div></div>
           </div>
         </div>
@@ -1116,6 +1144,24 @@ footer {
           <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg></span><div class="pf-name">Leaderboards</div><div class="pf-desc">Track your rank and compete with others on the public leaderboard.</div></div>
           <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span><div class="pf-name">Progress Dashboard</div><div class="pf-desc">One view for all your skills, streaks, XP history, and growth velocity across every domain.</div></div>
         </div>
+      </div>
+    </section>
+
+    <!-- STREAK DEMO -->
+    <section class="streak-section sr">
+      <div class="streak-inner">
+        <div class="streak-top">
+          <div>
+            <div class="section-label" style="margin-bottom:14px;">Daily streaks</div>
+            <h2 class="streak-heading">What a streak looks like.</h2>
+          </div>
+          <div>
+            <div class="streak-count"><span data-countup="47">0</span></div>
+            <div class="streak-count-lbl">day streak · illustrative</div>
+          </div>
+        </div>
+        <div class="streak-grid" id="streakGrid"></div>
+        <p class="streak-foot">Log your habits daily and keep the chain alive. Miss a day and the streak resets — and your XP takes the hit.</p>
       </div>
     </section>
 
@@ -1166,7 +1212,7 @@ footer {
       <div class="contact-tag">Get in touch</div>
       <h1 class="contact-headline">Questions, ideas, or just want to talk?</h1>
       <p class="contact-lead">A question, a collab idea, or thoughts on building things — email me and I usually reply within a couple of days.</p>
-      <div class="contact-items">
+      <div class="contact-items stagger">
         <a class="contact-item" href="https://web.polymathos.xyz" target="_blank" rel="noopener">
           <div class="ci-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/><path d="M6.453 15h11.094"/><path d="M8.5 2h7"/></svg></div>
           <div class="ci-body">
@@ -1271,7 +1317,12 @@ function navigate(view) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
   const el = document.getElementById('view-' + view);
-  if (el) { el.classList.add('active'); window.scrollTo(0,0); }
+  if (el) {
+    el.classList.add('active');
+    if (window.__lenis) window.__lenis.scrollTo(0, { immediate: true }); else window.scrollTo(0, 0);
+    window.__scrollY = 0;
+    if (typeof updateScrollProg === 'function') updateScrollProg();
+  }
   const lnk = document.querySelector('[data-view="' + view + '"]');
   if (lnk) lnk.classList.add('active');
   // close mobile menu
@@ -1389,16 +1440,74 @@ function submitDonation() {
 // init donate presets on load
 window.addEventListener('load', () => setDonateCur('INR'));
 
-// ── SCROLL REVEAL ──
-function initSR() {
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); obs.unobserve(e.target); } });
-  }, { threshold: 0.08 });
-  document.querySelectorAll('.view.active .sr').forEach(el => {
-    if (!el.classList.contains('revealed')) obs.observe(el);
+// ── SCROLL REVEAL + count-up + stagger + streak fill ──
+function animateCountUp(el) {
+  if (el.dataset.done) return; el.dataset.done = '1';
+  const target = parseFloat(el.dataset.countup) || 0;
+  if (window.__reducedMotion) { el.textContent = target.toLocaleString(); return; }
+  const dur = 1100, start = performance.now();
+  (function tick(now) {
+    const t = Math.min(1, (now - start) / dur);
+    const e = 1 - Math.pow(1 - t, 3); // ease-out cubic
+    el.textContent = Math.round(target * e).toLocaleString();
+    if (t < 1) requestAnimationFrame(tick); else el.textContent = target.toLocaleString();
+  })(start);
+}
+
+function revealStagger(el) {
+  el.classList.add('revealed');
+  if (!window.__reducedMotion) {
+    const kids = [...el.children];
+    kids.forEach((c, i) => { c.style.transitionDelay = Math.min(i * 55, 700) + 'ms'; });
+    // clear delays after the reveal so hover transitions stay snappy
+    setTimeout(() => kids.forEach(c => { c.style.transitionDelay = ''; }), 1500);
+  }
+}
+
+function buildStreak() {
+  const grid = document.getElementById('streakGrid');
+  if (!grid || grid.children.length) return;
+  for (let i = 0; i < 130; i++) {
+    const c = document.createElement('div');
+    c.className = 'streak-cell';
+    if ((i * 13 + 7) % 9 !== 0) c.classList.add('on'); // ~89% active, deterministic
+    grid.appendChild(c);
+  }
+}
+
+function fillStreak(grid) {
+  if (grid.dataset.done) return; grid.dataset.done = '1';
+  [...grid.children].forEach((c, i) => {
+    if (!c.classList.contains('on')) return;
+    if (window.__reducedMotion) { c.classList.add('lit'); return; }
+    setTimeout(() => c.classList.add('lit'), i * 18);
   });
 }
-window.addEventListener('load', () => setTimeout(initSR, 100));
+
+function initSR() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      if (el.classList.contains('stagger')) revealStagger(el); else el.classList.add('revealed');
+      el.querySelectorAll('[data-countup]').forEach(animateCountUp);
+      const sg = el.querySelector('#streakGrid'); if (sg) fillStreak(sg);
+      obs.unobserve(el);
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.view.active .sr, .view.active .stagger').forEach(el => {
+    if (!el.classList.contains('revealed') && !el.dataset.done) obs.observe(el);
+  });
+}
+window.addEventListener('load', () => { buildStreak(); setTimeout(initSR, 100); });
+
+// ── SCROLL PROGRESS BAR ──
+function updateScrollProg() {
+  const bar = document.getElementById('scrollProg');
+  if (!bar) return;
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  bar.style.width = (max > 0 ? Math.min(100, (window.__scrollY / max) * 100) : 0) + '%';
+}
 
 // ── FAQ ──
 function toggleFaq(id) {
@@ -1517,7 +1626,7 @@ function initRankLadder() {
       smoothTouch: false,
     });
     window.__lenis = lenis;
-    lenis.on('scroll', (e) => { window.__scrollY = e.scroll; updateHeroProgress(); });
+    lenis.on('scroll', (e) => { window.__scrollY = e.scroll; updateHeroProgress(); updateScrollProg(); });
 
     if (window.gsap && window.ScrollTrigger) {
       gsap.registerPlugin(ScrollTrigger);
@@ -1532,7 +1641,7 @@ function initRankLadder() {
     }
   } else {
     // Reduced motion: native scroll, static ladder showing the full climb
-    window.addEventListener('scroll', () => { window.__scrollY = window.scrollY; updateHeroProgress(); }, { passive: true });
+    window.addEventListener('scroll', () => { window.__scrollY = window.scrollY; updateHeroProgress(); updateScrollProg(); }, { passive: true });
     updateRankUI(1);
   }
   window.addEventListener('resize', updateHeroProgress);
