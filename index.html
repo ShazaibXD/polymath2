@@ -11,8 +11,10 @@
 
 :root {
   --bg: #06080C;
-  --green: #00FF87;
-  --green2: #00CC6A;
+  /* accent — electric lime */
+  --green: #A3E635;
+  --green2: #84CC16;
+  --green-hi: #B6F24D;
   --amber: #FFB547;
   --pink: #FF6B9D;
   --blue: #7B8FFF;
@@ -21,10 +23,38 @@
   --dim: #2A3045;
   --surface: #0D111A;
   --border: #151D2E;
+
+  /* type scale */
+  --step--1: clamp(10px, 0.9vw, 11px);
+  --step-0: clamp(12px, 1vw, 13px);
+  --step-1: clamp(15px, 1.4vw, 17px);
+  --step-2: clamp(22px, 3vw, 30px);
+  --step-3: clamp(30px, 5vw, 50px);
+  --step-4: clamp(40px, 7vw, 90px);
+  --step-5: clamp(58px, 10vw, 130px);
+
+  /* spacing scale */
+  --sp-1: 8px;
+  --sp-2: 16px;
+  --sp-3: 24px;
+  --sp-4: 40px;
+  --sp-5: 64px;
+  --sp-6: 90px;
+
+  /* one signature easing */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html { scroll-behavior: smooth; }
 html, body { height: 100%; }
+
+/* visible keyboard focus — accessibility floor */
+:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+:focus:not(:focus-visible) { outline: none; }
 
 body {
   background: var(--bg);
@@ -57,13 +87,9 @@ body::before {
   position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0;
   will-change: transform;
 }
-.orb-1 { width: 500px; height: 500px; background: rgba(255,255,255,0.04); top: -180px; left: -180px; animation: drift1 12s ease-in-out infinite; }
-.orb-2 { width: 420px; height: 420px; background: rgba(123,143,255,0.06); bottom: -130px; right: -80px; animation: drift2 15s ease-in-out infinite; }
-.orb-3 { width: 260px; height: 260px; background: rgba(255,107,157,0.05); top: 40%; left: 60%; animation: drift3 10s ease-in-out infinite; }
-
-@keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(50px,35px)} }
-@keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-35px,-50px)} }
-@keyframes drift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(25px,40px)} }
+.orb-1 { width: 500px; height: 500px; background: rgba(255,255,255,0.03); top: -180px; left: -180px; }
+.orb-2 { width: 420px; height: 420px; background: rgba(163,230,53,0.04); bottom: -130px; right: -80px; }
+.orb-3 { display: none; }
 
 /* PAGE WRAPPER */
 .page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
@@ -142,10 +168,10 @@ nav {
   padding: 9px 16px; border-radius: 100px;
   cursor: pointer; text-decoration: none;
   border: 1px solid var(--green);
-  box-shadow: 0 8px 22px -10px rgba(0,255,135,0.6);
-  transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s, background 0.2s;
+  box-shadow: 0 8px 22px -10px rgba(163,230,53,0.55);
+  transition: transform 0.18s var(--ease), box-shadow 0.18s, background 0.18s;
 }
-.nav-waitlist:hover { transform: translateY(-2px); background: #2bffa0; box-shadow: 0 12px 28px -10px rgba(0,255,135,0.75); }
+.nav-waitlist:hover { transform: translateY(-2px) scale(1.02); background: var(--green-hi); box-shadow: 0 12px 28px -10px rgba(163,230,53,0.7); }
 .nav-waitlist-arrow { transition: transform 0.2s; }
 .nav-waitlist:hover .nav-waitlist-arrow { transform: translateX(3px); }
 /* the in-menu copy only shows on mobile */
@@ -167,73 +193,26 @@ nav {
 
 /* SPLASH — full vh, fixed attention-hook, now a layered 3D scene */
 .splash {
-  height: 100vh;
+  height: 100vh; min-height: 600px;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   position: relative; overflow: hidden;
   text-align: center; padding: 0 24px;
-  perspective: 1400px;
 }
 
-.splash-scene {
+/* Live skill-graph canvas — the single signature motion */
+.graph-canvas {
   position: absolute; inset: 0;
-  transform-style: preserve-3d;
-  pointer-events: none;
+  width: 100%; height: 100%;
+  display: block; pointer-events: none;
+  z-index: 0; opacity: 0;
+  transition: opacity 1.2s var(--ease);
 }
-
-/* Animated ring — now true depth layers floating at different z */
-.splash-ring {
-  position: absolute;
-  border-radius: 50%; border: 1px solid;
-  pointer-events: none; will-change: transform, opacity;
-  left: 50%; top: 50%;
-  transform-style: preserve-3d;
-}
-.ring-1 { width: 340px; height: 340px; margin: -170px 0 0 -170px; border-color: rgba(255,255,255,0.08); animation: ringPulse 4s ease-in-out infinite; transform: translateZ(40px); }
-.ring-2 { width: 520px; height: 520px; margin: -260px 0 0 -260px; border-color: rgba(255,255,255,0.05); animation: ringPulse 4s 1s ease-in-out infinite; transform: translateZ(-60px); }
-.ring-3 { width: 700px; height: 700px; margin: -350px 0 0 -350px; border-color: rgba(255,255,255,0.025); animation: ringPulse 4s 2s ease-in-out infinite; transform: translateZ(-160px); }
-
-@keyframes ringPulse {
-  0%,100% { transform: translateZ(var(--rz,0)) scale(1); opacity: 1; }
-  50% { transform: translateZ(var(--rz,0)) scale(1.04); opacity: 0.5; }
-}
-.ring-1 { --rz: 40px; }
-.ring-2 { --rz: -60px; }
-.ring-3 { --rz: -160px; }
-
-/* Floating depth shards — pure CSS 3D, ambient ISO-style cards drifting around the headline */
-.shard {
-  position: absolute;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
-  backdrop-filter: blur(2px);
-  transform-style: preserve-3d;
-  will-change: transform;
-  box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
-}
-.shard::after {
-  content: attr(data-label);
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Space Mono', monospace; font-size: 9px;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--shard-color, var(--muted));
-  opacity: 0.55;
-  text-align: center; padding: 6px;
-}
-.shard-a { width: 92px; height: 60px; top: 16%; left: 13%; --shard-color: var(--muted); border-color: rgba(255,255,255,0.1); animation: floatA 7s ease-in-out infinite; }
-.shard-b { width: 78px; height: 78px; top: 64%; left: 10%; --shard-color: var(--blue); border-color: rgba(123,143,255,0.2); animation: floatB 8.5s ease-in-out infinite; }
-.shard-c { width: 100px; height: 56px; top: 22%; right: 11%; --shard-color: var(--amber); border-color: rgba(255,181,71,0.2); animation: floatC 6.5s ease-in-out infinite; }
-.shard-d { width: 70px; height: 70px; top: 68%; right: 14%; --shard-color: var(--pink); border-color: rgba(255,107,157,0.2); animation: floatD 9s ease-in-out infinite; }
-
-@keyframes floatA { 0%,100%{ transform: translateZ(90px) rotateX(12deg) rotateY(-14deg) translateY(0); } 50%{ transform: translateZ(110px) rotateX(8deg) rotateY(-10deg) translateY(-16px); } }
-@keyframes floatB { 0%,100%{ transform: translateZ(60px) rotateX(-10deg) rotateY(16deg) translateY(0); } 50%{ transform: translateZ(80px) rotateX(-14deg) rotateY(12deg) translateY(14px); } }
-@keyframes floatC { 0%,100%{ transform: translateZ(100px) rotateX(10deg) rotateY(14deg) translateY(0); } 50%{ transform: translateZ(120px) rotateX(14deg) rotateY(10deg) translateY(-12px); } }
-@keyframes floatD { 0%,100%{ transform: translateZ(70px) rotateX(-8deg) rotateY(-16deg) translateY(0); } 50%{ transform: translateZ(90px) rotateX(-12deg) rotateY(-12deg) translateY(16px); } }
-
-@media (max-width: 900px) {
-  .shard { display: none; }
+.graph-canvas.ready { opacity: 1; }
+/* radial mask so the graph fades behind the headline and toward edges */
+.splash::after {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(ellipse 52% 46% at 50% 46%, rgba(6,8,12,0.92) 0%, rgba(6,8,12,0.55) 35%, transparent 72%);
 }
 
 .splash-eyebrow {
@@ -333,20 +312,23 @@ nav {
 /* HOME CONTENT */
 .home-content { position: relative; z-index: 1; }
 
-/* TICKER */
-.ticker-wrap {
-  width: 100%; overflow: hidden;
-  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-  padding: 11px 0;
+/* SKILL GRID (static) */
+.skills-section { padding: var(--sp-5) 48px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.skills-inner { max-width: 900px; margin: 0 auto; text-align: center; }
+.skills-label {
+  font-family: 'Space Mono', monospace; font-size: var(--step--1);
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim);
+  margin-bottom: var(--sp-4);
 }
-.ticker { display: flex; animation: ticker 28s linear infinite; width: max-content; }
-.ticker-item {
-  font-family: 'Space Mono', monospace; font-size: 10px;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--dim); padding: 0 36px; white-space: nowrap;
+.skills-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.skill-chip {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  letter-spacing: 0.04em; color: var(--muted);
+  border: 1px solid var(--border); border-radius: 100px;
+  padding: 9px 16px; transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
 }
-.ticker-item span { margin-right: 8px; }
-@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.skill-chip:hover { color: var(--text); border-color: var(--dim); }
+.skill-chip-more { color: var(--green); border-color: rgba(163,230,53,0.3); }
 
 /* ICONS (Lucide, inlined) */
 svg.licon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
@@ -567,10 +549,10 @@ svg.licon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
   font-family: 'Space Mono', monospace; font-weight: 700; font-size: 12px;
   letter-spacing: 0.08em; text-transform: uppercase;
   padding: 16px; border: none; border-radius: 10px; cursor: pointer;
-  box-shadow: 0 14px 30px -10px rgba(0,255,135,0.5);
-  transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s, background 0.2s, opacity 0.2s;
+  box-shadow: 0 14px 30px -10px rgba(163,230,53,0.45);
+  transition: transform 0.18s var(--ease), box-shadow 0.18s, background 0.18s, opacity 0.2s;
 }
-.donate-btn:hover:not(:disabled) { transform: translateY(-2px); background: #2bffa0; box-shadow: 0 20px 40px -10px rgba(0,255,135,0.65); }
+.donate-btn:hover:not(:disabled) { transform: translateY(-2px) scale(1.01); background: var(--green-hi); box-shadow: 0 20px 40px -10px rgba(163,230,53,0.6); }
 .donate-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
 .donate-note { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); text-align: center; margin-top: 14px; letter-spacing: 0.04em; }
 
@@ -736,8 +718,8 @@ footer {
 .footer-right a { color: var(--muted); text-decoration: none; transition: color 0.15s; letter-spacing: 0.06em; }
 .footer-right a:hover { color: var(--text); }
 
-/* SCROLL REVEAL */
-.sr { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+/* SCROLL REVEAL — single signature easing, subtle translate */
+.sr { opacity: 0; transform: translateY(14px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
 .sr.revealed { opacity: 1; transform: translateY(0); }
 
 /* ───────────────────── MOBILE ───────────────────── */
@@ -751,7 +733,6 @@ footer {
   .nav-waitlist-desktop { display: none; }
   .nav-waitlist-mobile { display: inline-flex; justify-content: center; margin-top: 8px; }
 
-  .splash-ring { display: none; }
   .why-grid { grid-template-columns: 1fr; }
   .founder-inner { grid-template-columns: 1fr; gap: 24px; }
   .pf-grid { grid-template-columns: 1fr 1fr; }
@@ -793,9 +774,9 @@ footer {
     </div>
     <div class="nav-links" id="navLinks">
       <a class="nav-link active" data-view="home" onclick="navigate('home')">Home</a>
-      <a class="nav-link" data-view="about" onclick="navigate('about')">About Us</a>
+      <a class="nav-link" data-view="about" onclick="navigate('about')">About</a>
       <a class="nav-link" data-view="product" onclick="navigate('product')">Product</a>
-      <a class="nav-link" data-view="contact" onclick="navigate('contact')">Contact Us</a>
+      <a class="nav-link" data-view="contact" onclick="navigate('contact')">Contact</a>
       <a class="nav-link" href="hiring.html">Hiring</a>
       <a class="nav-link nav-link-beta" href="https://web.polymathos.xyz" target="_blank" rel="noopener"><span class="nav-beta-pulse"></span>Beta</a>
       <a class="nav-waitlist nav-waitlist-mobile" onclick="goWaitlist()">Join Waitlist</a>
@@ -811,19 +792,11 @@ footer {
   <!-- ═══════════════ HOME ═══════════════ -->
   <div class="view active" id="view-home">
 
-    <!-- SPLASH — attention hook, layered 3D scene -->
+    <!-- SPLASH — attention hook, live WebGL skill-graph -->
     <section class="splash" id="splashScene">
-      <div class="splash-scene" id="splashParallax">
-        <div class="splash-ring ring-1"></div>
-        <div class="splash-ring ring-2"></div>
-        <div class="splash-ring ring-3"></div>
-        <div class="shard shard-a" data-label="Python · 92%"></div>
-        <div class="shard shard-b" data-label="Day 14 streak"></div>
-        <div class="shard shard-c" data-label="Rank: Builder"></div>
-        <div class="shard shard-d" data-label="+120 XP"></div>
-      </div>
+      <canvas class="graph-canvas" id="graphCanvas" aria-hidden="true"></canvas>
 
-      <div class="splash-eyebrow">Building the next era</div>
+      <div class="splash-eyebrow">Built in the open by one person</div>
       <h1 class="splash-title">Become a Polymath.</h1>
       <div class="splash-sub">Not just a specialist.</div>
 
@@ -847,40 +820,34 @@ footer {
     <!-- HOME CONTENT (below fold) -->
     <div class="home-content">
 
-      <!-- TICKER -->
-      <div class="ticker-wrap">
-        <div class="ticker">
-          <div class="ticker-item"><span class="ticker-dot"></span> Python Mastery</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> AI / ML</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Public Speaking</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Personal Finance</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Fitness & Health</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> UI/UX Design</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Database Mastery</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Language Learning</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Rank & XP System</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Creative Writing</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Leadership</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Meta-Learning</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Negotiation</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Daily Streaks</div>
-          <!-- duplicate for seamless loop -->
-          <div class="ticker-item"><span class="ticker-dot"></span> Python Mastery</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> AI / ML</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Public Speaking</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Personal Finance</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Fitness & Health</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> UI/UX Design</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Database Mastery</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Language Learning</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Rank & XP System</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Creative Writing</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Leadership</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Meta-Learning</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Negotiation</div>
-          <div class="ticker-item"><span class="ticker-dot"></span> Daily Streaks</div>
+      <!-- SKILL GRID (static, replaces scrolling marquee) -->
+      <section class="skills-section sr">
+        <div class="skills-inner">
+          <div class="skills-label">27 roadmaps · one XP system</div>
+          <div class="skills-grid">
+            <span class="skill-chip">Coding</span>
+            <span class="skill-chip">AI / ML</span>
+            <span class="skill-chip">Python</span>
+            <span class="skill-chip">Web Development</span>
+            <span class="skill-chip">Data Science</span>
+            <span class="skill-chip">Cybersecurity</span>
+            <span class="skill-chip">Finance</span>
+            <span class="skill-chip">Entrepreneurship</span>
+            <span class="skill-chip">Public Speaking</span>
+            <span class="skill-chip">Writing</span>
+            <span class="skill-chip">Leadership</span>
+            <span class="skill-chip">Fitness</span>
+            <span class="skill-chip">Health</span>
+            <span class="skill-chip">Design</span>
+            <span class="skill-chip">Languages</span>
+            <span class="skill-chip">Chess</span>
+            <span class="skill-chip">Music Production</span>
+            <span class="skill-chip">Photography</span>
+            <span class="skill-chip">Mathematics</span>
+            <span class="skill-chip skill-chip-more">+ 8 more</span>
+          </div>
         </div>
-      </div>
+      </section>
 
 
       <!-- DONATE -->
@@ -892,9 +859,9 @@ footer {
               <span class="donate-tag"><span class="donate-pulse"></span> Pay it forward</span>
               <span class="donate-status">100% goes into the build</span>
             </div>
-            <h2 class="donate-heading">Fuel the Build.</h2>
+            <h2 class="donate-heading">Keeping it free isn't free.</h2>
             <p class="donate-body">
-              Polymath OS is built by one 18-year-old, in the open, with no investors. Every contribution buys server time, coffee, and late nights — and keeps the core free for everyone. Give whatever it's worth to you.
+              I'm building Polymath OS in the open — one person, no investors. It's free to use, and it stays that way. If it's earned a spot in your routine, a contribution covers servers and the late nights. Give whatever it's worth to you.
             </p>
 
             <div class="donate-form">
@@ -915,7 +882,7 @@ footer {
               <button type="button" class="donate-btn" id="donateBtn" onclick="submitDonation()" disabled>
                 Contribute <span class="donate-btn-amount" id="donateBtnAmount"></span>
               </button>
-              <div class="donate-note">Powered by Razorpay · Processed in ₹INR · You'll confirm the amount on the secure page 🙏</div>
+              <div class="donate-note">Opens Razorpay · Processed in INR — you'll confirm the final amount there.</div>
             </div>
           </div>
         </div>
@@ -944,22 +911,22 @@ footer {
               <span class="faq-q-text">When does it launch, and what does it cost?</span>
               <span class="faq-icon">+</span>
             </button>
-            <div class="faq-a">September 1, 2026. Polymath OS is free to use and supported by optional donations. A Pro upgrade unlocks the full system, and an Elite tier — adding an AI coach and AI mentor — is coming soon. Join the waitlist for early access.</div>
+            <div class="faq-a">September 1, 2026. The core is free to use, funded by optional contributions. A Pro upgrade will later unlock premium features, but no subscription is required to use Polymath OS. Join the waitlist for early access.</div>
           </div>
           <div class="faq-item" id="faq-4">
             <button class="faq-q" onclick="toggleFaq('faq-4')">
               <span class="faq-q-text">Can I use the product before launch?</span>
               <span class="faq-icon">+</span>
             </button>
-            <div class="faq-a">Yes — the beta is live at web.polymathos.xyz. It's an early, actively changing build, so expect bugs and incomplete features. Beta testers help us shape the final release and get founding-member perks at launch.</div>
+            <div class="faq-a">Yes — the beta is live at web.polymathos.xyz. It's an early, actively changing build, so expect bugs and incomplete features. Beta testers help shape the final release and get founding-member perks at launch.</div>
           </div>
         </div>
       </section>
 
       <!-- WAITLIST -->
       <section class="waitlist-strip sr" id="waitlist">
-        <h2 class="waitlist-heading">Get in early.</h2>
-        <p class="waitlist-sub">Get early access when Polymath OS launches on September 1.</p>
+        <h2 class="waitlist-heading">Want in when it launches?</h2>
+        <p class="waitlist-sub">Waitlist members get access first when Polymath OS opens on September 1.</p>
         <div class="tally-wrap">
           <iframe data-tally-src="https://tally.so/embed/xXzN6E?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="180" frameborder="0" marginheight="0" marginwidth="0" title="Waitlist"></iframe>
         </div>
@@ -972,7 +939,7 @@ footer {
   <div class="view" id="view-about">
 
     <div class="about-hero sr">
-      <div class="about-tag"><div class="about-tag-dot"></div> Why we exist</div>
+      <div class="about-tag"><div class="about-tag-dot"></div> Why I'm building this</div>
       <h1 class="about-headline">Built for people who<br>refuse to specialize.</h1>
       <p class="about-lead">Most platforms assume you want to master one thing. Polymath OS is for the person who wants to master many — and wants a system that keeps up.</p>
     </div>
@@ -984,12 +951,12 @@ footer {
           <div class="why-cell">
             <div class="why-num">01</div>
             <div class="why-title">Platforms reward passive consumption</div>
-            <div class="why-body">Watch a video, get a certificate. That's the model. It doesn't track whether you applied anything, built anything, or improved at all. We track actual progress.</div>
+            <div class="why-body">Watch a video, get a certificate. That's the model. It doesn't track whether you applied anything, built anything, or improved at all. Polymath OS tracks what you actually do.</div>
           </div>
           <div class="why-cell">
             <div class="why-num">02</div>
             <div class="why-title">Specialization is becoming a trap</div>
-            <div class="why-body">The most dangerous people in any room can do multiple things well. Narrow specialists get replaced. Polymaths get leverage. We build for the latter.</div>
+            <div class="why-body">The people with the most leverage can do several things well. Narrow specialists get automated; polymaths adapt. I'm building for the latter.</div>
           </div>
           <div class="why-cell">
             <div class="why-num">03</div>
@@ -999,7 +966,7 @@ footer {
           <div class="why-cell">
             <div class="why-num">04</div>
             <div class="why-title">Accountability needs stakes</div>
-            <div class="why-body">Journaling doesn't make you consistent. Rank does. Public leaderboards, streak penalties, and XP loss if you drop off — we make growth competitive and real.</div>
+            <div class="why-body">Journaling doesn't make you consistent. Rank does. Public leaderboards, streak penalties, and XP loss if you drop off make growth competitive and real.</div>
           </div>
         </div>
       </div>
@@ -1016,12 +983,12 @@ footer {
           <a class="founder-handle" href="https://www.instagram.com/mdshaz_/" target="_blank" rel="noopener">@mdshaz_ <svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
           <p class="founder-bio">
             18 years old. Deep in AI/ML.<br><br>
-            I built Polymath OS because most learning platforms are built for passive consumers — not people who actually want to <em>become dangerous</em> at multiple things. I kept looking for something that tracked all my skills — code, fitness, finance, communication — in one place with real stakes attached.<br><br>
+            I built Polymath OS because learning platforms are built for passive consumers — not people who want to get <em>good</em> at several things at once. I wanted one place that tracked all of it — code, fitness, finance, communication — with real stakes attached.<br><br>
             It didn't exist. So I'm building it.
           </p>
           <div class="founder-stats">
-            <div><div class="fstat-val">18<span>y</span></div><div class="fstat-lbl">Founder's age</div></div>
-            <div><div class="fstat-val">5<span>+</span></div><div class="fstat-lbl">Skills tracked daily</div></div>
+            <div><div class="fstat-val">27</div><div class="fstat-lbl">Skill roadmaps</div></div>
+            <div><div class="fstat-val">7</div><div class="fstat-lbl">Ranks to climb</div></div>
             <div><div class="fstat-val">Sept<span> 1</span></div><div class="fstat-lbl">Launch target</div></div>
           </div>
         </div>
@@ -1035,7 +1002,7 @@ footer {
 
     <div class="product-hero sr">
       <div class="product-tag"><div class="product-tag-dot"></div> In development</div>
-      <h1 class="product-headline">The OS for your growth.</h1>
+      <h1 class="product-headline">One place for everything you're learning.</h1>
       <p class="product-lead">One system. Every domain. Real stakes. Launching September 1, 2026.</p>
     </div>
 
@@ -1052,7 +1019,7 @@ footer {
           <div class="countdown-unit"><div class="countdown-num" id="cd-min">00</div><div class="countdown-lbl">Minutes</div></div>
           <div class="countdown-unit"><div class="countdown-num" id="cd-sec">00</div><div class="countdown-lbl">Seconds</div></div>
         </div>
-        <p class="launch-date">Target launch: <span>September 1, 2026</span> &nbsp;·&nbsp; Be first in line.</p>
+        <p class="launch-date">Target launch: <span>September 1, 2026</span></p>
       </div>
     </section>
 
@@ -1061,7 +1028,7 @@ footer {
         <div class="section-label">What's shipping</div>
         <div class="pf-grid">
           <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg></span><div class="pf-name">Skill Roadmaps</div><div class="pf-desc">Structured learning paths across every domain — code, fitness, finance, communication, creativity.</div></div>
-          <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg></span><div class="pf-name">XP & Rank System</div><div class="pf-desc">Earn XP for every completed task, streak, and challenge. Climb through five distinct ranks.</div></div>
+          <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg></span><div class="pf-name">XP & Rank System</div><div class="pf-desc">Earn XP for every task, streak, and challenge, and climb seven ranks — Novice to Polymath.</div></div>
           <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg></span><div class="pf-name">Daily Habit Tracker</div><div class="pf-desc">Log and protect daily habits with streak mechanics that actually hurt when you break them.</div></div>
           <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg></span><div class="pf-name">Curated Library</div><div class="pf-desc">Every resource maps to a roadmap step, and completing it adds to your XP and progress.</div></div>
           <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg></span><div class="pf-name">Leaderboards</div><div class="pf-desc">Track your rank and compete with others on the public leaderboard.</div></div>
@@ -1077,9 +1044,9 @@ footer {
           <div class="beta-card-glow"></div>
           <div class="beta-top">
             <span class="beta-tag"><span class="nav-beta-pulse"></span> Beta Access Open</span>
-            <span class="beta-status">v0.3 · actively patched</span>
+            <span class="beta-status">v0.3</span>
           </div>
-          <h2 class="beta-heading">Don't wait for September.</h2>
+          <h2 class="beta-heading">The beta's already live.</h2>
           <p class="beta-body">
             A working build of Polymath OS is already live. Beta testers get early access to skill roadmaps, the XP system, and the daily tracker — plus founding-member status when the full product ships.
           </p>
@@ -1092,7 +1059,7 @@ footer {
           <div class="beta-disclaimer">
             <div class="beta-disclaimer-icon">!</div>
             <div class="beta-disclaimer-text">
-              <strong>This is a beta.</strong> Expect bugs, incomplete features, and occasional resets as we ship fast and iterate. Data and progress may not carry over to the final release.
+              <strong>This is a beta.</strong> Expect bugs, incomplete features, and occasional resets while it's shipping fast. Data and progress may not carry over to the final release.
             </div>
           </div>
         </div>
@@ -1101,8 +1068,8 @@ footer {
 
     <section class="product-waitlist sr">
       <div class="pw-inner">
-        <h2 class="pw-heading">Lock in early access.</h2>
-        <p class="pw-sub">Waitlist members get first access when we launch.</p>
+        <h2 class="pw-heading">First access goes to the waitlist.</h2>
+        <p class="pw-sub">Add your email and you'll hear from me the day it opens.</p>
         <div class="tally-wrap">
           <iframe data-tally-src="https://tally.so/embed/xXzN6E?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="180" frameborder="0" marginheight="0" marginwidth="0" title="Waitlist"></iframe>
         </div>
@@ -1115,8 +1082,8 @@ footer {
   <div class="view" id="view-contact">
     <div class="contact-page sr">
       <div class="contact-tag">Get in touch</div>
-      <h1 class="contact-headline">Say hello.</h1>
-      <p class="contact-lead">Have a question, a collab idea, or just want to talk about building things? Reach out — typical reply within 48 hours.</p>
+      <h1 class="contact-headline">Questions, ideas, or just want to talk?</h1>
+      <p class="contact-lead">A question, a collab idea, or thoughts on building things — email me and I usually reply within a couple of days.</p>
       <div class="contact-items">
         <a class="contact-item" href="https://web.polymathos.xyz" target="_blank" rel="noopener">
           <div class="ci-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/><path d="M6.453 15h11.094"/><path d="M8.5 2h7"/></svg></div>
@@ -1164,11 +1131,19 @@ footer {
   <!-- COOKIE BANNER -->
   <div class="cookie-banner" id="cookieBanner">
     <div class="cookie-title">Cookies</div>
-    <div class="cookie-text">We use cookies only for basic analytics — to see which pages people visit. Details in our <a href="privacy.html" style="color:var(--text);text-decoration:underline;">Privacy Policy</a>.</div>
+    <div class="cookie-text">I use cookies only for basic analytics — to see which pages get visited. Details in the <a href="privacy.html" style="color:var(--text);text-decoration:underline;">Privacy Policy</a>.</div>
     <button class="cookie-btn" onclick="acceptCookies()">Accept & Continue</button>
   </div>
 
 <script src="https://tally.so/widgets/embed.js"></script>
+
+<!-- Motion + 3D libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
 
 <script>
 // ── COOKIES ──
@@ -1377,34 +1352,6 @@ function updateCountdown() {
 }
 startCountdown();
 
-// ── 3D HERO PARALLAX (mouse-driven depth tilt) ──
-(function () {
-  const scene = document.getElementById('splashParallax');
-  const wrap = document.getElementById('splashScene');
-  if (!scene || !wrap) return;
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (prefersReduced) return;
-
-  let targetX = 0, targetY = 0, curX = 0, curY = 0;
-
-  wrap.addEventListener('mousemove', (e) => {
-    const rect = wrap.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width - 0.5;
-    const py = (e.clientY - rect.top) / rect.height - 0.5;
-    targetX = px * 14;
-    targetY = py * 14;
-  });
-  wrap.addEventListener('mouseleave', () => { targetX = 0; targetY = 0; });
-
-  function raf() {
-    curX += (targetX - curX) * 0.06;
-    curY += (targetY - curY) * 0.06;
-    scene.style.transform = `rotateY(${curX}deg) rotateX(${-curY}deg)`;
-    requestAnimationFrame(raf);
-  }
-  requestAnimationFrame(raf);
-})();
-
 // ── 3D TILT ON CARD HOVER (beta card + feature cells already use CSS, this adds subtle pointer-follow tilt to the beta card) ──
 (function () {
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1421,6 +1368,236 @@ startCountdown();
     });
   });
 })();
+
+// ── SMOOTH SCROLL (Lenis) + GSAP, with reduced-motion guard ──
+window.__reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+window.__scrollY = 0;
+window.__heroProgress = 0; // 0 at top of hero, 1 once scrolled one viewport
+
+(function () {
+  const updateHeroProgress = () => {
+    const vh = window.innerHeight || 1;
+    window.__heroProgress = Math.min(1, Math.max(0, window.__scrollY / vh));
+  };
+
+  if (!window.__reducedMotion && window.Lenis) {
+    const lenis = new Lenis({
+      duration: 1.1,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // expo-out
+      smoothWheel: true,
+    });
+    window.__lenis = lenis;
+    lenis.on('scroll', (e) => { window.__scrollY = e.scroll; updateHeroProgress(); });
+
+    if (window.gsap && window.ScrollTrigger) {
+      gsap.registerPlugin(ScrollTrigger);
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add((time) => lenis.raf(time * 1000));
+      gsap.ticker.lagSmoothing(0);
+
+      // subtle scroll-coupled fade/lift of the hero copy as you leave it
+      const heroEls = document.querySelectorAll('.splash-eyebrow, .splash-title, .splash-sub, .splash-def, .splash-beta-pill');
+      gsap.to(heroEls, {
+        y: -40, opacity: 0, ease: 'none',
+        scrollTrigger: { trigger: '.splash', start: 'top top', end: 'bottom top', scrub: true },
+      });
+    } else {
+      function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }
+      requestAnimationFrame(raf);
+    }
+  } else {
+    // No smooth scroll — track native scroll so the canvas can still couple gently
+    window.addEventListener('scroll', () => { window.__scrollY = window.scrollY; updateHeroProgress(); }, { passive: true });
+  }
+  window.addEventListener('resize', updateHeroProgress);
+  updateHeroProgress();
+})();
+</script>
+
+<!-- ── SKILL-GRAPH WebGL HERO (Three.js) ── -->
+<script type="module">
+import * as THREE from 'three';
+
+const canvas = document.getElementById('graphCanvas');
+const host = document.getElementById('splashScene');
+if (canvas && host) {
+  const ACCENT = 0xA3E635, DIM = 0x39435e, BG = 0x06080C;
+  const reduced = window.__reducedMotion;
+  const isMobile = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+  const animate = !reduced && !isMobile;        // desktop only gets the live loop
+  const NODE_COUNT = isMobile ? 28 : 52;
+
+  // soft round sprite texture for points
+  function dot() {
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const x = c.getContext('2d');
+    const g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.35, 'rgba(255,255,255,0.85)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 64, 64);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }
+  const tex = dot();
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(BG, 0.072);   // far nodes fade — depth-of-field feel
+
+  const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+  camera.position.set(0, 0, 15);
+
+  const group = new THREE.Group();
+  scene.add(group);
+
+  // ── build a loose 3D skill-graph ──
+  const nodes = [];
+  for (let i = 0; i < NODE_COUNT; i++) {
+    nodes.push(new THREE.Vector3(
+      (Math.random() - 0.5) * 20,
+      (Math.random() - 0.5) * 11,
+      (Math.random() - 0.5) * 12
+    ));
+  }
+  // edges: connect each node to its 2 nearest neighbours (progression paths)
+  const edges = [];
+  const seen = new Set();
+  for (let i = 0; i < nodes.length; i++) {
+    const d = nodes.map((n, j) => ({ j, dist: n.distanceTo(nodes[i]) }))
+      .filter(o => o.j !== i).sort((a, b) => a.dist - b.dist);
+    for (let k = 0; k < 2; k++) {
+      const j = d[k].j, key = i < j ? i + '-' + j : j + '-' + i;
+      if (!seen.has(key)) { seen.add(key); edges.push([i, j]); }
+    }
+  }
+
+  // node points (vertex colours: mostly dim slate, ~30% lit lime)
+  const np = new Float32Array(nodes.length * 3);
+  const nc = new Float32Array(nodes.length * 3);
+  const cAcc = new THREE.Color(ACCENT), cDim = new THREE.Color(DIM);
+  const lit = [];
+  nodes.forEach((n, i) => {
+    np[i*3] = n.x; np[i*3+1] = n.y; np[i*3+2] = n.z;
+    const isLit = Math.random() < 0.3; lit.push(isLit);
+    const col = isLit ? cAcc : cDim;
+    nc[i*3] = col.r; nc[i*3+1] = col.g; nc[i*3+2] = col.b;
+  });
+  const ng = new THREE.BufferGeometry();
+  ng.setAttribute('position', new THREE.BufferAttribute(np, 3));
+  ng.setAttribute('color', new THREE.BufferAttribute(nc, 3));
+  const nodePoints = new THREE.Points(ng, new THREE.PointsMaterial({
+    size: 0.5, map: tex, vertexColors: true, transparent: true,
+    depthWrite: false, sizeAttenuation: true, opacity: 0.95,
+  }));
+  group.add(nodePoints);
+
+  // edge lines (faint lime)
+  const ep = new Float32Array(edges.length * 6);
+  edges.forEach(([a, b], i) => {
+    ep[i*6] = nodes[a].x; ep[i*6+1] = nodes[a].y; ep[i*6+2] = nodes[a].z;
+    ep[i*6+3] = nodes[b].x; ep[i*6+4] = nodes[b].y; ep[i*6+5] = nodes[b].z;
+  });
+  const eg = new THREE.BufferGeometry();
+  eg.setAttribute('position', new THREE.BufferAttribute(ep, 3));
+  const lines = new THREE.LineSegments(eg, new THREE.LineBasicMaterial({
+    color: ACCENT, transparent: true, opacity: 0.1,
+  }));
+  group.add(lines);
+
+  // pulses — XP flowing along edges in the accent colour
+  const PULSE_COUNT = isMobile ? 14 : 26;
+  const pulses = [];
+  for (let i = 0; i < PULSE_COUNT; i++) {
+    pulses.push({ edge: (Math.random() * edges.length) | 0, t: Math.random(), speed: 0.15 + Math.random() * 0.4 });
+  }
+  const pp = new Float32Array(PULSE_COUNT * 3);
+  const pg = new THREE.BufferGeometry();
+  pg.setAttribute('position', new THREE.BufferAttribute(pp, 3));
+  const pulsePoints = new THREE.Points(pg, new THREE.PointsMaterial({
+    size: 0.85, map: tex, color: ACCENT, transparent: true,
+    depthWrite: false, sizeAttenuation: true, opacity: 0.95,
+    blending: THREE.AdditiveBlending,
+  }));
+  group.add(pulsePoints);
+
+  function stepPulses(dt) {
+    for (let i = 0; i < PULSE_COUNT; i++) {
+      const p = pulses[i];
+      p.t += p.speed * dt;
+      if (p.t > 1) { p.t = 0; p.edge = (Math.random() * edges.length) | 0; p.speed = 0.15 + Math.random() * 0.4; }
+      const [a, b] = edges[p.edge];
+      pp[i*3]   = nodes[a].x + (nodes[b].x - nodes[a].x) * p.t;
+      pp[i*3+1] = nodes[a].y + (nodes[b].y - nodes[a].y) * p.t;
+      pp[i*3+2] = nodes[a].z + (nodes[b].z - nodes[a].z) * p.t;
+    }
+    pg.attributes.position.needsUpdate = true;
+  }
+  stepPulses(0); // seed positions for the static frame too
+
+  // sizing
+  function resize() {
+    const w = host.clientWidth, h = host.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // mouse parallax (a few degrees, eased)
+  let pointerX = 0, pointerY = 0, curRX = 0, curRY = 0;
+  if (animate) {
+    host.addEventListener('mousemove', (e) => {
+      const r = host.getBoundingClientRect();
+      pointerX = ((e.clientX - r.left) / r.width - 0.5);
+      pointerY = ((e.clientY - r.top) / r.height - 0.5);
+    });
+    host.addEventListener('mouseleave', () => { pointerX = 0; pointerY = 0; });
+  }
+
+  group.rotation.x = -0.15;
+
+  function render() {
+    renderer.render(scene, camera);
+  }
+
+  let last = performance.now(), running = false, rafId = 0;
+  function loop(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    group.rotation.y += dt * 0.04;                       // slow ambient drift
+    const hp = window.__heroProgress || 0;
+    curRY += ((pointerX * 0.18) - curRY) * 0.05;
+    curRX += ((-pointerY * 0.12) - curRX) * 0.05;
+    group.rotation.z = curRY * 0.3;
+    camera.position.x = curRY * 4;
+    camera.position.y = -curRX * 4 - hp * 1.5;           // gentle scroll-coupled camera
+    camera.position.z = 15 + hp * 4;
+    camera.lookAt(0, 0, 0);
+    stepPulses(dt);
+    render();
+    if (running) rafId = requestAnimationFrame(loop);
+  }
+
+  function start() { if (!running && animate) { running = true; last = performance.now(); rafId = requestAnimationFrame(loop); } }
+  function stop() { running = false; if (rafId) cancelAnimationFrame(rafId); }
+
+  // lazy-init after first paint; reveal canvas
+  requestAnimationFrame(() => {
+    resize(); render();
+    canvas.classList.add('ready');
+    if (animate) {
+      // pause when hero scrolls off-screen
+      const io = new IntersectionObserver((es) => {
+        es.forEach(e => e.isIntersecting ? start() : stop());
+      }, { threshold: 0.01 });
+      io.observe(host);
+      document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+      start();
+    }
+  });
+}
 </script>
 </body>
 </html>
