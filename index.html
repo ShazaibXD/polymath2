@@ -330,11 +330,12 @@ nav {
 .skill-chip:hover { color: var(--text); border-color: var(--dim); }
 .skill-chip-more { color: var(--green); border-color: rgba(163,230,53,0.3); }
 
-/* RANK LADDER — pinned scroll demo */
-.rank-section { position: relative; border-bottom: 1px solid var(--border); }
+/* RANK LADDER — sticky scroll demo (CSS sticky, not GSAP pin) */
+.rank-section { position: relative; height: 220vh; border-bottom: 1px solid var(--border); }
 .rank-pin {
-  min-height: 100vh; display: flex; align-items: center;
-  padding: var(--sp-6) 48px; position: relative; overflow: hidden;
+  position: sticky; top: 0; height: 100vh;
+  display: flex; align-items: center;
+  padding: var(--sp-4) 48px; overflow: hidden;
   background: radial-gradient(ellipse 60% 70% at 80% 50%, rgba(163,230,53,0.05) 0%, transparent 65%);
 }
 .rank-inner {
@@ -782,7 +783,8 @@ footer {
   .nav-waitlist-mobile { display: inline-flex; justify-content: center; margin-top: 8px; }
 
   .why-grid { grid-template-columns: 1fr; }
-  .rank-pin { min-height: 0; padding: var(--sp-5) 20px; }
+  .rank-section { height: auto; }
+  .rank-pin { position: static; height: auto; padding: var(--sp-5) 20px; }
   .rank-inner { grid-template-columns: 1fr; gap: 32px; }
   .founder-inner { grid-template-columns: 1fr; gap: 24px; }
   .pf-grid { grid-template-columns: 1fr 1fr; }
@@ -1491,12 +1493,14 @@ function initRankLadder() {
   if (window.matchMedia('(max-width: 768px), (pointer: coarse)').matches) { updateRankUI(1); return; }
   gsap.to({}, {
     scrollTrigger: {
-      trigger: sec, start: 'top top', end: '+=1700',
-      pin: '.rank-pin', scrub: 0.4,
+      trigger: sec, start: 'top top', end: 'bottom bottom',
+      scrub: 0.4,
       onUpdate: (self) => updateRankUI(self.progress),
     },
   });
   updateRankUI(0);
+  // re-measure once everything (fonts, canvas) has settled
+  setTimeout(() => ScrollTrigger.refresh(), 300);
 }
 
 (function () {
