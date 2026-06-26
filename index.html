@@ -439,6 +439,20 @@ nav {
 .fc-4::before { background: var(--pink); }
 .feature-icon { font-size: 18px; margin-bottom: 14px; display: block; transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); }
 .feature-cell:hover .feature-icon { transform: translateZ(10px) scale(1.08); }
+
+/* ICONS (Lucide, inlined) */
+svg.licon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
+.feature-icon svg.licon { width: 24px; height: 24px; }
+.pf-icon svg.licon { width: 22px; height: 22px; }
+.rank-badge svg.licon { width: 20px; height: 20px; }
+.ci-icon svg.licon { width: 20px; height: 20px; }
+.pro-check svg.licon { width: 15px; height: 15px; }
+.nav-pro-star svg.licon { width: 12px; height: 12px; }
+.pro-badge svg.licon { width: 12px; height: 12px; }
+.founder-handle svg.licon { width: 12px; height: 12px; vertical-align: -1px; }
+.beta-cta-arrow svg.licon, .pro-buy-arrow svg.licon, .nav-waitlist-arrow svg.licon, .ci-arrow svg.licon { width: 15px; height: 15px; }
+/* ticker separator dot (replaces ◈ glyph) */
+.ticker-dot { display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--muted); margin-right: 12px; vertical-align: middle; }
 .feature-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
 .feature-desc { font-family: 'Space Mono', monospace; font-size: 11px; line-height: 1.7; color: var(--muted); }
 
@@ -866,7 +880,7 @@ nav {
 .contact-item:hover { background: var(--surface); }
 .contact-item:nth-child(1):hover { border-left-color: var(--pink); }
 .contact-item:nth-child(2):hover { border-left-color: var(--green); }
-.ci-icon { font-size: 22px; width: 44px; height: 44px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ci-icon { color: var(--text); width: 44px; height: 44px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .ci-body { flex: 1; }
 .ci-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--dim); margin-bottom: 4px; }
 .ci-val { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); }
@@ -977,14 +991,14 @@ footer {
       <a class="nav-link active" data-view="home" onclick="navigate('home')">Home</a>
       <a class="nav-link" data-view="about" onclick="navigate('about')">About Us</a>
       <a class="nav-link" data-view="product" onclick="navigate('product')">Product</a>
-      <a class="nav-link nav-link-pro" data-view="pro" onclick="navigate('pro')"><span class="nav-pro-star">★</span>Pro</a>
+      <a class="nav-link nav-link-pro" data-view="pro" onclick="navigate('pro')"><span class="nav-pro-star"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg></span>Pro</a>
       <a class="nav-link" data-view="contact" onclick="navigate('contact')">Contact Us</a>
       <a class="nav-link" href="hiring.html">Hiring</a>
       <a class="nav-link nav-link-beta" href="https://web.polymathos.xyz" target="_blank" rel="noopener"><span class="nav-beta-pulse"></span>Beta</a>
       <a class="nav-waitlist nav-waitlist-mobile" onclick="goWaitlist()">Join Waitlist</a>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
-      <a class="nav-waitlist nav-waitlist-desktop" onclick="goWaitlist()">Join Waitlist <span class="nav-waitlist-arrow">→</span></a>
+      <a class="nav-waitlist nav-waitlist-desktop" onclick="goWaitlist()">Join Waitlist <span class="nav-waitlist-arrow"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></a>
       <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -1033,35 +1047,35 @@ footer {
       <!-- TICKER -->
       <div class="ticker-wrap">
         <div class="ticker">
-          <div class="ticker-item"><span>◈</span> Python Mastery</div>
-          <div class="ticker-item"><span>◈</span> AI / ML</div>
-          <div class="ticker-item"><span>◈</span> Public Speaking</div>
-          <div class="ticker-item"><span>◈</span> Personal Finance</div>
-          <div class="ticker-item"><span>◈</span> Fitness & Health</div>
-          <div class="ticker-item"><span>◈</span> UI/UX Design</div>
-          <div class="ticker-item"><span>◈</span> Database Mastery</div>
-          <div class="ticker-item"><span>◈</span> Language Learning</div>
-          <div class="ticker-item"><span>◈</span> Rank & XP System</div>
-          <div class="ticker-item"><span>◈</span> Creative Writing</div>
-          <div class="ticker-item"><span>◈</span> Leadership</div>
-          <div class="ticker-item"><span>◈</span> Meta-Learning</div>
-          <div class="ticker-item"><span>◈</span> Negotiation</div>
-          <div class="ticker-item"><span>◈</span> Daily Streaks</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Python Mastery</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> AI / ML</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Public Speaking</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Personal Finance</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Fitness & Health</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> UI/UX Design</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Database Mastery</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Language Learning</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Rank & XP System</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Creative Writing</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Leadership</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Meta-Learning</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Negotiation</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Daily Streaks</div>
           <!-- duplicate for seamless loop -->
-          <div class="ticker-item"><span>◈</span> Python Mastery</div>
-          <div class="ticker-item"><span>◈</span> AI / ML</div>
-          <div class="ticker-item"><span>◈</span> Public Speaking</div>
-          <div class="ticker-item"><span>◈</span> Personal Finance</div>
-          <div class="ticker-item"><span>◈</span> Fitness & Health</div>
-          <div class="ticker-item"><span>◈</span> UI/UX Design</div>
-          <div class="ticker-item"><span>◈</span> Database Mastery</div>
-          <div class="ticker-item"><span>◈</span> Language Learning</div>
-          <div class="ticker-item"><span>◈</span> Rank & XP System</div>
-          <div class="ticker-item"><span>◈</span> Creative Writing</div>
-          <div class="ticker-item"><span>◈</span> Leadership</div>
-          <div class="ticker-item"><span>◈</span> Meta-Learning</div>
-          <div class="ticker-item"><span>◈</span> Negotiation</div>
-          <div class="ticker-item"><span>◈</span> Daily Streaks</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Python Mastery</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> AI / ML</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Public Speaking</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Personal Finance</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Fitness & Health</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> UI/UX Design</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Database Mastery</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Language Learning</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Rank & XP System</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Creative Writing</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Leadership</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Meta-Learning</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Negotiation</div>
+          <div class="ticker-item"><span class="ticker-dot"></span> Daily Streaks</div>
         </div>
       </div>
 
@@ -1070,22 +1084,22 @@ footer {
         <div class="strip-label">What's being built</div>
         <div class="features-grid">
           <div class="feature-cell fc-1">
-            <span class="feature-icon">◈</span>
+            <span class="feature-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg></span>
             <div class="feature-name">Skill Roadmaps</div>
             <div class="feature-desc">Structured paths for anything — coding, AI, fitness, finance, design, languages. If it's a skill, there's a roadmap.</div>
           </div>
           <div class="feature-cell fc-2">
-            <span class="feature-icon">◉</span>
+            <span class="feature-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg></span>
             <div class="feature-name">Rank & XP System</div>
             <div class="feature-desc">Earn points for completing skills, streaks, and challenges. Climb from Novice to Polymath.</div>
           </div>
           <div class="feature-cell fc-3">
-            <span class="feature-icon">⊞</span>
+            <span class="feature-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg></span>
             <div class="feature-name">Daily Tracker</div>
             <div class="feature-desc">Code. Study. Build. Sleep. Log habits, protect streaks, and see weekly compounding.</div>
           </div>
           <div class="feature-cell fc-4">
-            <span class="feature-icon">▶</span>
+            <span class="feature-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg></span>
             <div class="feature-name">Curated Library</div>
             <div class="feature-desc">Handpicked resources — no noise. Every video, article, and course earns you XP.</div>
           </div>
@@ -1104,11 +1118,11 @@ footer {
             </p>
           </div>
           <div class="rank-ladder">
-            <div class="rank-tier"><div class="rank-badge">🌱</div><div class="rank-info"><div class="rank-name">Novice</div><div class="rank-pts">0 – 500 XP</div></div><span class="rank-perks perk-free">Free</span></div>
-            <div class="rank-tier"><div class="rank-badge">⚙️</div><div class="rank-info"><div class="rank-name">Builder</div><div class="rank-pts">500 – 2,000 XP</div></div><span class="rank-perks perk-free">Free</span></div>
-            <div class="rank-tier highlight"><div class="rank-badge">🔥</div><div class="rank-info"><div class="rank-name">Specialist</div><div class="rank-pts">2,000 – 6,000 XP</div></div><span class="rank-perks perk-pro">Pro</span></div>
-            <div class="rank-tier"><div class="rank-badge">⚡</div><div class="rank-info"><div class="rank-name">Expert</div><div class="rank-pts">6,000 – 15,000 XP</div></div><span class="rank-perks perk-pro">Pro</span></div>
-            <div class="rank-tier"><div class="rank-badge">🧠</div><div class="rank-info"><div class="rank-name">Polymath</div><div class="rank-pts">15,000+ XP</div></div><span class="rank-perks perk-elite">Elite</span></div>
+            <div class="rank-tier"><div class="rank-badge"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9.536V7a4 4 0 0 1 4-4h1.5a.5.5 0 0 1 .5.5V5a4 4 0 0 1-4 4 4 4 0 0 0-4 4c0 2 1 3 1 5a5 5 0 0 1-1 3"/><path d="M4 9a5 5 0 0 1 8 4 5 5 0 0 1-8-4"/><path d="M5 21h14"/></svg></div><div class="rank-info"><div class="rank-name">Novice</div><div class="rank-pts">0 – 500 XP</div></div><span class="rank-perks perk-free">Free</span></div>
+            <div class="rank-tier"><div class="rank-badge"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"/></svg></div><div class="rank-info"><div class="rank-name">Builder</div><div class="rank-pts">500 – 2,000 XP</div></div><span class="rank-perks perk-free">Free</span></div>
+            <div class="rank-tier highlight"><div class="rank-badge"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/></svg></div><div class="rank-info"><div class="rank-name">Specialist</div><div class="rank-pts">2,000 – 6,000 XP</div></div><span class="rank-perks perk-pro">Pro</span></div>
+            <div class="rank-tier"><div class="rank-badge"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div><div class="rank-info"><div class="rank-name">Expert</div><div class="rank-pts">6,000 – 15,000 XP</div></div><span class="rank-perks perk-pro">Pro</span></div>
+            <div class="rank-tier"><div class="rank-badge"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path d="M18 18a4 4 0 0 0 2-7.464"/><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path d="M6 18a4 4 0 0 1-2-7.464"/><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77"/></svg></div><div class="rank-info"><div class="rank-name">Polymath</div><div class="rank-pts">15,000+ XP</div></div><span class="rank-perks perk-elite">Elite</span></div>
           </div>
         </div>
       </section>
@@ -1243,7 +1257,7 @@ footer {
         <div>
           <div class="founder-role">Founder &amp; Builder</div>
           <div class="founder-name">Shaz</div>
-          <a class="founder-handle" href="https://www.instagram.com/mdshaz_/" target="_blank" rel="noopener">@mdshaz_ ↗</a>
+          <a class="founder-handle" href="https://www.instagram.com/mdshaz_/" target="_blank" rel="noopener">@mdshaz_ <svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
           <p class="founder-bio">
             18 years old. Deep in AI/ML.<br><br>
             I built Polymath OS because most learning platforms are built for passive consumers — not people who actually want to <em>become dangerous</em> at multiple things. I kept looking for something that tracked all my skills — code, fitness, finance, communication — in one place with real stakes attached.<br><br>
@@ -1290,12 +1304,12 @@ footer {
       <div class="pf-inner">
         <div class="section-label">What's shipping</div>
         <div class="pf-grid">
-          <div class="pf-cell"><span class="pf-icon">◈</span><div class="pf-name">Skill Roadmaps</div><div class="pf-desc">Structured learning paths across every domain — code, fitness, finance, communication, creativity.</div></div>
-          <div class="pf-cell"><span class="pf-icon">◉</span><div class="pf-name">XP & Rank System</div><div class="pf-desc">Earn XP for every completed task, streak, and challenge. Climb through five distinct ranks.</div></div>
-          <div class="pf-cell"><span class="pf-icon">⊞</span><div class="pf-name">Daily Habit Tracker</div><div class="pf-desc">Log and protect daily habits with streak mechanics that actually hurt when you break them.</div></div>
-          <div class="pf-cell"><span class="pf-icon">▶</span><div class="pf-name">Curated Library</div><div class="pf-desc">Every resource is handpicked. No filler. Completing them rewards you with XP and progress.</div></div>
-          <div class="pf-cell"><span class="pf-icon">⌬</span><div class="pf-name">Leaderboards</div><div class="pf-desc">See where you stand. Compete publicly. Elite tier puts you on the global board.</div></div>
-          <div class="pf-cell"><span class="pf-icon">⬡</span><div class="pf-name">Progress Dashboard</div><div class="pf-desc">One view for all your skills, streaks, XP history, and growth velocity across every domain.</div></div>
+          <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg></span><div class="pf-name">Skill Roadmaps</div><div class="pf-desc">Structured learning paths across every domain — code, fitness, finance, communication, creativity.</div></div>
+          <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg></span><div class="pf-name">XP & Rank System</div><div class="pf-desc">Earn XP for every completed task, streak, and challenge. Climb through five distinct ranks.</div></div>
+          <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg></span><div class="pf-name">Daily Habit Tracker</div><div class="pf-desc">Log and protect daily habits with streak mechanics that actually hurt when you break them.</div></div>
+          <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg></span><div class="pf-name">Curated Library</div><div class="pf-desc">Every resource is handpicked. No filler. Completing them rewards you with XP and progress.</div></div>
+          <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg></span><div class="pf-name">Leaderboards</div><div class="pf-desc">See where you stand. Compete publicly. Elite tier puts you on the global board.</div></div>
+          <div class="pf-cell"><span class="pf-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span><div class="pf-name">Progress Dashboard</div><div class="pf-desc">One view for all your skills, streaks, XP history, and growth velocity across every domain.</div></div>
         </div>
       </div>
     </section>
@@ -1315,7 +1329,7 @@ footer {
           </p>
           <div class="beta-cta-row">
             <a class="beta-cta" href="https://web.polymathos.xyz" target="_blank" rel="noopener">
-              Enter the beta <span class="beta-cta-arrow">→</span>
+              Enter the beta <span class="beta-cta-arrow"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
             </a>
             <span class="beta-url">web.polymathos.xyz</span>
           </div>
@@ -1352,7 +1366,7 @@ footer {
     <section class="pro-pricing sr">
       <div class="pro-card">
         <div class="pro-card-glow"></div>
-        <div class="pro-badge">★ Lifetime Access · Early-Bird Only</div>
+        <div class="pro-badge"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg> Lifetime Access · Early-Bird Only</div>
         <div class="pro-price-row">
           <span class="pro-price-old">₹19,980</span>
           <span class="pro-discount">90% OFF</span>
@@ -1364,17 +1378,17 @@ footer {
         <p class="pro-price-sub">One-time payment · No recurring charges · Early-bird price, ends at launch</p>
 
         <ul class="pro-feature-list">
-          <li><span class="pro-check">✓</span> All 27+ skill roadmaps, unlocked forever</li>
-          <li><span class="pro-check">✓</span> Full XP &amp; 5-tier rank system</li>
-          <li><span class="pro-check">✓</span> Unlimited habit tracking &amp; streaks</li>
-          <li><span class="pro-check">✓</span> Curated library — every resource</li>
-          <li><span class="pro-check">✓</span> Leaderboards &amp; global board access</li>
-          <li><span class="pro-check">✓</span> Founding-member badge &amp; early features</li>
-          <li><span class="pro-check">✓</span> Every future update, included</li>
+          <li><span class="pro-check"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> All 27+ skill roadmaps, unlocked forever</li>
+          <li><span class="pro-check"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Full XP &amp; 5-tier rank system</li>
+          <li><span class="pro-check"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Unlimited habit tracking &amp; streaks</li>
+          <li><span class="pro-check"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Curated library — every resource</li>
+          <li><span class="pro-check"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Leaderboards &amp; global board access</li>
+          <li><span class="pro-check"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Founding-member badge &amp; early features</li>
+          <li><span class="pro-check"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Every future update, included</li>
         </ul>
 
         <button type="button" class="pro-buy" onclick="buyPro()">
-          Get Pro for life <span class="pro-buy-arrow">→</span>
+          Get Pro for life <span class="pro-buy-arrow"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
         </button>
         <div class="pro-buy-note">Secure checkout · Lifetime guarantee · Cancel anytime before purchase</div>
       </div>
@@ -1389,28 +1403,28 @@ footer {
       <p class="contact-lead">Have a question, a collab idea, or just want to talk about building things? Reach out — we reply to everything.</p>
       <div class="contact-items">
         <a class="contact-item" href="https://web.polymathos.xyz" target="_blank" rel="noopener">
-          <div class="ci-icon">🧪</div>
+          <div class="ci-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/><path d="M6.453 15h11.094"/><path d="M8.5 2h7"/></svg></div>
           <div class="ci-body">
             <div class="ci-label">Beta</div>
             <div class="ci-val">web.polymathos.xyz</div>
           </div>
-          <div class="ci-arrow">→</div>
+          <div class="ci-arrow"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>
         </a>
         <a class="contact-item" href="https://www.instagram.com/polymath01os/" target="_blank" rel="noopener">
-          <div class="ci-icon">📸</div>
+          <div class="ci-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></div>
           <div class="ci-body">
             <div class="ci-label">Instagram</div>
             <div class="ci-val">@polymath01os</div>
           </div>
-          <div class="ci-arrow">→</div>
+          <div class="ci-arrow"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>
         </a>
         <a class="contact-item" href="mailto:mohamedshazaib111@gmail.com">
-          <div class="ci-icon">✉️</div>
+          <div class="ci-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg></div>
           <div class="ci-body">
             <div class="ci-label">Email</div>
             <div class="ci-val">mohamedshazaib111@gmail.com</div>
           </div>
-          <div class="ci-arrow">→</div>
+          <div class="ci-arrow"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>
         </a>
       </div>
       <p class="contact-footer-note">We're a small team moving fast. Expect a response within 48 hours. Note: web.polymathos.xyz is a beta build and may be unstable — see the Beta section on the home page for details before reporting issues.</p>
@@ -1433,7 +1447,7 @@ footer {
 
   <!-- COOKIE BANNER -->
   <div class="cookie-banner" id="cookieBanner">
-    <div class="cookie-title"><span>◈</span> We use cookies</div>
+    <div class="cookie-title"><span class="ticker-dot"></span> We use cookies</div>
     <div class="cookie-text">Polymath OS uses cookies to enhance your experience, track analytics, and keep things running smoothly. By continuing, you agree to our <a href="privacy.html" style="color:var(--text);text-decoration:underline;">Privacy Policy</a>.</div>
     <button class="cookie-btn" onclick="acceptCookies()">Accept & Continue</button>
   </div>
