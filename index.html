@@ -330,6 +330,54 @@ nav {
 .skill-chip:hover { color: var(--text); border-color: var(--dim); }
 .skill-chip-more { color: var(--green); border-color: rgba(163,230,53,0.3); }
 
+/* RANK LADDER — pinned scroll demo */
+.rank-section { position: relative; border-bottom: 1px solid var(--border); }
+.rank-pin {
+  min-height: 100vh; display: flex; align-items: center;
+  padding: var(--sp-6) 48px; position: relative; overflow: hidden;
+  background: radial-gradient(ellipse 60% 70% at 80% 50%, rgba(163,230,53,0.05) 0%, transparent 65%);
+}
+.rank-inner {
+  max-width: 980px; width: 100%; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center;
+}
+.rank-head .section-label { margin-bottom: var(--sp-3); }
+.rank-heading {
+  font-family: 'Instrument Serif', serif; font-size: var(--step-3);
+  line-height: 1.05; letter-spacing: -0.02em; margin-bottom: var(--sp-2);
+}
+.rank-sub { font-family: 'Space Mono', monospace; font-size: var(--step-0); line-height: 1.9; color: var(--muted); max-width: 420px; }
+
+.rank-stage { display: flex; flex-direction: column; gap: var(--sp-3); }
+.rank-readout {
+  border: 1px solid var(--border); border-radius: 14px; padding: 26px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.03), rgba(13,17,26,0.5));
+}
+.rank-xp-num {
+  font-family: 'Space Mono', monospace; font-size: clamp(32px, 4.5vw, 46px);
+  font-weight: 700; color: var(--green); letter-spacing: -0.02em; line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.rank-now { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--text); margin-top: 10px; }
+.rank-bar { height: 6px; border-radius: 100px; background: var(--surface); border: 1px solid var(--border); overflow: hidden; margin: 16px 0 10px; }
+.rank-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green2), var(--green)); box-shadow: 0 0 12px rgba(163,230,53,0.5); transition: width 0.1s linear; }
+.rank-step { font-family: 'Space Mono', monospace; font-size: var(--step--1); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+.rank-list { list-style: none; }
+.rank-row {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px;
+  padding: 11px 14px; border-radius: 8px; opacity: 0.38;
+  border: 1px solid transparent;
+  transition: opacity 0.3s var(--ease), background 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.rank-row.done { opacity: 0.66; }
+.rank-row.active { opacity: 1; background: rgba(163,230,53,0.06); border-color: rgba(163,230,53,0.28); }
+.rank-row-lvl { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); letter-spacing: 0.1em; }
+.rank-row.done .rank-row-lvl, .rank-row.active .rank-row-lvl { color: var(--green); }
+.rank-row-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); }
+.rank-row.active .rank-row-name { color: var(--green); }
+.rank-row-xp { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
 /* ICONS (Lucide, inlined) */
 svg.licon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 .pf-icon svg.licon { width: 22px; height: 22px; }
@@ -734,6 +782,8 @@ footer {
   .nav-waitlist-mobile { display: inline-flex; justify-content: center; margin-top: 8px; }
 
   .why-grid { grid-template-columns: 1fr; }
+  .rank-pin { min-height: 0; padding: var(--sp-5) 20px; }
+  .rank-inner { grid-template-columns: 1fr; gap: 32px; }
   .founder-inner { grid-template-columns: 1fr; gap: 24px; }
   .pf-grid { grid-template-columns: 1fr 1fr; }
   .faq-section, .waitlist-strip, .about-hero, .why-section, .founder-section, .product-hero, .countdown-section, .product-features, .product-waitlist, .contact-page, .beta-section, .donate-section { padding-left: 20px; padding-right: 20px; }
@@ -849,6 +899,36 @@ footer {
         </div>
       </section>
 
+
+      <!-- RANK LADDER (scroll-driven) -->
+      <section class="rank-section" id="rankLadder">
+        <div class="rank-pin">
+          <div class="rank-inner">
+            <div class="rank-head">
+              <div class="section-label">How progress works</div>
+              <h2 class="rank-heading">Every step earns XP. XP earns rank.</h2>
+              <p class="rank-sub">Roadmap steps, streaks, and challenges all feed one XP system. Climb all seven ranks — Novice to Polymath.</p>
+            </div>
+            <div class="rank-stage">
+              <div class="rank-readout">
+                <div class="rank-xp-num" id="rankXpNum">0 XP</div>
+                <div class="rank-now" id="rankNow">Novice</div>
+                <div class="rank-bar"><div class="rank-bar-fill" id="rankBarFill"></div></div>
+                <div class="rank-step" id="rankStep">Rank 1 of 7</div>
+              </div>
+              <ol class="rank-list" id="rankList">
+                <li class="rank-row" data-i="0"><span class="rank-row-lvl">01</span><span class="rank-row-name">Novice</span><span class="rank-row-xp">0 XP</span></li>
+                <li class="rank-row" data-i="1"><span class="rank-row-lvl">02</span><span class="rank-row-name">Seeker</span><span class="rank-row-xp">100 XP</span></li>
+                <li class="rank-row" data-i="2"><span class="rank-row-lvl">03</span><span class="rank-row-name">Initiate</span><span class="rank-row-xp">400 XP</span></li>
+                <li class="rank-row" data-i="3"><span class="rank-row-lvl">04</span><span class="rank-row-name">Adept</span><span class="rank-row-xp">1,000 XP</span></li>
+                <li class="rank-row" data-i="4"><span class="rank-row-lvl">05</span><span class="rank-row-name">Expert</span><span class="rank-row-xp">2,400 XP</span></li>
+                <li class="rank-row" data-i="5"><span class="rank-row-lvl">06</span><span class="rank-row-name">Master</span><span class="rank-row-xp">5,000 XP</span></li>
+                <li class="rank-row" data-i="6"><span class="rank-row-lvl">07</span><span class="rank-row-name">Polymath</span><span class="rank-row-xp">10,000 XP</span></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <!-- DONATE -->
       <section class="donate-section sr" id="donate">
@@ -1374,6 +1454,51 @@ window.__reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').m
 window.__scrollY = 0;
 window.__heroProgress = 0; // 0 at top of hero, 1 once scrolled one viewport
 
+// ── RANK LADDER (scroll-driven product demo) ──
+const RANKS = [
+  { n: 'Novice',   min: 0,     max: 100 },
+  { n: 'Seeker',   min: 100,   max: 400 },
+  { n: 'Initiate', min: 400,   max: 1000 },
+  { n: 'Adept',    min: 1000,  max: 2400 },
+  { n: 'Expert',   min: 2400,  max: 5000 },
+  { n: 'Master',   min: 5000,  max: 10000 },
+  { n: 'Polymath', min: 10000, max: 10000 },
+];
+
+function updateRankUI(p) {
+  const num = document.getElementById('rankXpNum');
+  if (!num) return;
+  const pos = Math.min(6.9999, Math.max(0, p) * 7);
+  const i = Math.floor(pos);
+  const frac = pos - i;
+  const r = RANKS[i];
+  const xp = (i === 6) ? '10,000+ XP'
+    : Math.round(r.min + (r.max - r.min) * frac).toLocaleString() + ' XP';
+  num.textContent = xp;
+  document.getElementById('rankNow').textContent = r.n;
+  document.getElementById('rankStep').textContent = 'Rank ' + (i + 1) + ' of 7';
+  document.getElementById('rankBarFill').style.width = (i === 6 ? 100 : frac * 100) + '%';
+  document.querySelectorAll('.rank-row').forEach((row, idx) => {
+    row.classList.toggle('done', idx < i);
+    row.classList.toggle('active', idx === i);
+  });
+}
+
+function initRankLadder() {
+  const sec = document.getElementById('rankLadder');
+  if (!sec || !window.gsap || !window.ScrollTrigger) { updateRankUI(1); return; }
+  // mobile/touch: no pin (avoids jank) — show the full climb statically
+  if (window.matchMedia('(max-width: 768px), (pointer: coarse)').matches) { updateRankUI(1); return; }
+  gsap.to({}, {
+    scrollTrigger: {
+      trigger: sec, start: 'top top', end: '+=1700',
+      pin: '.rank-pin', scrub: 0.4,
+      onUpdate: (self) => updateRankUI(self.progress),
+    },
+  });
+  updateRankUI(0);
+}
+
 (function () {
   const updateHeroProgress = () => {
     const vh = window.innerHeight || 1;
@@ -1382,9 +1507,10 @@ window.__heroProgress = 0; // 0 at top of hero, 1 once scrolled one viewport
 
   if (!window.__reducedMotion && window.Lenis) {
     const lenis = new Lenis({
-      duration: 1.1,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // expo-out
+      lerp: 0.13,            // snappy, 1:1-ish with input — not floaty
+      wheelMultiplier: 1,
       smoothWheel: true,
+      smoothTouch: false,
     });
     window.__lenis = lenis;
     lenis.on('scroll', (e) => { window.__scrollY = e.scroll; updateHeroProgress(); });
@@ -1394,20 +1520,16 @@ window.__heroProgress = 0; // 0 at top of hero, 1 once scrolled one viewport
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add((time) => lenis.raf(time * 1000));
       gsap.ticker.lagSmoothing(0);
-
-      // subtle scroll-coupled fade/lift of the hero copy as you leave it
-      const heroEls = document.querySelectorAll('.splash-eyebrow, .splash-title, .splash-sub, .splash-def, .splash-beta-pill');
-      gsap.to(heroEls, {
-        y: -40, opacity: 0, ease: 'none',
-        scrollTrigger: { trigger: '.splash', start: 'top top', end: 'bottom top', scrub: true },
-      });
+      initRankLadder();      // the one deliberate pinned scroll moment
     } else {
       function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }
       requestAnimationFrame(raf);
+      updateRankUI(1);
     }
   } else {
-    // No smooth scroll — track native scroll so the canvas can still couple gently
+    // Reduced motion: native scroll, static ladder showing the full climb
     window.addEventListener('scroll', () => { window.__scrollY = window.scrollY; updateHeroProgress(); }, { passive: true });
+    updateRankUI(1);
   }
   window.addEventListener('resize', updateHeroProgress);
   updateHeroProgress();
@@ -1478,12 +1600,11 @@ if (canvas && host) {
   const np = new Float32Array(nodes.length * 3);
   const nc = new Float32Array(nodes.length * 3);
   const cAcc = new THREE.Color(ACCENT), cDim = new THREE.Color(DIM);
-  const lit = [];
+  const order = [];                         // per-node completion threshold
   nodes.forEach((n, i) => {
     np[i*3] = n.x; np[i*3+1] = n.y; np[i*3+2] = n.z;
-    const isLit = Math.random() < 0.3; lit.push(isLit);
-    const col = isLit ? cAcc : cDim;
-    nc[i*3] = col.r; nc[i*3+1] = col.g; nc[i*3+2] = col.b;
+    order.push(Math.random());
+    nc[i*3] = cDim.r; nc[i*3+1] = cDim.g; nc[i*3+2] = cDim.b;
   });
   const ng = new THREE.BufferGeometry();
   ng.setAttribute('position', new THREE.BufferAttribute(np, 3));
@@ -1493,6 +1614,18 @@ if (canvas && host) {
     depthWrite: false, sizeAttenuation: true, opacity: 0.95,
   }));
   group.add(nodePoints);
+
+  // light nodes lime as "completion" rises (baseline ~25% lit at rest)
+  function applyCompletion(level) {
+    for (let i = 0; i < nodes.length; i++) {
+      const f = Math.max(0, Math.min(1, (level - order[i]) / 0.06));
+      nc[i*3]   = cDim.r + (cAcc.r - cDim.r) * f;
+      nc[i*3+1] = cDim.g + (cAcc.g - cDim.g) * f;
+      nc[i*3+2] = cDim.b + (cAcc.b - cDim.b) * f;
+    }
+    ng.attributes.color.needsUpdate = true;
+  }
+  applyCompletion(0.25);
 
   // edge lines (faint lime)
   const ep = new Float32Array(edges.length * 6);
@@ -1575,6 +1708,10 @@ if (canvas && host) {
     camera.position.y = -curRX * 4 - hp * 1.5;           // gentle scroll-coupled camera
     camera.position.z = 15 + hp * 4;
     camera.lookAt(0, 0, 0);
+    // graph "completes" as you scroll out of the hero
+    applyCompletion(0.25 + 0.7 * hp);
+    pulsePoints.material.opacity = 0.6 + 0.35 * hp;
+    lines.material.opacity = 0.08 + 0.07 * hp;
     stepPulses(dt);
     render();
     if (running) rafId = requestAnimationFrame(loop);
