@@ -140,11 +140,6 @@ nav {
   margin-left: 8px;
 }
 
-/* PRO NAV LINK */
-.nav-link-pro { color: var(--amber); display: inline-flex; align-items: center; gap: 6px; }
-.nav-link-pro:hover { color: var(--amber); background: rgba(255,181,71,0.08); }
-.nav-link-pro.active { color: var(--amber); border-color: rgba(255,181,71,0.2); background: rgba(255,181,71,0.06); }
-.nav-pro-star { font-size: 9px; line-height: 1; }
 
 /* WAITLIST CTA BUTTON */
 .nav-waitlist {
@@ -405,41 +400,13 @@ nav {
 svg.licon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 .feature-icon svg.licon { width: 24px; height: 24px; }
 .pf-icon svg.licon { width: 22px; height: 22px; }
-.rank-badge svg.licon { width: 20px; height: 20px; }
 .ci-icon svg.licon { width: 20px; height: 20px; }
-.pro-check svg.licon { width: 15px; height: 15px; }
-.nav-pro-star svg.licon { width: 12px; height: 12px; }
-.pro-badge svg.licon { width: 12px; height: 12px; }
 .founder-handle svg.licon { width: 12px; height: 12px; vertical-align: -1px; }
-.beta-cta-arrow svg.licon, .pro-buy-arrow svg.licon, .nav-waitlist-arrow svg.licon, .ci-arrow svg.licon { width: 15px; height: 15px; }
+.beta-cta-arrow svg.licon, .nav-waitlist-arrow svg.licon, .ci-arrow svg.licon { width: 15px; height: 15px; }
 /* ticker separator dot (replaces ◈ glyph) */
 .ticker-dot { display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--muted); margin-right: 12px; vertical-align: middle; }
 .feature-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
 .feature-desc { font-family: 'Space Mono', monospace; font-size: 11px; line-height: 1.7; color: var(--muted); }
-
-/* RANK */
-.rank-section { padding: 80px 48px; border-top: 1px solid var(--border); position: relative; z-index: 1; }
-.rank-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
-.rank-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
-.rank-heading { font-family: 'Instrument Serif', serif; font-size: clamp(30px, 4vw, 50px); line-height: 1.1; margin-bottom: 20px; }.rank-body { font-family: 'Space Mono', monospace; font-size: 11px; line-height: 1.9; color: var(--muted); }
-.rank-ladder { display: flex; flex-direction: column; gap: 7px; perspective: 1000px; }
-.rank-tier {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px; background: var(--surface);
-  border: 1px solid var(--border); border-radius: 8px;
-  transition: all 0.25s cubic-bezier(0.16,1,0.3,1); cursor: default;
-  transform-style: preserve-3d;
-}
-.rank-tier:hover { border-color: var(--dim); transform: translateX(5px) translateZ(12px) rotateY(-2deg); box-shadow: -10px 16px 36px -16px rgba(0,0,0,0.6); }
-.rank-tier.highlight { border-color: rgba(255,181,71,0.3); background: rgba(255,181,71,0.04); }
-.rank-badge { font-size: 18px; width: 32px; text-align: center; flex-shrink: 0; }
-.rank-info { flex: 1; }
-.rank-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 2px; }
-.rank-pts { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); }
-.rank-perks { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
-.perk-free { background: rgba(0,255,135,0.08); color: var(--green); }
-.perk-pro { background: rgba(255,181,71,0.1); color: var(--amber); }
-.perk-elite { background: rgba(123,143,255,0.1); color: var(--blue); }
 
 /* FAQ */
 .faq-section { padding: 80px 48px; border-top: 1px solid var(--border); position: relative; z-index: 1; }
@@ -658,59 +625,6 @@ svg.licon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 .donate-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
 .donate-note { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); text-align: center; margin-top: 14px; letter-spacing: 0.04em; }
 
-/* ───────────────────── PRO ───────────────────── */
-#view-pro { position: relative; z-index: 1; }
-.pro-hero { padding: 100px 48px 50px; text-align: center; }
-.pro-tag {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.15em;
-  text-transform: uppercase; color: var(--amber);
-  border: 1px solid rgba(255,181,71,0.25); background: rgba(255,181,71,0.06);
-  border-radius: 100px; padding: 6px 14px; margin-bottom: 30px;
-}
-.pro-tag-dot { width: 6px; height: 6px; background: var(--amber); border-radius: 50%; box-shadow: 0 0 6px var(--amber); animation: blink 2s ease-in-out infinite; }
-.pro-headline { font-family: 'Instrument Serif', serif; font-size: clamp(40px, 7vw, 84px); line-height: 0.97; letter-spacing: -0.025em; margin-bottom: 18px; }.pro-lead { font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.85; color: var(--muted); max-width: 520px; margin: 0 auto; }
-
-.pro-pricing { padding: 20px 48px 90px; }
-.pro-card {
-  position: relative; overflow: hidden; max-width: 460px; margin: 0 auto;
-  border: 1px solid rgba(255,181,71,0.22);
-  background: linear-gradient(160deg, rgba(255,181,71,0.06), rgba(13,17,26,0.55));
-  border-radius: 18px; padding: 44px 40px;
-  box-shadow: 0 50px 100px -45px rgba(255,181,71,0.18), 0 24px 60px -25px rgba(0,0,0,0.55);
-}
-.pro-card-glow { position: absolute; width: 320px; height: 320px; border-radius: 50%; background: rgba(255,181,71,0.16); filter: blur(95px); top: -130px; right: -70px; pointer-events: none; }
-.pro-badge {
-  display: inline-block; position: relative;
-  font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700;
-  letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber);
-  border: 1px solid rgba(255,181,71,0.3); background: rgba(255,181,71,0.08);
-  border-radius: 100px; padding: 6px 14px; margin-bottom: 24px;
-}
-.pro-price-row { display: flex; align-items: center; gap: 14px; position: relative; margin-bottom: 4px; }
-.pro-price-old { font-family: 'Space Mono', monospace; font-size: 20px; color: var(--muted); text-decoration: line-through; text-decoration-color: var(--pink); }
-.pro-discount { font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--pink); border: 1px solid rgba(255,107,157,0.35); background: rgba(255,107,157,0.08); border-radius: 100px; padding: 4px 10px; }
-.pro-price-now { font-family: 'Syne', sans-serif; font-size: clamp(48px, 9vw, 68px); font-weight: 800; color: var(--text); line-height: 1; position: relative; }
-.pro-currency { color: var(--amber); }
-.pro-price-unit { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 400; color: var(--muted); letter-spacing: 0.04em; }
-.pro-price-sub { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); margin: 14px 0 28px; letter-spacing: 0.03em; position: relative; }
-.pro-feature-list { list-style: none; display: flex; flex-direction: column; gap: 13px; margin-bottom: 32px; position: relative; }
-.pro-feature-list li { font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.5; color: #C8CEDE; display: flex; align-items: flex-start; gap: 12px; }
-.pro-check { color: var(--green); font-weight: 700; flex-shrink: 0; }
-.pro-buy {
-  width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px;
-  background: var(--amber); color: #06080C;
-  font-family: 'Space Mono', monospace; font-weight: 700; font-size: 12px;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  padding: 17px; border: none; border-radius: 10px; cursor: pointer; position: relative;
-  box-shadow: 0 16px 34px -12px rgba(255,181,71,0.55);
-  transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s, background 0.2s;
-}
-.pro-buy:hover { transform: translateY(-2px); background: #ffc56b; box-shadow: 0 22px 44px -12px rgba(255,181,71,0.7); }
-.pro-buy-arrow { transition: transform 0.2s; }
-.pro-buy:hover .pro-buy-arrow { transform: translateX(3px); }
-.pro-buy-note { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); text-align: center; margin-top: 14px; letter-spacing: 0.04em; position: relative; }
-
 /* ───────────────────── ABOUT ───────────────────── */
 #view-about { position: relative; z-index: 1; }
 
@@ -899,13 +813,11 @@ footer {
 
   .splash-ring { display: none; }
   .features-grid { grid-template-columns: 1fr 1fr; }
-  .rank-inner { grid-template-columns: 1fr; gap: 40px; }
   .why-grid { grid-template-columns: 1fr; }
   .founder-inner { grid-template-columns: 1fr; gap: 24px; }
   .pf-grid { grid-template-columns: 1fr 1fr; }
-  .features-strip, .rank-section, .faq-section, .waitlist-strip, .about-hero, .why-section, .founder-section, .product-hero, .countdown-section, .product-features, .product-waitlist, .contact-page, .beta-section, .donate-section, .pro-hero, .pro-pricing { padding-left: 20px; padding-right: 20px; }
+  .features-strip, .faq-section, .waitlist-strip, .about-hero, .why-section, .founder-section, .product-hero, .countdown-section, .product-features, .product-waitlist, .contact-page, .beta-section, .donate-section { padding-left: 20px; padding-right: 20px; }
   .donate-card { padding: 32px 22px; }
-  .pro-card { padding: 36px 24px; }
   footer { padding: 20px; flex-direction: column; gap: 10px; text-align: center; }
   .cs-countdown { gap: 10px; }
   .countdown-unit { min-width: 64px; padding: 14px 16px; }
@@ -945,7 +857,6 @@ footer {
       <a class="nav-link active" data-view="home" onclick="navigate('home')">Home</a>
       <a class="nav-link" data-view="about" onclick="navigate('about')">About Us</a>
       <a class="nav-link" data-view="product" onclick="navigate('product')">Product</a>
-      <a class="nav-link nav-link-pro" data-view="pro" onclick="navigate('pro')"><span class="nav-pro-star"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg></span>Pro</a>
       <a class="nav-link" data-view="contact" onclick="navigate('contact')">Contact Us</a>
       <a class="nav-link" href="hiring.html">Hiring</a>
       <a class="nav-link nav-link-beta" href="https://web.polymathos.xyz" target="_blank" rel="noopener"><span class="nav-beta-pulse"></span>Beta</a>
@@ -1056,27 +967,6 @@ footer {
             <span class="feature-icon"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg></span>
             <div class="feature-name">Curated Library</div>
             <div class="feature-desc">Hand-picked videos, articles, and courses tied to each roadmap step. Finish one, earn XP.</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- RANK -->
-      <section class="rank-section sr">
-        <div class="rank-inner">
-          <div class="rank-text">
-            <div class="rank-label">The Hierarchy</div>
-            <h2 class="rank-heading">Earn your rank.<br>Own your stack.</h2>
-            <p class="rank-body">
-              Every skill you complete, every streak you protect, every challenge you ship — earns XP and moves you up the ladder.<br><br>
-              Free users get the foundation. Pro unlocks the full system. Elite competes for the top of the board.
-            </p>
-          </div>
-          <div class="rank-ladder">
-            <div class="rank-tier"><div class="rank-badge"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9.536V7a4 4 0 0 1 4-4h1.5a.5.5 0 0 1 .5.5V5a4 4 0 0 1-4 4 4 4 0 0 0-4 4c0 2 1 3 1 5a5 5 0 0 1-1 3"/><path d="M4 9a5 5 0 0 1 8 4 5 5 0 0 1-8-4"/><path d="M5 21h14"/></svg></div><div class="rank-info"><div class="rank-name">Novice</div><div class="rank-pts">0 – 500 XP</div></div><span class="rank-perks perk-free">Free</span></div>
-            <div class="rank-tier"><div class="rank-badge"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"/></svg></div><div class="rank-info"><div class="rank-name">Builder</div><div class="rank-pts">500 – 2,000 XP</div></div><span class="rank-perks perk-free">Free</span></div>
-            <div class="rank-tier highlight"><div class="rank-badge"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/></svg></div><div class="rank-info"><div class="rank-name">Specialist</div><div class="rank-pts">2,000 – 6,000 XP</div></div><span class="rank-perks perk-pro">Pro</span></div>
-            <div class="rank-tier"><div class="rank-badge"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div><div class="rank-info"><div class="rank-name">Expert</div><div class="rank-pts">6,000 – 15,000 XP</div></div><span class="rank-perks perk-pro">Pro</span></div>
-            <div class="rank-tier"><div class="rank-badge"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path d="M18 18a4 4 0 0 0 2-7.464"/><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path d="M6 18a4 4 0 0 1-2-7.464"/><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77"/></svg></div><div class="rank-info"><div class="rank-name">Polymath</div><div class="rank-pts">15,000+ XP</div></div><span class="rank-perks perk-elite">Elite</span></div>
           </div>
         </div>
       </section>
@@ -1309,46 +1199,6 @@ footer {
 
   </div><!-- /view-product -->
 
-  <!-- ═══════════════ PRO ═══════════════ -->
-  <div class="view" id="view-pro">
-    <div class="pro-hero sr">
-      <div class="pro-tag"><span class="pro-tag-dot"></span> Early-bird · limited time</div>
-      <h1 class="pro-headline">Polymath OS Pro.<br>Once. Forever.</h1>
-      <p class="pro-lead">Pay one time. Unlock every roadmap, the full XP &amp; rank system, and every feature we ever ship — for life. No subscription, no renewals. <strong style="color:var(--amber)">Lifetime access is an early-bird offer — once we launch, it's gone for good.</strong></p>
-    </div>
-
-    <section class="pro-pricing sr">
-      <div class="pro-card">
-        <div class="pro-card-glow"></div>
-        <div class="pro-badge"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg> Lifetime Access · Early-Bird Only</div>
-        <div class="pro-price-row">
-          <span class="pro-price-old">₹19,980</span>
-          <span class="pro-discount">90% OFF</span>
-        </div>
-        <div class="pro-price-now">
-          <span class="pro-currency">₹</span>1,999
-          <span class="pro-price-unit">/ lifetime</span>
-        </div>
-        <p class="pro-price-sub">One-time payment · No recurring charges · Early-bird price, ends at launch</p>
-
-        <ul class="pro-feature-list">
-          <li><span class="pro-check"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> All 27+ skill roadmaps, unlocked forever</li>
-          <li><span class="pro-check"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Full XP &amp; 5-tier rank system</li>
-          <li><span class="pro-check"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Unlimited habit tracking &amp; streaks</li>
-          <li><span class="pro-check"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Curated library — every resource</li>
-          <li><span class="pro-check"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Leaderboards &amp; global board access</li>
-          <li><span class="pro-check"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Founding-member badge &amp; early features</li>
-          <li><span class="pro-check"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Every future update, included</li>
-        </ul>
-
-        <button type="button" class="pro-buy" onclick="buyPro()">
-          Get Pro for life <span class="pro-buy-arrow"><svg class="licon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
-        </button>
-        <div class="pro-buy-note">Secure checkout · Lifetime guarantee · Cancel anytime before purchase</div>
-      </div>
-    </section>
-  </div><!-- /view-pro -->
-
   <!-- ═══════════════ CONTACT ═══════════════ -->
   <div class="view" id="view-contact">
     <div class="contact-page sr">
@@ -1426,7 +1276,7 @@ window.addEventListener('load', () => {
 window.addEventListener('load', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const targetView = urlParams.get('view') || window.location.hash.replace('#', '');
-  if (targetView && ['home', 'about', 'product', 'contact', 'pro'].includes(targetView)) {
+  if (targetView && ['home', 'about', 'product', 'contact'].includes(targetView)) {
     navigate(targetView);
   } else {
     runTypewriter();
@@ -1483,14 +1333,6 @@ function goWaitlist() {
   } else {
     scrollToForm();
   }
-}
-
-// ── PRO CHECKOUT ──
-// Checkout is handled by the app's payment backend (Razorpay). The landing
-// page hands off the chosen plan; swap this URL when the live checkout is ready.
-const PRO_CHECKOUT_URL = 'https://web.polymathos.xyz/?checkout=pro-lifetime';
-function buyPro() {
-  window.open(PRO_CHECKOUT_URL, '_blank', 'noopener');
 }
 
 // ── DONATE ──
