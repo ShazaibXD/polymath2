@@ -1291,19 +1291,22 @@ window.addEventListener('load', () => {
 window.addEventListener('load', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const targetView = urlParams.get('view') || window.location.hash.replace('#', '');
-  if (targetView && ['home', 'about', 'product', 'contact'].includes(targetView)) {
+  if (targetView && ['about', 'product', 'contact'].includes(targetView)) {
     navigate(targetView);
   } else {
+    // home (default, or ?view=home from another page) — show hero + run typewriter
+    if (targetView === 'home') navigate('home');
     runTypewriter();
   }
 });
 
 // ── TYPEWRITER ──
 function runTypewriter() {
-  const fullText = 'a person whose knowledge, mastery, and curiosity refuse to be contained by a single discipline.';
   const target = document.getElementById('defText');
   const cursor = document.getElementById('defCursor');
-  if (!target) return;
+  if (!target || target.dataset.typed) return;
+  target.dataset.typed = '1';
+  const fullText = 'a person whose knowledge, mastery, and curiosity refuse to be contained by a single discipline.';
   let i = 0;
   function type() {
     if (i <= fullText.length) { target.textContent = fullText.slice(0, i); i++; setTimeout(type, 38); }
