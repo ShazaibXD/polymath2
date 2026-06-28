@@ -4,17 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Terms & Conditions | Polymath OS</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/logo-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Instrument+Serif:ital@0;1&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root { --bg: #06080C; --green: #00FF87; --green2: #00CC6A; --amber: #FFB547; --pink: #FF6B9D; --blue: #7B8FFF; --text: #EEF0F6; --muted: #5A6480; --dim: #2A3045; --surface: #0D111A; --border: #151D2E; }
+:root { --bg: #06080C; --green: #A3E635; --green2: #84CC16; --green-hi: #B6F24D; --amber: #FFB547; --pink: #FF6B9D; --blue: #7B8FFF; --text: #EEF0F6; --muted: #5A6480; --dim: #2A3045; --surface: #0D111A; --border: #151D2E; }
 body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; overflow-x: hidden; cursor: default; }
 body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"); pointer-events: none; z-index: 9999; opacity: 0.5; }
 .grid-bg { position: fixed; inset: 0; z-index: 0; background-image: linear-gradient(rgba(0,255,135,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,135,0.03) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%); }
 nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; background: rgba(6,8,12,0.8); }
 .nav-logo { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--green); display: flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer; }
 .nav-dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; box-shadow: 0 0 12px var(--green); animation: blink 2s ease-in-out infinite; flex-shrink: 0; }
+.nav-logo-icon { width: 26px; height: 26px; border-radius: 6px; display: block; flex-shrink: 0; }
 @keyframes blink { 0%,100%{opacity:1;box-shadow:0 0 12px var(--green)} 50%{opacity:0.5;box-shadow:0 0 20px var(--green)} }
 .nav-links { display: flex; align-items: center; gap: 4px; }
 .nav-link { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 7px 14px; border-radius: 6px; cursor: pointer; transition: color 0.15s, background 0.15s; border: 1px solid transparent; text-decoration: none; }
@@ -30,15 +33,15 @@ footer { position: relative; z-index: 1; padding: 24px 48px; border-top: 1px sol
 /* Document specific */
 .doc-container { max-width: 720px; margin: 80px auto; padding: 0 24px; position: relative; z-index: 1; }
 .doc-title { font-family: 'Instrument Serif', serif; font-size: clamp(40px, 6vw, 64px); line-height: 1; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text); }
-.doc-title em { font-style: italic; color: var(--amber); }
+.doc-title em { font-style: italic; color: var(--green); }
 .doc-meta { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 48px; letter-spacing: 0.04em; }
-.doc-content { font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.9; color: #C8CEDE; }
-.doc-content h2 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); margin: 40px 0 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.doc-content { font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.9; color: #D4DAEA; }
+.doc-content h2 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); margin: 40px 0 16px; padding: 0 0 12px 16px; border-bottom: 1px solid var(--border); border-left: 3px solid var(--green); }
 .doc-content p { margin-bottom: 16px; }
 .doc-content ul { margin-bottom: 16px; padding-left: 20px; }
 .doc-content li { margin-bottom: 8px; }
-.doc-content a { color: var(--amber); text-decoration: none; }
-.doc-content a:hover { text-decoration: underline; }
+.doc-content a { color: var(--green); text-decoration: none; }
+.doc-content a:hover { color: var(--green-hi); text-decoration: underline; }
 .doc-content hr { border: none; height: 1px; background: var(--border); margin: 32px 0; }
 .doc-content strong { color: var(--text); }
 
@@ -56,7 +59,7 @@ footer { position: relative; z-index: 1; padding: 24px 48px; border-top: 1px sol
 
 <nav>
   <a href="index.html" class="nav-logo">
-    <div class="nav-dot"></div>
+    <img class="nav-logo-icon" src="assets/logo-icon.png" alt="" />
     POLYMATH OS
   </a>
   <div class="nav-links" id="navLinks">
