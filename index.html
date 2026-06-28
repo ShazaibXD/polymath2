@@ -795,6 +795,36 @@ footer {
 .footer-right a { color: var(--muted); text-decoration: none; transition: color 0.15s; letter-spacing: 0.06em; }
 .footer-right a:hover { color: var(--text); }
 
+/* Footer socials popover */
+.footer-socials { position: relative; display: inline-flex; }
+.footer-socials-trigger { color: var(--muted); cursor: pointer; letter-spacing: 0.06em; transition: color 0.15s; }
+.footer-socials:hover .footer-socials-trigger, .footer-socials.open .footer-socials-trigger { color: var(--green); }
+.footer-socials-pop {
+  position: absolute; bottom: calc(100% + 14px); left: 50%;
+  display: flex; flex-direction: column; gap: 4px; min-width: 152px;
+  background: rgba(6,8,12,0.97); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border); border-radius: 11px; padding: 7px;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.55);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transform: translateX(-50%) translateY(8px);
+  transition: opacity 0.22s ease, transform 0.3s cubic-bezier(0.16,1,0.3,1), visibility 0.22s;
+  z-index: 10000;
+}
+.footer-socials:hover .footer-socials-pop, .footer-socials.open .footer-socials-pop {
+  opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0);
+}
+.footer-socials-pop a {
+  display: flex; align-items: center; gap: 10px; padding: 9px 11px; border-radius: 7px;
+  color: var(--text) !important; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  transition: background 0.15s, color 0.15s;
+}
+.footer-socials-pop a:hover { background: rgba(163,230,53,0.12); color: var(--green) !important; }
+.footer-socials-pop svg { width: 14px; height: 14px; flex-shrink: 0; }
+.footer-socials-pop::after {
+  content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 6px solid transparent; border-top-color: var(--border);
+}
+
 /* SCROLL REVEAL — single signature easing, subtle translate */
 .sr { opacity: 0; transform: translateY(14px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
 .sr.revealed { opacity: 1; transform: translateY(0); }
@@ -1252,7 +1282,19 @@ footer {
       <a href="https://web.polymathos.xyz" target="_blank" rel="noopener">Beta</a>
       <a href="privacy.html">Privacy</a>
       <a href="terms.html">Terms</a>
-      <a href="https://www.instagram.com/polymath01os/" target="_blank" rel="noopener">Instagram</a>
+      <div class="footer-socials" id="footerSocials">
+        <a class="footer-socials-trigger" onclick="toggleFooterSocials(event)">Socials</a>
+        <div class="footer-socials-pop">
+          <a href="https://x.com/polymathos_01" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            X
+          </a>
+          <a href="https://www.instagram.com/polymath01os/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            Instagram
+          </a>
+        </div>
+      </div>
       <a href="mailto:mohamedshazaib111@gmail.com">Email</a>
     </div>
   </footer>
@@ -1277,6 +1319,16 @@ footer {
 </script>
 
 <script>
+// ── FOOTER SOCIALS POPOVER ──
+function toggleFooterSocials(e) {
+  e.stopPropagation();
+  document.getElementById('footerSocials').classList.toggle('open');
+}
+document.addEventListener('click', () => {
+  const fs = document.getElementById('footerSocials');
+  if (fs) fs.classList.remove('open');
+});
+
 // ── COOKIES ──
 function acceptCookies() {
   document.getElementById('cookieBanner').classList.remove('show');
