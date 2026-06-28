@@ -784,33 +784,6 @@ svg.licon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 }
 .cookie-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--dim); }
 
-/* ───────────────────── SOCIALS POPUP ───────────────────── */
-.social-pop {
-  position: fixed; bottom: 24px; right: 24px; max-width: 320px; z-index: 9998;
-  background: rgba(6, 8, 12, 0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px 20px;
-  display: flex; flex-direction: column; gap: 12px;
-  transform: translateY(180%); opacity: 0; pointer-events: none;
-  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
-  box-shadow: 0 16px 50px rgba(0,0,0,0.55);
-}
-.social-pop.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
-.social-pop-close { position: absolute; top: 10px; right: 12px; background: none; border: none; color: var(--muted); font-size: 13px; line-height: 1; cursor: pointer; transition: color 0.2s; }
-.social-pop-close:hover { color: var(--text); }
-.social-pop-logo { height: 30px; width: auto; display: block; margin-bottom: 2px; }
-.social-pop-text { font-family: 'Space Mono', monospace; font-size: 10px; line-height: 1.6; color: var(--muted); letter-spacing: 0.02em; }
-.social-pop-links { display: flex; gap: 10px; }
-.social-pop-btn {
-  flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
-  font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; color: var(--text);
-  background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px;
-  padding: 10px 0; transition: all 0.2s;
-}
-.social-pop-btn:hover { background: rgba(163,230,53,0.12); border-color: var(--green); color: var(--green); }
-.social-pop-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
-@media (max-width: 768px) { .social-pop { left: 16px; right: 16px; bottom: 16px; max-width: none; } }
-
 /* ───────────────────── FOOTER ───────────────────── */
 footer {
   position: relative; z-index: 1; padding: 24px 48px;
@@ -1286,23 +1259,6 @@ footer {
 
 </div><!-- /app -->
 
-  <!-- SOCIALS POPUP -->
-  <div class="social-pop" id="socialPop" role="dialog" aria-label="Follow Polymath OS on social media">
-    <button class="social-pop-close" onclick="closeSocialPop()" aria-label="Close">✕</button>
-    <img class="social-pop-logo" src="assets/logo-wordmark.png" alt="Polymath OS" />
-    <div class="social-pop-text">Follow the journey — updates, drops & behind-the-scenes.</div>
-    <div class="social-pop-links">
-      <a class="social-pop-btn" href="https://x.com/polymathos_01" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        X
-      </a>
-      <a class="social-pop-btn" href="https://www.instagram.com/polymath01os/" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-        Instagram
-      </a>
-    </div>
-  </div>
-
   <!-- COOKIE BANNER -->
   <div class="cookie-banner" id="cookieBanner">
     <div class="cookie-title">Cookies</div>
@@ -1332,19 +1288,6 @@ window.addEventListener('load', () => {
       document.getElementById('cookieBanner').classList.add('show');
     }
   }, 3500);
-});
-
-// ── SOCIALS POPUP ──
-function closeSocialPop() {
-  document.getElementById('socialPop').classList.remove('show');
-  localStorage.setItem('socialPopSeen', 'true');
-}
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    if (!localStorage.getItem('socialPopSeen')) {
-      document.getElementById('socialPop').classList.add('show');
-    }
-  }, 6000);
 });
 
 // ── LOAD: instant hero + view routing ──
