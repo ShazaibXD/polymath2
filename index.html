@@ -203,6 +203,7 @@ nav {
   text-align: center; padding: 0 24px;
 }
 
+
 /* Live skill-graph canvas — the single signature motion */
 .graph-canvas {
   position: absolute; inset: 0;
@@ -333,44 +334,135 @@ nav {
 .skill-chip:hover { color: var(--text); border-color: var(--dim); }
 .skill-chip-more { color: var(--green); border-color: rgba(163,230,53,0.3); }
 
-/* RANK LADDER — sticky scroll demo (CSS sticky, not GSAP pin) */
-.rank-section { position: relative; height: 220vh; border-bottom: 1px solid var(--border); }
+/* ============================================================
+   RANK LADDER → 7 HERO CUBES
+   Seven independent 3D-CSS cubes (one per rank) fly in and land
+   into their slot as scroll/XP progress crosses each threshold.
+   The cube row is the dominant visual of the section — not a
+   small side element. Single lime accent (var(--green)); dark
+   stage. Compositor-only (transform/opacity), 60fps.
+   ============================================================ */
+
+/* shorter scroll: 220vh → 130vh */
+.rank-section { position: relative; height: 130vh; border-bottom: 1px solid var(--border); }
+
 .rank-pin {
   position: sticky; top: 0; height: 100vh;
-  display: flex; align-items: center;
+  display: flex; align-items: center; justify-content: center;
   padding: var(--sp-4) 48px; overflow: hidden;
-  background: radial-gradient(ellipse 60% 70% at 80% 50%, rgba(163,230,53,0.05) 0%, transparent 65%);
+  background: radial-gradient(ellipse 70% 60% at 50% 60%, rgba(163,230,53,0.07) 0%, transparent 65%);
 }
-.rank-inner {
-  max-width: 980px; width: 100%; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center;
+.rank-inner--hero {
+  max-width: 1240px; width: 100%; margin: 0 auto;
+  display: flex; flex-direction: column; align-items: center; gap: var(--sp-3);
 }
-.rank-head .section-label { margin-bottom: var(--sp-3); }
+.rank-inner--hero .rank-head { max-width: 640px; text-align: center; }
+.rank-inner--hero .rank-head .section-label { margin-bottom: var(--sp-3); display: block; }
 .rank-heading {
   font-family: 'Instrument Serif', serif; font-size: var(--step-3);
   line-height: 1.05; letter-spacing: -0.02em; margin-bottom: var(--sp-2);
 }
-.rank-sub { font-family: 'Space Mono', monospace; font-size: var(--step-0); line-height: 1.9; color: var(--muted); max-width: 420px; }
+.rank-sub { font-family: 'Space Mono', monospace; font-size: var(--step-0); line-height: 1.9; color: var(--muted); max-width: 460px; margin: 0 auto; }
+.rank-inner--hero .rank-sub { margin-bottom: 0; }
 
-.rank-stage { display: flex; flex-direction: column; gap: var(--sp-3); }
+/* ---------- THE HERO: 7 cubes, one per rank — the dominant visual of the section ---------- */
+.rank-cubes-hero {
+  position: relative;
+  width: 100%; height: clamp(280px, 36vw, 440px);
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: clamp(6px, 1.1vw, 16px);
+}
+/* perspective lives on each cube individually (not the shared row) — a single
+   shared vanishing point would rake the cubes far from center into a skewed
+   "staircase", since they'd all be viewed from one off-center angle. */
+.rank-cube-mini { position: relative; width: clamp(126px, 14.5vw, 190px); height: 100%; flex: 0 0 auto; perspective: 1000px; perspective-origin: 50% 70%; }
+/* faint floor socket — marks the slot even before its cube has landed */
+.rank-cube-mini::after {
+  content: ''; position: absolute; left: 50%; bottom: 8px; width: 70%; height: 10px;
+  margin-left: -35%; border-radius: 50%;
+  background: radial-gradient(ellipse 50% 100% at 50% 50%, rgba(163,230,53,0.14), transparent 72%);
+  opacity: .55; pointer-events: none;
+}
+/* --s = half the cube edge; one source of truth for sizing the faces */
+.rcm-box {
+  --s: clamp(54px, 7vw, 78px);
+  position: absolute; left: 50%; bottom: 18px;
+  width: calc(var(--s) * 2); height: calc(var(--s) * 2);
+  margin-left: calc(var(--s) * -1);
+  transform-style: preserve-3d;
+  /* resting state until JS flips data-state on the slot */
+  transform: translateY(96px) translateZ(calc(var(--s) * -1)) scale(.5) rotateX(40deg) rotateY(-54deg);
+  opacity: 0;
+  will-change: transform, opacity;
+  /* slow, deliberate landing — not a snappy pop */
+  transition: transform 1.15s cubic-bezier(.19,1,.22,1), opacity .9s var(--ease), filter .6s var(--ease);
+}
+.rcm-face {
+  position: absolute; inset: 0;
+  width: calc(var(--s) * 2); height: calc(var(--s) * 2);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; padding: 0 6px; text-align: center;
+  border: 1px solid var(--border); border-radius: 12px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.035), rgba(13,17,26,0.92));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+  backface-visibility: hidden; overflow: hidden;
+  transition: border-color .4s var(--ease), box-shadow .4s var(--ease);
+}
+.rcm-face--front { transform: translateZ(var(--s)); }
+.rcm-face--top    { transform: rotateX(90deg) translateZ(var(--s)); background: linear-gradient(160deg, rgba(255,255,255,0.05), rgba(6,8,12,0.96)); }
+.rcm-face--side   { transform: rotateY(90deg) translateZ(var(--s)); background: linear-gradient(200deg, rgba(255,255,255,0.02), rgba(6,8,12,0.97)); }
+
+.rcm-tier { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .3em; text-transform: uppercase; color: var(--dim); }
+.rcm-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(16px, 2vw, 23px); letter-spacing: -0.01em; color: var(--text); line-height: 1.15; }
+
+/* PENDING (not yet reached) — stays off-stage, only the floor socket is visible */
+.rank-cube-mini[data-state="pending"] .rcm-box { opacity: 0; }
+
+/* DONE (already climbed past) — landed, settled, slightly dimmed */
+.rank-cube-mini[data-state="done"] .rcm-box,
+.rank-cube-mini[data-state="active"] .rcm-box {
+  opacity: 1;
+  transform: translateY(0) translateZ(calc(var(--s) * -1)) scale(1) rotateX(-16deg) rotateY(-28deg);
+}
+.rank-cube-mini[data-state="done"] .rcm-box { filter: brightness(.72) saturate(.85); }
+
+/* ACTIVE (current rank) — the live cube: bigger, lit, gently swaying — never a fast spin */
+.rank-cube-mini[data-state="active"] .rcm-box {
+  transform: translateY(-6px) translateZ(calc(var(--s) * -1)) scale(1.18) rotateX(-16deg) rotateY(-28deg);
+  animation: rcmSway 6s ease-in-out infinite;
+  animation-delay: 1.15s; /* let the landing transition finish before the idle sway starts */
+}
+.rank-cube-mini[data-state="active"] .rcm-face--front {
+  border-color: rgba(163,230,53,0.55);
+  box-shadow: 0 0 26px rgba(163,230,53,0.3), inset 0 0 18px rgba(163,230,53,0.12);
+}
+.rank-cube-mini[data-state="active"] .rcm-tier { color: var(--green2); }
+.rank-cube-mini[data-state="active"] .rcm-name { color: var(--green); }
+@keyframes rcmSway {
+  0%, 100% { transform: translateY(-6px) translateZ(calc(var(--s) * -1)) scale(1.18) rotateX(-16deg) rotateY(-28deg); }
+  50%      { transform: translateY(-10px) translateZ(calc(var(--s) * -1)) scale(1.18) rotateX(-12deg) rotateY(-14deg); }
+}
+
+/* ---------- readout + list: compact strip beneath the hero ---------- */
+.rank-stage { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; max-width: 760px; margin: 0 auto; }
 .rank-readout {
-  border: 1px solid var(--border); border-radius: 14px; padding: 26px;
+  border: 1px solid var(--border); border-radius: 14px; padding: 22px 26px;
   background: linear-gradient(160deg, rgba(255,255,255,0.03), rgba(13,17,26,0.5));
 }
 .rank-xp-num {
-  font-family: 'Space Mono', monospace; font-size: clamp(32px, 4.5vw, 46px);
+  font-family: 'Space Mono', monospace; font-size: clamp(28px, 3.6vw, 38px);
   font-weight: 700; color: var(--green); letter-spacing: -0.02em; line-height: 1;
   font-variant-numeric: tabular-nums;
 }
-.rank-now { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--text); margin-top: 10px; }
-.rank-bar { height: 6px; border-radius: 100px; background: var(--surface); border: 1px solid var(--border); overflow: hidden; margin: 16px 0 10px; }
+.rank-now { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--text); margin-top: 8px; }
+.rank-bar { height: 6px; border-radius: 100px; background: var(--surface); border: 1px solid var(--border); overflow: hidden; margin: 14px 0 8px; }
 .rank-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green2), var(--green)); box-shadow: 0 0 12px rgba(163,230,53,0.5); transition: width 0.1s linear; }
 .rank-step { font-family: 'Space Mono', monospace; font-size: var(--step--1); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 
-.rank-list { list-style: none; }
+.rank-list { list-style: none; border: 1px solid var(--border); border-radius: 14px; padding: 8px; background: linear-gradient(160deg, rgba(255,255,255,0.02), rgba(13,17,26,0.4)); }
 .rank-row {
-  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px;
-  padding: 11px 14px; border-radius: 8px; opacity: 0.38;
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px;
+  padding: 7px 12px; border-radius: 8px; opacity: 0.38;
   border: 1px solid transparent;
   transition: opacity 0.3s var(--ease), background 0.3s var(--ease), border-color 0.3s var(--ease);
 }
@@ -378,9 +470,27 @@ nav {
 .rank-row.active { opacity: 1; background: rgba(163,230,53,0.06); border-color: rgba(163,230,53,0.28); }
 .rank-row-lvl { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); letter-spacing: 0.1em; }
 .rank-row.done .rank-row-lvl, .rank-row.active .rank-row-lvl { color: var(--green); }
-.rank-row-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); }
+.rank-row-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
 .rank-row.active .rank-row-name { color: var(--green); }
-.rank-row-xp { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rank-row-xp { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* ---------- reduced motion: cubes settle instantly, no sway, no scrub ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .rcm-box { transition: none; }
+  .rank-cube-mini[data-state="active"] .rcm-box { animation: none; }
+}
+
+/* ---------- mobile/touch: no sticky pin — all 7 cubes wrap into a static hero grid ---------- */
+@media (max-width: 768px), (pointer: coarse) {
+  .rank-section { height: auto; }
+  .rank-pin { position: static; height: auto; padding: var(--sp-5) 20px; }
+  .rank-cubes-hero { height: auto; flex-wrap: wrap; row-gap: 28px; }
+  .rank-cube-mini { width: 104px; height: 148px; perspective: 700px; }
+  .rcm-box { --s: 46px; bottom: 14px; }
+  .rcm-name { font-size: 12px; white-space: normal; }
+  .rcm-tier { font-size: 7px; letter-spacing: .22em; }
+  .rank-stage { grid-template-columns: 1fr; max-width: 420px; }
+}
 
 /* SCROLL PROGRESS BAR */
 .scroll-prog {
@@ -864,6 +974,300 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* ════════════════════════════════════════════════════════════
+   INTERACTIVE LOOP DEMO  (scoped: .loop-demo-)
+   ════════════════════════════════════════════════════════════ */
+.loop-demo { padding: 110px 48px; border-bottom: 1px solid var(--border); --loop-red: #FF5A5A; }
+.loop-demo-head { max-width: 720px; margin: 0 auto 72px; text-align: center; }
+.loop-demo-heading { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: clamp(40px, 6vw, 72px); line-height: 0.98; color: var(--text); }
+.loop-demo-sub { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-top: 20px; }
+
+.loop-demo-stage { max-width: 760px; margin: 0 auto; min-height: 380px; display: flex; align-items: center; justify-content: center; position: relative; pointer-events: none; }
+.loop-demo-panel { display: none; width: 100%; animation: loopFade 0.4s var(--ease); }
+.loop-demo-stage[data-state="1"] .loop-demo-panel-1,
+.loop-demo-stage[data-state="2"] .loop-demo-panel-2,
+.loop-demo-stage[data-state="3"] .loop-demo-panel-3,
+.loop-demo-stage[data-state="4"] .loop-demo-panel-4 { display: block; }
+@keyframes loopFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* State 1 — pick */
+.loop-demo-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.loop-demo-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 30px 22px; text-align: left; cursor: pointer; color: var(--text); font-family: 'Syne', sans-serif; transition: border-color 0.25s var(--ease), transform 0.3s var(--ease), opacity 0.3s var(--ease); }
+.loop-demo-card:hover { border-color: rgba(163,230,53,0.45); transform: translateY(-4px); }
+.loop-demo-card-k { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; display: block; }
+.loop-demo-card-t { font-size: 17px; font-weight: 700; line-height: 1.3; }
+.loop-demo-card.is-out { opacity: 0; transform: scale(0.92); pointer-events: none; }
+.loop-demo-card.is-chosen { border-color: var(--green); transform: scale(1.02); }
+
+/* Shared active-card shell (states 2 & 3) */
+.loop-demo-active { max-width: 580px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 44px 40px; }
+.loop-demo-active-k { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green); display: block; margin-bottom: 16px; }
+.loop-demo-active-t { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: clamp(26px, 3.4vw, 34px); line-height: 1.1; color: var(--text); margin-bottom: 20px; }
+.loop-demo-lesson { font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; font-size: 15px; line-height: 1.7; color: rgba(238,240,246,0.78); }
+
+/* Shared button */
+.loop-demo-btn { display: inline-flex; align-items: center; gap: 8px; margin-top: 28px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; background: var(--green); color: #06080C; border: none; border-radius: 999px; padding: 14px 28px; cursor: pointer; transition: transform 0.2s var(--ease), box-shadow 0.25s var(--ease); }
+.loop-demo-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px -10px rgba(163,230,53,0.55); }
+.loop-demo-btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.loop-demo-btn-ghost:hover { border-color: rgba(163,230,53,0.45); box-shadow: none; }
+
+/* State 3 — quiz */
+.loop-demo-q { font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; font-size: 16px; line-height: 1.5; color: var(--text); margin-bottom: 24px; }
+.loop-demo-opts { display: grid; gap: 12px; }
+.loop-demo-opt { background: transparent; border: 1px solid var(--border); border-radius: 11px; padding: 16px 20px; text-align: left; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; font-size: 15px; color: var(--text); cursor: pointer; transition: border-color 0.2s var(--ease), color 0.2s var(--ease); }
+.loop-demo-opt:hover:not(.is-locked) { border-color: rgba(163,230,53,0.4); }
+.loop-demo-opt.is-locked { cursor: default; }
+.loop-demo-opt.is-correct { border-color: var(--green); color: var(--green); animation: loopPulse 0.6s var(--ease); }
+.loop-demo-opt.is-wrong { border-color: var(--loop-red); color: var(--loop-red); animation: loopShake 0.4s; }
+@keyframes loopPulse { 0% { box-shadow: 0 0 0 0 rgba(163,230,53,0.5); } 100% { box-shadow: 0 0 0 14px rgba(163,230,53,0); } }
+@keyframes loopShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+
+/* State 4 — XP + level up */
+.loop-demo-result { max-width: 520px; margin: 0 auto; text-align: center; }
+.loop-demo-result-k { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green); margin-bottom: 28px; }
+.loop-demo-xp-row { display: flex; align-items: center; gap: 18px; margin-bottom: 26px; }
+.loop-demo-xp-bar { flex: 1; height: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+.loop-demo-xp-fill { height: 100%; width: 0; background: var(--green); box-shadow: 0 0 18px rgba(163,230,53,0.7); border-radius: 999px; transition: width 1s var(--ease); }
+.loop-demo-xp-num { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 22px; color: var(--green); min-width: 78px; text-align: right; }
+.loop-demo-level { font-family: 'Space Mono', monospace; font-size: 20px; color: var(--text); margin-bottom: 30px; opacity: 0; }
+.loop-demo-level.show { animation: loopSlideIn 0.5s var(--ease) forwards; }
+.loop-demo-level .to { color: var(--green); }
+@keyframes loopSlideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.loop-demo-graph { width: 132px; height: 88px; margin: 0 auto 32px; display: block; }
+.loop-demo-graph .lnode { fill: var(--dim); transition: fill 0.5s var(--ease); }
+.loop-demo-graph .ledge { stroke: var(--border); stroke-width: 1.4; }
+.loop-demo-graph .lnode.lit { fill: var(--green); filter: drop-shadow(0 0 6px rgba(163,230,53,0.8)); }
+
+@media (max-width: 768px) {
+  .loop-demo { padding: 80px 20px; }
+  .loop-demo-cards { grid-template-columns: 1fr; }
+  .loop-demo-active { padding: 34px 26px; }
+  .loop-demo-btn { width: 100%; justify-content: center; }
+  .loop-demo-xp-row { flex-wrap: wrap; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   WHAT IT DOES — 4 PILLARS  (scoped: .pillars-)
+   ════════════════════════════════════════════════════════════ */
+.pillars { padding: 110px 48px; border-bottom: 1px solid var(--border); }
+.pillars-head { max-width: 760px; margin: 0 auto 76px; text-align: center; }
+.pillars-eyebrow { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 18px; }
+.pillars-heading { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: clamp(34px, 5.5vw, 60px); line-height: 1.04; color: var(--text); }
+.pillars-sub { font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; font-size: 15px; line-height: 1.65; color: var(--muted); margin-top: 22px; }
+
+.pillars-grid { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 48px; }
+.pillars-card { border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 42px 38px; transition: border-color 0.3s var(--ease); }
+.pillars-card:hover { border-color: rgba(163,230,53,0.3); }
+.pillars-card-eyebrow { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 18px; }
+.pillars-card-heading { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: clamp(26px, 3vw, 34px); line-height: 1.1; color: var(--text); margin-bottom: 16px; }
+.pillars-card-body { font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; font-size: 14px; line-height: 1.62; color: rgba(238,240,246,0.7); }
+.pillars-visual { margin-top: 30px; min-height: 64px; }
+
+/* ============================================================
+   PILLARS — SHARED MOTION LAYER (single lime accent only)
+   ============================================================ */
+.pillars-visual{position:relative}
+
+/* Base progress hairline that sweeps once per 2s loop on EVERY card,
+   tying the four pillars into one shared "loop" heartbeat. */
+.pillars-visual::after{
+  content:'';
+  position:absolute;left:0;bottom:0;height:2px;width:100%;
+  transform-origin:left center;transform:scaleX(0);
+  background:linear-gradient(90deg,transparent,var(--green),transparent);
+  opacity:.55;
+  pointer-events:none;
+}
+.pillars-visual.pl-sweep::after{
+  animation:plBaseSweep 2s linear infinite;
+}
+@keyframes plBaseSweep{
+  0%{transform:scaleX(0);opacity:0}
+  10%{opacity:.55}
+  100%{transform:scaleX(1);opacity:0}
+}
+
+/* Reduced-motion: kill the sweep, leave a steady faint baseline. */
+@media (prefers-reduced-motion:reduce){
+  .pillars-visual.pl-sweep::after{animation:none;transform:scaleX(1);opacity:.18}
+}
+
+/* ===== 01 CREATE ===== */
+#pillarsInput{position:relative;display:inline-flex;align-items:center;gap:10px;overflow:hidden;border:1px solid var(--border);border-radius:10px;padding:13px 18px;min-width:240px;background:var(--surface)}
+.pillars-input-text{font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;font-size:14px;color:rgba(238,240,246,0.85)}
+.pillars-input-arrow{font-family:'Space Mono',monospace;color:var(--green);margin-left:auto}
+#pillarsInputText{display:inline-block;will-change:transform,opacity;transition:transform .42s var(--ease),opacity .42s var(--ease)}
+#pillarsInputText.is-swapping{transform:translateY(-6px);opacity:0}
+#pillarsInput .pi-caret{width:2px;height:1.1em;background:var(--green);display:inline-block;animation:piCaretBlink 1.06s steps(1) infinite}
+@keyframes piCaretBlink{0%,50%{opacity:1}50.01%,100%{opacity:0}}
+/* shared base hairline declared in sharedCss; nothing extra needed here */
+@media (prefers-reduced-motion:reduce){
+  #pillarsInput .pi-caret{animation:none;opacity:1}
+  #pillarsInputText{transition:none}
+}
+
+/* ===== 02 LEARN ===== */
+.pillars-stack{position:relative;height:130px;perspective:700px}
+.pillars-stack .ps-card{position:absolute;left:50%;top:14px;width:74%;height:84px;margin-left:-37%;
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  display:flex;align-items:center;gap:12px;padding:0 16px;
+  transform-origin:50% 120%;will-change:transform,opacity;
+  transition:transform .45s var(--ease),opacity .4s var(--ease),filter .4s var(--ease)}
+.pillars-stack .ps-card .ps-title{font-family:'Space Mono',monospace;font-size:12.5px;letter-spacing:.01em;
+  color:rgba(238,240,246,0.82);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pillars-stack .ps-card .ps-dot{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border);flex:0 0 auto;
+  display:grid;place-items:center;color:var(--green);font-size:13px;font-family:'Space Mono',monospace;
+  transition:border-color .3s var(--ease),background .3s var(--ease)}
+/* depth slots: data-slot 0 = top/front, 2 = back — generous offset/shrink so the
+   opaque front card fully covers the slots behind it, even mid-transition */
+.pillars-stack .ps-card[data-slot='0']{transform:translateY(0) scale(1);opacity:1;z-index:3;filter:none}
+.pillars-stack .ps-card[data-slot='0'] .ps-title{color:var(--text)}
+.pillars-stack .ps-card[data-slot='1']{transform:translateY(-20px) scale(.88);opacity:.45;z-index:2;filter:brightness(.8)}
+.pillars-stack .ps-card[data-slot='2']{transform:translateY(-36px) scale(.78);opacity:.2;z-index:1;filter:brightness(.65)}
+/* the leaving (completed) card — bigger, clearer swoosh to the right */
+.pillars-stack .ps-card.ps-dealing{transform:translateX(70%) translateY(-10px) rotate(11deg) scale(1.05);opacity:0;z-index:4;
+  transition:transform .6s cubic-bezier(.36,0,.66,-0.1),opacity .4s var(--ease)}
+.pillars-stack .ps-card.ps-dealing .ps-dot{border-color:var(--green);background:color-mix(in srgb,var(--green) 22%,transparent);color:var(--green)}
+/* a freshly recycled card rises in from below to the back of the stack */
+.pillars-stack .ps-card.ps-entering{transition:none!important;transform:translateY(54px) scale(.74)!important;opacity:0!important}
+.pillars-stack:hover .ps-card[data-slot='0']{transform:translateY(-4px) scale(1.01)}
+@media (prefers-reduced-motion:reduce){
+  .pillars-stack .ps-card{transition:none}
+}
+
+/* ===== 03 TEST ===== */
+#pillarsChecks{display:flex;flex-direction:column;gap:12px;position:relative}
+#pillarsChecks .pc-row{display:flex;align-items:center;gap:12px}
+#pillarsChecks .pc-box{width:24px;height:24px;border-radius:7px;border:1.5px solid var(--border);flex:0 0 auto;
+  display:grid;place-items:center;transition:border-color .3s var(--ease),background .3s var(--ease)}
+#pillarsChecks .pc-box svg{width:14px;height:14px}
+#pillarsChecks .pc-box path{stroke:var(--green);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;fill:none;
+  stroke-dasharray:22;stroke-dashoffset:22;transition:stroke-dashoffset .34s var(--ease)}
+#pillarsChecks .pc-row.is-on .pc-box{border-color:var(--green);background:color-mix(in srgb,var(--green) 14%,transparent)}
+#pillarsChecks .pc-row.is-on .pc-box path{stroke-dashoffset:0}
+#pillarsChecks .pc-line{height:7px;border-radius:4px;background:var(--border);width:60%;transition:width .3s var(--ease)}
+#pillarsChecks .pc-row.is-on .pc-line{background:color-mix(in srgb,var(--green) 30%,var(--border))}
+.pc-xp{position:absolute;right:6px;bottom:-6px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--green);border:1px solid var(--green);border-radius:999px;padding:4px 10px;
+  background:color-mix(in srgb,var(--green) 10%,transparent);
+  opacity:0;transform:translateY(8px) scale(.85);transition:opacity .3s var(--ease),transform .4s var(--ease)}
+.pc-xp.is-pop{opacity:1;transform:translateY(0) scale(1)}
+.pc-xp::after{content:'';position:absolute;inset:-1px;border-radius:999px;border:1px solid var(--green);
+  opacity:0;transform:scale(1)}
+.pc-xp.is-pop::after{animation:pcRipple .6s var(--ease) 1}
+@keyframes pcRipple{0%{opacity:.6;transform:scale(1)}100%{opacity:0;transform:scale(1.6)}}
+@media (prefers-reduced-motion:reduce){
+  #pillarsChecks .pc-box path,.pc-xp{transition:none}
+  .pc-xp.is-pop::after{animation:none}
+}
+
+/* ===== 04 LEVEL UP ===== */
+.pillars-lvl{display:flex;align-items:center;gap:14px}
+.pillars-lvl .pl-badge{position:relative;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--green);
+  border:1px solid var(--green);border-radius:10px;padding:6px 11px;min-width:54px;text-align:center;
+  background:color-mix(in srgb,var(--green) 8%,transparent);will-change:transform}
+.pillars-lvl .pl-badge.is-up{animation:plPop .5s var(--ease) 1}
+.pillars-lvl .pl-badge::after{content:'';position:absolute;inset:-2px;border-radius:12px;border:1px solid var(--green);opacity:0}
+.pillars-lvl .pl-badge.is-up::after{animation:plRing .55s var(--ease) 1}
+@keyframes plPop{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:scale(1)}}
+@keyframes plRing{0%{opacity:.6;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
+.pillars-lvl .pl-track{flex:1;height:12px;border-radius:999px;background:var(--surface);border:1px solid var(--border);overflow:hidden;position:relative}
+#pillarsXpFill{height:100%;width:12%;border-radius:999px;background:var(--green);
+  transition:width 1.85s linear;position:relative;overflow:hidden}
+#pillarsXpFill.is-reset{transition:none}
+#pillarsXpFill::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(100deg,transparent 0%,color-mix(in srgb,#fff 55%,transparent) 50%,transparent 100%);
+  transform:translateX(-100%);animation:plShimmer 1.6s linear infinite}
+@media (prefers-reduced-motion:reduce){
+  #pillarsXpFill{transition:none;width:80%}
+  #pillarsXpFill::after{animation:none;display:none}
+  .pillars-lvl .pl-badge.is-up{animation:none}
+}
+@keyframes plShimmer{0%{transform:translateX(-100%)}60%,100%{transform:translateX(220%)}}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .pillars-grid { gap: 28px; }
+}
+@media (max-width: 768px) {
+  .pillars { padding: 80px 20px; }
+  .pillars-grid { grid-template-columns: 1fr; gap: 24px; }
+  .pillars-card { padding: 34px 26px; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   MOTION SYSTEM 2.0 — "Set in Motion" (kinetic editorial)
+   scoped: .pm-* / .hero-3d* / .loop-ghost / .loop-branch
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Lime underline wipe (links) ── */
+.pm-underline { position: relative; }
+.pm-underline::after { content: ''; position: absolute; left: 0; bottom: -3px; width: 100%; height: 1px; background: var(--green);
+  transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease); }
+.pm-underline:hover::after, a.pm-underline:focus-visible::after { transform: scaleX(1); }
+
+/* ── Reveal primitives ── */
+.pm-line-mask { display: block; overflow: hidden; }
+.pm-line-inner { display: inline-block; will-change: transform; }
+.pm-word { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.12em; margin-bottom: -0.12em; }
+.pm-char { display: inline-block; will-change: transform, opacity; }
+.hero-3d-title.is-assembled .hero-3d-word { overflow: visible; }
+[data-reveal] { will-change: transform, opacity; }
+
+/* ── Page / view transition wipe ── */
+.pm-wipe { position: fixed; inset: 0; z-index: 9200; background: var(--green); transform: scaleY(0); transform-origin: bottom; pointer-events: none; will-change: transform; }
+.pm-wipe-label { position: fixed; left: 0; right: 0; top: 50%; z-index: 9201; text-align: center; transform: translateY(-50%);
+  font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 0.28em; text-transform: uppercase; color: #06080C; pointer-events: none; opacity: 0; }
+
+/* ── HERO 3D extruded kinetic title ── */
+.hero-3d { perspective: 1000px; position: relative; z-index: 2; display: inline-block; }
+.splash-title.hero-3d-title {
+  --depth: 6; --skew: 0deg;
+  transform-style: preserve-3d;
+  color: #F4F7FB;
+  /* single-source extrusion: all 6 dark layers read from --depth (no lime glow) */
+  text-shadow:
+    calc(var(--depth) * 0.18px) calc(var(--depth) * 0.18px) 0 #0c1119,
+    calc(var(--depth) * 0.36px) calc(var(--depth) * 0.36px) 0 #0b0f17,
+    calc(var(--depth) * 0.54px) calc(var(--depth) * 0.54px) 0 #0a0e15,
+    calc(var(--depth) * 0.72px) calc(var(--depth) * 0.72px) 0 #090c12,
+    calc(var(--depth) * 0.9px)  calc(var(--depth) * 0.9px)  0 #080b10,
+    calc(var(--depth) * 1.08px) calc(var(--depth) * 1.08px) 0 #06080c;
+  /* override the old fadeUp keyframe — chars handle entrance now */
+  animation: none !important; opacity: 1;
+}
+.hero-3d-word { display: inline-block; vertical-align: top; overflow: hidden; padding: 0 .02em; }
+.hero-3d-skew { display: inline-block; transform: skewX(var(--skew)); }
+@media (max-width: 768px) { .splash-title.hero-3d-title { --depth: 3; } }
+
+/* ── Loop demo: ghost cursor + auto tag ── */
+.loop-demo-stage { position: relative; }
+.loop-ghost { position: absolute; top: 0; left: 0; width: 30px; height: 30px; margin: -15px 0 0 -15px;
+  border: 1.5px solid var(--green); border-radius: 50%; pointer-events: none; z-index: 6; opacity: 0; mix-blend-mode: difference; will-change: transform; }
+.loop-ghost::after { content: ''; position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; background: var(--green); border-radius: 50%; }
+.loop-auto-tag { position: absolute; top: -34px; right: 4px; z-index: 6; display: inline-flex; align-items: center; gap: 7px;
+  font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); opacity: 0; transition: opacity .4s var(--ease); }
+.loop-auto-tag.show { opacity: 0.85; }
+.loop-auto-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px rgba(163,230,53,0.8); animation: loopPulseDot 1.4s ease-in-out infinite; }
+@keyframes loopPulseDot { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+.loop-demo-card.is-press, .loop-demo-opt.is-press, .loop-demo-btn.is-press { transform: scale(0.97); }
+.loop--gsap .loop-demo-panel { animation: none !important; }
+
+/* ── Loop demo: growing skill-branch + XP particle burst ── */
+.loop-demo-graph-wrap { position: relative; width: 132px; height: 88px; margin: 0 auto 32px; }
+.loop-demo-graph-wrap .loop-demo-graph { margin: 0; }
+.loop-demo-graph .lbranch { stroke: var(--green); stroke-width: 2; fill: none; stroke-linecap: round; opacity: 0;
+  filter: drop-shadow(0 0 4px rgba(163,230,53,0.7)); }
+.loop-demo-graph .lleaf { fill: var(--green); opacity: 0; filter: drop-shadow(0 0 6px rgba(163,230,53,0.9)); }
+.loop-particle { position: absolute; left: 50%; top: 42%; width: 6px; height: 6px; margin: -3px; border-radius: 50%;
+  background: var(--green); pointer-events: none; box-shadow: 0 0 7px rgba(163,230,53,0.85); }
+
+/* ── Generic magnetic target (JS-driven transform) ── */
+[data-magnetic] { will-change: transform; }
+
+@media (prefers-reduced-motion: reduce) {
+  .loop-ghost, .loop-auto-tag, .pm-wipe, .pm-wipe-label { display: none !important; }
+}
 </style>
 </head>
 <body>
@@ -910,7 +1314,7 @@ footer {
       <canvas class="graph-canvas" id="graphCanvas" aria-hidden="true"></canvas>
 
       <div class="splash-eyebrow">Built in the open by one person</div>
-      <h1 class="splash-title">Become a Polymath.</h1>
+      <div class="hero-3d"><h1 class="splash-title hero-3d-title" id="splashTitle">Become a Polymath.</h1></div>
       <div class="splash-sub">Track every skill in one place.</div>
 
       <div class="splash-def">
@@ -932,6 +1336,135 @@ footer {
 
     <!-- HOME CONTENT (below fold) -->
     <div class="home-content">
+
+      <!-- INTERACTIVE LOOP DEMO -->
+      <section class="loop-demo" id="loopDemo" aria-label="Interactive learning loop demo">
+        <div class="loop-demo-head">
+          <h2 class="loop-demo-heading">Not a tracker. A loop.</h2>
+          <p class="loop-demo-sub">Learn → Quiz → Earn XP → Level up. Try it.</p>
+        </div>
+
+        <div class="loop-demo-stage" id="loopStage" data-state="1">
+          <div class="loop-ghost" id="loopGhost" aria-hidden="true"></div>
+          <div class="loop-auto-tag" id="loopAutoTag" aria-hidden="true"><span class="dot"></span> auto-playing</div>
+
+          <!-- STATE 1 — pick a skill -->
+          <div class="loop-demo-panel loop-demo-panel-1">
+            <div class="loop-demo-cards" id="loopCards"></div>
+          </div>
+
+          <!-- STATE 2 — micro-lesson -->
+          <div class="loop-demo-panel loop-demo-panel-2">
+            <div class="loop-demo-active">
+              <span class="loop-demo-active-k" id="loopLessonK"></span>
+              <h3 class="loop-demo-active-t" id="loopLessonT"></h3>
+              <p class="loop-demo-lesson" id="loopLessonBody"></p>
+              <button class="loop-demo-btn" id="loopGotIt" type="button">Got it →</button>
+            </div>
+          </div>
+
+          <!-- STATE 3 — quiz -->
+          <div class="loop-demo-panel loop-demo-panel-3">
+            <div class="loop-demo-active">
+              <span class="loop-demo-active-k">Quick check</span>
+              <p class="loop-demo-q" id="loopQ"></p>
+              <div class="loop-demo-opts" id="loopOpts"></div>
+            </div>
+          </div>
+
+          <!-- STATE 4 — XP + level up -->
+          <div class="loop-demo-panel loop-demo-panel-4">
+            <div class="loop-demo-result">
+              <div class="loop-demo-result-k">Nice. You closed the loop.</div>
+              <div class="loop-demo-graph-wrap" id="loopGraphWrap">
+                <svg class="loop-demo-graph" id="loopGraph" viewBox="0 0 132 88" aria-hidden="true">
+                  <line class="ledge" x1="26" y1="64" x2="66" y2="44"/>
+                  <line class="ledge" x1="66" y1="44" x2="106" y2="64"/>
+                  <line class="ledge" x1="66" y1="44" x2="66" y2="16"/>
+                  <line class="ledge" x1="26" y1="64" x2="106" y2="64"/>
+                  <!-- pre-authored grow-branches: one sprouts per correct answer -->
+                  <path class="lbranch" data-branch="0" d="M66 44 Q88 32 102 38"/>
+                  <path class="lbranch" data-branch="1" d="M66 44 Q44 30 30 38"/>
+                  <path class="lbranch" data-branch="2" d="M66 44 Q72 64 82 76"/>
+                  <circle class="lleaf" data-leaf="0" cx="102" cy="38" r="5"/>
+                  <circle class="lleaf" data-leaf="1" cx="30" cy="38" r="5"/>
+                  <circle class="lleaf" data-leaf="2" cx="82" cy="76" r="5"/>
+                  <circle class="lnode" cx="26" cy="64" r="6"/>
+                  <circle class="lnode" cx="106" cy="64" r="6"/>
+                  <circle class="lnode" cx="66" cy="16" r="6"/>
+                  <circle class="lnode" id="loopGraphLit" cx="66" cy="44" r="7"/>
+                </svg>
+              </div>
+              <div class="loop-demo-xp-row">
+                <div class="loop-demo-xp-bar"><div class="loop-demo-xp-fill" id="loopXpFill"></div></div>
+                <span class="loop-demo-xp-num" id="loopXpNum">+0 XP</span>
+              </div>
+              <div class="loop-demo-level" id="loopLevel">Level 1 <span class="to">→ Level 2</span></div>
+              <button class="loop-demo-btn loop-demo-btn-ghost" id="loopReset" type="button">Try another</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- WHAT POLYMATH OS DOES — 4 PILLARS -->
+      <section class="pillars" id="pillars" aria-label="What Polymath OS does">
+        <div class="pillars-head">
+          <div class="pillars-eyebrow">What it does</div>
+          <h2 class="pillars-heading">Four things. One loop.</h2>
+          <p class="pillars-sub">Polymath OS replaces your scattered Notion pages, half-watched courses, and abandoned Anki decks with a single system that actually closes the loop.</p>
+        </div>
+
+        <div class="pillars-grid">
+
+          <!-- 01 CREATE -->
+          <div class="pillars-card">
+            <div class="pillars-card-eyebrow">01 / Create</div>
+            <h3 class="pillars-card-heading">Build your own curriculum.</h3>
+            <p class="pillars-card-body">Add any skill you want to master — coding, languages, music, finance, anything. Define milestones, set the depth, choose your pace. Polymath OS shapes itself to what you want to learn, not the other way around.</p>
+            <div class="pillars-visual">
+              <div class="pillars-input" id="pillarsInput">
+                <span class="pillars-input-text" id="pillarsInputText">Quantum computing</span>
+                <span class="pillars-input-arrow">→</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 02 LEARN -->
+          <div class="pillars-card">
+            <div class="pillars-card-eyebrow">02 / Learn</div>
+            <h3 class="pillars-card-heading">Bite-sized lessons. No fluff.</h3>
+            <p class="pillars-card-body">Each skill is broken into focused micro-lessons you can finish in under 5 minutes. No 4-hour YouTube rabbit holes. No 600-page textbooks. Just the next concept, delivered cleanly.</p>
+            <div class="pillars-visual">
+              <div class="pillars-stack" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <!-- 03 TEST -->
+          <div class="pillars-card">
+            <div class="pillars-card-eyebrow">03 / Test</div>
+            <h3 class="pillars-card-heading">Prove you actually learned it.</h3>
+            <p class="pillars-card-body">Every lesson ends with a quiz. Spaced repetition surfaces what you're forgetting before you forget it. Reading something ≠ knowing it. Polymath OS makes you earn the checkmark.</p>
+            <div class="pillars-visual">
+              <div class="pillars-checks" id="pillarsChecks" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <!-- 04 LEVEL UP -->
+          <div class="pillars-card">
+            <div class="pillars-card-eyebrow">04 / Level up</div>
+            <h3 class="pillars-card-heading">Watch yourself get sharper.</h3>
+            <p class="pillars-card-body">Every correct answer earns XP. Every skill has levels. Your dashboard becomes a real map of what you actually know — not what you've bookmarked, not what you've watched, what you've truly internalized.</p>
+            <div class="pillars-visual">
+              <div class="pillars-lvl">
+                <div class="pl-badge">Lv 6</div>
+                <div class="pl-track"><div class="pillars-xp-fill" id="pillarsXpFill"></div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
 
       <!-- SKILL GRID (static, replaces scrolling marquee) -->
       <section class="skills-section sr">
@@ -963,14 +1496,72 @@ footer {
       </section>
 
 
-      <!-- RANK LADDER (scroll-driven) -->
+      <!-- RANK LADDER → 7 HERO CUBES, fly in + land as scroll/XP progress crosses each rank threshold -->
+      <!-- height reduced 220vh → 130vh; ids #rankXpNum #rankNow #rankBarFill #rankStep #rankList preserved -->
       <section class="rank-section" id="rankLadder">
         <div class="rank-pin">
-          <div class="rank-inner">
+          <div class="rank-inner rank-inner--hero">
+
             <div class="rank-head">
+              <span class="section-label">The climb</span>
               <h2 class="rank-heading">Every step earns XP. XP earns rank.</h2>
-              <p class="rank-sub">Roadmap steps, streaks, and challenges all feed one XP bar. Seven ranks to climb, from Novice up to Polymath.</p>
+              <p class="rank-sub">Roadmap steps, streaks, and challenges all feed one XP bar. Seven ranks to climb, from Novice up to Polymath — keep scrolling and watch them land.</p>
             </div>
+
+            <!-- HERO: 7 individual 3D cubes, one per rank. JS toggles data-state (pending → active → done) as scroll progress crosses each rank's XP threshold. -->
+            <div class="rank-cubes-hero" id="rankCubesHero" aria-hidden="true">
+              <div class="rank-cube-mini" data-rank-index="0" data-state="active">
+                <div class="rcm-box">
+                  <span class="rcm-face rcm-face--front"><span class="rcm-tier">Rank 01</span><span class="rcm-name">Novice</span></span>
+                  <span class="rcm-face rcm-face--top"></span>
+                  <span class="rcm-face rcm-face--side"></span>
+                </div>
+              </div>
+              <div class="rank-cube-mini" data-rank-index="1" data-state="pending">
+                <div class="rcm-box">
+                  <span class="rcm-face rcm-face--front"><span class="rcm-tier">Rank 02</span><span class="rcm-name">Seeker</span></span>
+                  <span class="rcm-face rcm-face--top"></span>
+                  <span class="rcm-face rcm-face--side"></span>
+                </div>
+              </div>
+              <div class="rank-cube-mini" data-rank-index="2" data-state="pending">
+                <div class="rcm-box">
+                  <span class="rcm-face rcm-face--front"><span class="rcm-tier">Rank 03</span><span class="rcm-name">Initiate</span></span>
+                  <span class="rcm-face rcm-face--top"></span>
+                  <span class="rcm-face rcm-face--side"></span>
+                </div>
+              </div>
+              <div class="rank-cube-mini" data-rank-index="3" data-state="pending">
+                <div class="rcm-box">
+                  <span class="rcm-face rcm-face--front"><span class="rcm-tier">Rank 04</span><span class="rcm-name">Adept</span></span>
+                  <span class="rcm-face rcm-face--top"></span>
+                  <span class="rcm-face rcm-face--side"></span>
+                </div>
+              </div>
+              <div class="rank-cube-mini" data-rank-index="4" data-state="pending">
+                <div class="rcm-box">
+                  <span class="rcm-face rcm-face--front"><span class="rcm-tier">Rank 05</span><span class="rcm-name">Expert</span></span>
+                  <span class="rcm-face rcm-face--top"></span>
+                  <span class="rcm-face rcm-face--side"></span>
+                </div>
+              </div>
+              <div class="rank-cube-mini" data-rank-index="5" data-state="pending">
+                <div class="rcm-box">
+                  <span class="rcm-face rcm-face--front"><span class="rcm-tier">Rank 06</span><span class="rcm-name">Master</span></span>
+                  <span class="rcm-face rcm-face--top"></span>
+                  <span class="rcm-face rcm-face--side"></span>
+                </div>
+              </div>
+              <div class="rank-cube-mini" data-rank-index="6" data-state="pending">
+                <div class="rcm-box">
+                  <span class="rcm-face rcm-face--front"><span class="rcm-tier">Rank 07</span><span class="rcm-name">Polymath</span></span>
+                  <span class="rcm-face rcm-face--top"></span>
+                  <span class="rcm-face rcm-face--side"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- readout + list — these ids MUST stay so updateRankUI() keeps working -->
             <div class="rank-stage">
               <div class="rank-readout">
                 <div class="rank-xp-num" id="rankXpNum">0 XP</div>
@@ -988,6 +1579,7 @@ footer {
                 <li class="rank-row" data-i="6"><span class="rank-row-lvl">07</span><span class="rank-row-name">Polymath</span><span class="rank-row-xp">10,000 XP</span></li>
               </ol>
             </div>
+
           </div>
         </div>
       </section>
@@ -1649,20 +2241,72 @@ function updateRankUI(p) {
   });
 }
 
+/* ============================================================
+   RANK CUBE SCROLLER — 7 hero cubes, one per rank.
+   Keeps updateRankUI(p) untouched and keeps calling it with self.progress.
+   As progress crosses each rank's threshold, that cube's data-state flips
+   pending → active (lit, gently swaying) → done (settled, dimmed) — a slow,
+   deliberate "fly in and land" rather than a fast continuous spin. The pin
+   height/scroll distance is unchanged, so the climb itself isn't any longer.
+   ============================================================ */
 function initRankLadder() {
-  const sec = document.getElementById('rankLadder');
-  if (!sec || !window.gsap || !window.ScrollTrigger) { updateRankUI(1); return; }
-  // mobile/touch: no pin (avoids jank) — show the full climb statically
-  if (window.matchMedia('(max-width: 768px), (pointer: coarse)').matches) { updateRankUI(1); return; }
+  const sec   = document.getElementById('rankLadder');
+  const cubes = Array.from(document.querySelectorAll('.rank-cube-mini[data-rank-index]'))
+    .sort((a, b) => Number(a.dataset.rankIndex) - Number(b.dataset.rankIndex));
+  if (!sec) return;
+
+  // No GSAP available → just show the maxed state.
+  if (!window.gsap || !window.ScrollTrigger) { updateRankUI(1); return; }
+
+  // Flip each cube's slot state. Guarded so re-painting the same state never
+  // re-triggers the landing transition mid-scrub.
+  function paintCubes(progress) {
+    if (!cubes.length) return;
+    const rankPos = Math.min(6.9999, Math.max(0, progress) * 7); // matches updateRankUI
+    const rankIdx = Math.floor(rankPos);
+    cubes.forEach((el, i) => {
+      const state = i < rankIdx ? 'done' : (i === rankIdx ? 'active' : 'pending');
+      if (el.getAttribute('data-state') !== state) el.setAttribute('data-state', state);
+    });
+  }
+
+  // ---- reduced motion: only Novice settled in, no scrub, no sway ----
+  if (window.__reducedMotion) {
+    updateRankUI(0);
+    paintCubes(0);
+    return;
+  }
+
+  // ---- mobile / touch: no pin, no scrub — all 7 cubes assemble once, statically ----
+  if (window.matchMedia('(max-width: 768px), (pointer: coarse)').matches) {
+    updateRankUI(1);
+    paintCubes(1);
+    return;
+  }
+
+  // ---- desktop: scrub drives both the readout and which cubes have landed ----
+  // scrub is intentionally heavy (slow, smooth catch-up) so the cubes feel
+  // unhurried even on a fast scroll — the pin height (and so total scroll
+  // time) is untouched, so the climb overall still moves at a normal pace.
   gsap.to({}, {
     scrollTrigger: {
-      trigger: sec, start: 'top top', end: 'bottom bottom',
-      scrub: 0.4,
-      onUpdate: (self) => updateRankUI(self.progress),
+      trigger: sec,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: 1.1,
+      onUpdate: (self) => {
+        const p = self.progress;
+        updateRankUI(p);     // unchanged readout contract
+        paintCubes(p);
+      },
     },
   });
+
+  // initial paint
   updateRankUI(0);
-  // re-measure once everything (fonts, canvas) has settled
+  paintCubes(0);
+
+  // re-measure once fonts/layout settle (matches old behaviour)
   setTimeout(() => ScrollTrigger.refresh(), 300);
 }
 
@@ -1682,6 +2326,15 @@ function initRankLadder() {
     window.__lenis = lenis;
     lenis.on('scroll', (e) => { window.__scrollY = e.scroll; updateHeroProgress(); updateScrollProg(); });
 
+    // Keep Lenis's measured scroll height in sync with late-settling content (fonts, async
+    // sections, the rank section). Without this Lenis caps the wheel a few px short of the true
+    // page bottom, so the footer can't be reached by scroll wheel (only by dragging the bar).
+    const remeasure = () => { try { lenis.resize(); } catch (_) {} if (window.ScrollTrigger) ScrollTrigger.refresh(); };
+    window.addEventListener('load', remeasure);
+    [300, 800, 1600].forEach((d) => setTimeout(remeasure, d));
+    window.addEventListener('resize', remeasure);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(remeasure);
+
     if (window.gsap && window.ScrollTrigger) {
       gsap.registerPlugin(ScrollTrigger);
       lenis.on('scroll', ScrollTrigger.update);
@@ -1700,6 +2353,777 @@ function initRankLadder() {
   }
   window.addEventListener('resize', updateHeroProgress);
   updateHeroProgress();
+})();
+</script>
+
+
+<!-- ── POLYMATH MOTION SYSTEM 2.0 (cursor, scramble, reveals, page-wipe, hero 3D) ── -->
+<script>
+(function () {
+  'use strict';
+  var g = window.gsap, ST = window.ScrollTrigger;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var PM = window.PM = { gsap: g, reduce: reduce, fine: fine };
+  if (g && ST) { try { g.registerPlugin(ST); } catch (e) {} }
+
+  /* ── 1. (custom cursor removed — native cursor used sitewide) ── */
+
+  /* ── 2. Magnetic pull on selected elements ── */
+  PM.magnetize = function (sel, root) {
+    if (!g || reduce || !fine) return;
+    (root || document).querySelectorAll(sel).forEach(function (el) {
+      if (el.dataset.magInit) return; el.dataset.magInit = '1';
+      var qx = g.quickTo(el, 'x', { duration: 0.4, ease: 'power3' });
+      var qy = g.quickTo(el, 'y', { duration: 0.4, ease: 'power3' });
+      el.addEventListener('pointermove', function (e) {
+        var r = el.getBoundingClientRect();
+        qx((e.clientX - (r.left + r.width / 2)) * 0.3);
+        qy((e.clientY - (r.top + r.height / 2)) * 0.45);
+      });
+      el.addEventListener('pointerleave', function () { qx(0); qy(0); });
+    });
+  };
+
+  /* ── 3. Text scramble for Space Mono labels (keeps real textContent) ── */
+  var GLYPHS = '!<>-_\\/[]{}=+*^?#$%010110';
+  PM.scramble = function (el) {
+    if (reduce || !g || !el) return;
+    if (el.dataset.scrambling) return;
+    var finalText = el.dataset.finalText || el.textContent;
+    el.dataset.finalText = finalText; el.dataset.scrambling = '1';
+    var len = finalText.length, obj = { p: 0 };
+    g.to(obj, {
+      p: 1, duration: Math.min(0.95, 0.3 + len * 0.028), ease: 'power2.out',
+      onUpdate: function () {
+        var rev = Math.floor(obj.p * len), out = '';
+        for (var i = 0; i < len; i++) {
+          if (i < rev || finalText[i] === ' ') out += finalText[i];
+          else out += GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+        }
+        el.textContent = out;
+      },
+      onComplete: function () { el.textContent = finalText; delete el.dataset.scrambling; }
+    });
+  };
+
+  /* ── 4. Reveals: masked word-rise headings + batched block entrance + label scramble ── */
+  function splitWords(el) {
+    var text = el.textContent; el.textContent = '';
+    text.split(/(\s+)/).forEach(function (tok) {
+      if (tok === '' ) return;
+      if (/^\s+$/.test(tok)) { el.appendChild(document.createTextNode(tok)); return; }
+      var w = document.createElement('span'); w.className = 'pm-word';
+      var inner = document.createElement('span'); inner.className = 'pm-line-inner';
+      inner.textContent = tok; w.appendChild(inner); el.appendChild(w);
+    });
+    return el.querySelectorAll('.pm-line-inner');
+  }
+  PM.initReveals = function (root) {
+    root = root || document;
+    if (!g || !ST || reduce) return;
+    root.querySelectorAll('[data-reveal="lines"]').forEach(function (el) {
+      if (el.dataset.revInit) return; el.dataset.revInit = '1';
+      var inners = splitWords(el);
+      g.set(inners, { yPercent: 118 });
+      ST.create({ trigger: el, start: 'top 88%', once: true, onEnter: function () {
+        g.to(inners, { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.07 });
+      } });
+    });
+    var blocks = [].slice.call(root.querySelectorAll('[data-reveal="up"]')).filter(function (b) { return !b.dataset.revInit; });
+    blocks.forEach(function (b) { b.dataset.revInit = '1'; });
+    if (blocks.length) {
+      g.set(blocks, { y: 28, autoAlpha: 0 });
+      ST.batch(blocks, { start: 'top 88%', once: true, onEnter: function (batch) {
+        g.to(batch, { y: 0, autoAlpha: 1, duration: 0.7, ease: 'expo.out', stagger: 0.07 });
+      } });
+    }
+    root.querySelectorAll('[data-scramble]').forEach(function (el) {
+      if (el.dataset.scInit) return; el.dataset.scInit = '1';
+      ST.create({ trigger: el, start: 'top 94%', once: true, onEnter: function () { PM.scramble(el); } });
+    });
+  };
+
+  /* ── 5. Page / view transition wipe ── */
+  var wipe, wipeLabel;
+  if (!reduce && g) {
+    wipe = document.createElement('div'); wipe.className = 'pm-wipe'; wipe.setAttribute('aria-hidden', 'true');
+    wipeLabel = document.createElement('div'); wipeLabel.className = 'pm-wipe-label'; wipeLabel.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(wipe); document.body.appendChild(wipeLabel);
+  }
+  PM.wipe = function (label, midCb) {
+    return new Promise(function (resolve) {
+      if (reduce || !g || !wipe) { if (midCb) midCb(); resolve(); return; }
+      wipeLabel.textContent = label || '';
+      g.timeline()
+        .set(wipe, { transformOrigin: 'bottom', scaleY: 0 })
+        .to(wipe, { scaleY: 1, duration: 0.4, ease: 'power3.inOut' })
+        .to(wipeLabel, { opacity: 1, duration: 0.18 }, '-=0.18')
+        .add(function () { if (midCb) midCb(); })
+        .to(wipeLabel, { opacity: 0, duration: 0.16 }, '+=0.04')
+        .set(wipe, { transformOrigin: 'top' })
+        .to(wipe, { scaleY: 0, duration: 0.4, ease: 'power3.inOut', onComplete: resolve });
+    });
+  };
+
+  /* ── HERO 3D extruded kinetic title ── */
+  (function () {
+    var title = document.getElementById('splashTitle');
+    if (!title) return;
+    if (!g) return;
+    var raw = title.textContent; title.textContent = '';
+    raw.split(' ').forEach(function (word, wi, arr) {
+      var w = document.createElement('span'); w.className = 'hero-3d-word';
+      [].forEach.call(word, function (ch) {
+        var c = document.createElement('span'); c.className = 'pm-char'; c.textContent = ch; w.appendChild(c);
+      });
+      title.appendChild(w);
+      if (wi < arr.length - 1) title.appendChild(document.createTextNode(' '));
+    });
+    var chars = title.querySelectorAll('.pm-char');
+    function finish() { title.classList.add('is-assembled'); }
+    function assemble() {
+      if (reduce) { finish(); return; }
+      g.set(chars, { yPercent: 118, opacity: 0, rotateX: -80 });
+      g.to(chars, { yPercent: 0, opacity: 1, rotateX: 0, duration: 1.05, ease: 'expo.out', stagger: 0.03, delay: 0.12, onComplete: finish });
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(assemble); else assemble();
+
+    var splash = document.getElementById('splashScene');
+    if (fine && !reduce && splash) {
+      var rotX = g.quickTo(title, 'rotationX', { duration: 0.6, ease: 'power3' });
+      var rotY = g.quickTo(title, 'rotationY', { duration: 0.6, ease: 'power3' });
+      splash.addEventListener('pointermove', function (e) {
+        var r = splash.getBoundingClientRect();
+        rotY(((e.clientX - r.left) / r.width - 0.5) * 12);
+        rotX(-((e.clientY - r.top) / r.height - 0.5) * 10);
+      });
+      splash.addEventListener('pointerleave', function () { rotX(0); rotY(0); });
+    }
+    if (ST && !reduce) {
+      var skewTo = g.quickTo(title, 'skewX', { duration: 0.5, ease: 'power3' }), skewReset;
+      ST.create({ trigger: splash || title, start: 'top top', end: 'bottom top', scrub: 0.4, onUpdate: function (self) {
+        skewTo(g.utils.clamp(-7, 7, self.getVelocity() / -260));
+        clearTimeout(skewReset); skewReset = setTimeout(function () { skewTo(0); }, 140);
+      } });
+    }
+  })();
+
+  /* ── boot ── */
+  function boot() {
+    PM.initReveals(document);
+    PM.magnetize('.nav-waitlist, .loop-demo-btn, .beta-cta, .splash-beta-pill, .donate-btn');
+  }
+  if (document.readyState !== 'loading') boot(); else document.addEventListener('DOMContentLoaded', boot);
+  window.addEventListener('load', function () { if (g && ST) setTimeout(function () { ST.refresh(); }, 350); });
+})();
+</script>
+
+<!-- ── INTERACTIVE LOOP DEMO + PILLARS MICRO-VISUALS (self-contained) ── -->
+<script>
+(function () {
+  'use strict';
+
+  /* ───────── Interactive loop demo ───────── */
+  var SKILLS = [
+    {
+      k: 'Chess',
+      t: 'The whole point',
+      lesson: 'Chess has one objective: trap the other king so it can’t escape. That’s checkmate — everything else is just how you get there.',
+      q: 'What’s the goal of chess?',
+      opts: [
+        { t: 'Capture every pawn', ok: false },
+        { t: 'Checkmate the king', ok: true },
+        { t: 'Reach the other side', ok: false }
+      ]
+    },
+    {
+      k: 'Public Speaking',
+      t: 'Beating the nerves',
+      lesson: 'Stage nerves shrink with reps. Saying your talk out loud — not just in your head — is the fastest way to feel calm when it counts.',
+      q: 'Fastest way to get less nervous on stage?',
+      opts: [
+        { t: 'Practice out loud', ok: true },
+        { t: 'Never rehearse', ok: false },
+        { t: 'Just talk faster', ok: false }
+      ]
+    },
+    {
+      k: 'Python',
+      t: 'Your first command',
+      lesson: 'print() is how a program talks to you — it shows text on the screen. It’s the very first thing most coders ever run.',
+      q: 'What does print() do?',
+      opts: [
+        { t: 'Sends a page to a printer', ok: false },
+        { t: 'Deletes a file', ok: false },
+        { t: 'Shows text on the screen', ok: true }
+      ]
+    }
+  ];
+
+  var stage = document.getElementById('loopStage');
+  if (stage) {
+    var PM = window.PM || {};
+    var g = window.gsap;
+    var red = PM.reduce != null ? PM.reduce : window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var fine = PM.fine != null ? PM.fine : window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    var anim = !!g && !red;
+
+    var cardsWrap = document.getElementById('loopCards');
+    var lessonK = document.getElementById('loopLessonK');
+    var lessonT = document.getElementById('loopLessonT');
+    var lessonBody = document.getElementById('loopLessonBody');
+    var gotIt = document.getElementById('loopGotIt');
+    var qEl = document.getElementById('loopQ');
+    var optsEl = document.getElementById('loopOpts');
+    var xpFill = document.getElementById('loopXpFill');
+    var xpNum = document.getElementById('loopXpNum');
+    var levelEl = document.getElementById('loopLevel');
+    var graph = document.getElementById('loopGraph');
+    var graphLit = document.getElementById('loopGraphLit');
+    var graphWrap = document.getElementById('loopGraphWrap');
+    var resetBtn = document.getElementById('loopReset');
+    var ghost = document.getElementById('loopGhost');
+    var autoTag = document.getElementById('loopAutoTag');
+    var chosen = null, chosenIdx = 0, branchCount = 0, loopLevel = 1;
+    var timers = [];
+    xpNum.setAttribute('aria-live', 'polite');
+    if (anim) stage.classList.add('loop--gsap');
+
+    function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+    function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+
+    // ── build the three skill cards (state 1) ──
+    var cards = [];
+    SKILLS.forEach(function (s, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'loop-demo-card';
+      b.innerHTML = '<span class="loop-demo-card-k">' + s.k + '</span><span class="loop-demo-card-t">' + s.t + '</span>';
+      b.addEventListener('click', function () { userTouch(); pick(i, b); });
+      cardsWrap.appendChild(b); cards.push(b);
+    });
+
+    // ── morph transition between the 4 states (FLIP-lite, core GSAP) ──
+    function goState(n) {
+      if (String(n) === stage.dataset.state) return;
+      var cur = stage.querySelector('.loop-demo-panel-' + stage.dataset.state);
+      if (!anim || !cur) { stage.dataset.state = String(n); return; }
+      g.to(cur, { autoAlpha: 0, y: -14, filter: 'blur(5px)', duration: 0.28, ease: 'power2.in', onComplete: function () {
+        g.set(cur, { clearProps: 'opacity,visibility,transform,filter' });
+        stage.dataset.state = String(n);
+        var nxt = stage.querySelector('.loop-demo-panel-' + n);
+        var host = nxt.querySelector('.loop-demo-active, .loop-demo-result, .loop-demo-cards');
+        var targets = host ? host.children : [nxt];
+        g.fromTo(targets, { y: 16, autoAlpha: 0, filter: 'blur(4px)' },
+          { y: 0, autoAlpha: 1, filter: 'blur(0px)', duration: 0.5, ease: 'expo.out', stagger: 0.05,
+            onComplete: function () { g.set(targets, { clearProps: 'filter,transform' }); } });
+      } });
+    }
+
+    function pick(i, btn) {
+      chosen = SKILLS[i]; chosenIdx = i;
+      cards.forEach(function (c) { c.classList.add(c === btn ? 'is-chosen' : 'is-out'); });
+      later(showLesson, anim ? 360 : 280);
+    }
+
+    function showLesson() {
+      lessonK.textContent = chosen.k;
+      lessonT.textContent = chosen.t;
+      lessonBody.textContent = chosen.lesson;
+      goState(2);
+    }
+
+    gotIt.addEventListener('click', function () { userTouch(); showQuiz(); });
+
+    function showQuiz() {
+      if (!chosen) return;
+      qEl.textContent = chosen.q;
+      optsEl.innerHTML = '';
+      chosen.opts.forEach(function (o) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'loop-demo-opt';
+        b.textContent = o.t;
+        b.addEventListener('click', function () { userTouch(); answer(b, o); });
+        optsEl.appendChild(b);
+      });
+      goState(3);
+    }
+
+    function answer(btn, opt) {
+      if (opt.ok) {
+        lockOpts();
+        btn.classList.add('is-correct');
+        later(showResult, 600);
+      } else {
+        btn.classList.add('is-wrong');
+        btn.addEventListener('animationend', function () { btn.classList.remove('is-wrong'); }, { once: true });
+        Array.prototype.forEach.call(optsEl.children, function (c, idx) {
+          if (chosen.opts[idx].ok) c.classList.add('is-correct');
+        });
+      }
+    }
+
+    function lockOpts() {
+      Array.prototype.forEach.call(optsEl.children, function (c) { c.classList.add('is-locked'); c.disabled = true; });
+    }
+
+    // ── the branch that awards XP (grows a new stroked branch + leaf + burst) ──
+    function growBranch() {
+      var idx = branchCount % 3; branchCount++;
+      var path = graph.querySelector('.lbranch[data-branch="' + idx + '"]');
+      var leaf = graph.querySelector('.lleaf[data-leaf="' + idx + '"]');
+      if (!path || !leaf) return;
+      if (!anim) { path.style.opacity = 1; leaf.style.opacity = 1; return; }
+      var len = path.getTotalLength();
+      path.style.strokeDasharray = len; path.style.strokeDashoffset = len; path.style.opacity = 1;
+      g.to(path, { strokeDashoffset: 0, duration: 0.6, ease: 'power2.out' });
+      g.fromTo(leaf, { opacity: 0, scale: 0, transformOrigin: '50% 50%' },
+        { opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(2.2)', delay: 0.5, onStart: burstParticles });
+    }
+
+    function burstParticles() {
+      if (!anim || !graphWrap) return;
+      for (var i = 0; i < 10; i++) {
+        var p = document.createElement('div'); p.className = 'loop-particle'; graphWrap.appendChild(p);
+        var ang = Math.random() * Math.PI * 2, dist = 24 + Math.random() * 44;
+        g.fromTo(p, { x: 0, y: 0, scale: 1, opacity: 1 },
+          { x: Math.cos(ang) * dist, y: Math.sin(ang) * dist - 8, scale: 0, opacity: 0,
+            duration: 0.6 + Math.random() * 0.35, ease: 'power2.out',
+            onComplete: (function (el) { return function () { el.remove(); }; })(p) });
+      }
+    }
+
+    function showResult() {
+      goState(4);
+      later(playReward, anim ? 540 : 40);
+    }
+
+    function playReward() {
+      // progressive: Level 1→2 gives +50, 2→3 gives +75, 3→4 gives +100 … (+25 each tier)
+      var award = 50 + (loopLevel - 1) * 25;
+      var nextLevel = loopLevel + 1;
+      xpFill.style.width = '0'; xpNum.textContent = '+0 XP';
+      levelEl.classList.remove('show'); graphLit.classList.remove('lit');
+      levelEl.innerHTML = 'Level ' + loopLevel + ' <span class="to">→ Level ' + nextLevel + '</span>';
+      later(function () { xpFill.style.width = '100%'; }, 60);
+      graphLit.classList.add('lit');
+      growBranch();
+      if (anim) {
+        var obj = { v: 0 };
+        g.to(obj, { v: award, duration: 0.85, ease: 'power1.out',
+          onUpdate: function () { xpNum.textContent = '+' + Math.round(obj.v) + ' XP'; } });
+      } else { xpNum.textContent = '+' + award + ' XP'; }
+      later(function () { levelEl.classList.add('show'); }, 430);
+      // climb each cycle (1→2 … 6→7), then wrap back so XP stays demo-sized
+      loopLevel = loopLevel >= 6 ? 1 : loopLevel + 1;
+    }
+
+    function resetLoop() {
+      clearTimers();
+      chosen = null;
+      cards.forEach(function (c) { c.classList.remove('is-out', 'is-chosen', 'is-press'); });
+      if (optsEl) Array.prototype.forEach.call(optsEl.children, function (c) { c.classList.remove('is-locked', 'is-correct', 'is-wrong'); c.disabled = false; });
+      goState(1);
+    }
+
+    resetBtn.addEventListener('click', function () { userTouch(); resetLoop(); });
+
+    /* ════ Ghost-cursor auto-play (calls the real handlers; yields on any input) ════ */
+    var autoActive = false, aborted = false, inView = false, idleTimer = null;
+    var useGhost = anim && fine;
+
+    function ghostShow(v) { if (ghost && useGhost) g.to(ghost, { autoAlpha: v ? 1 : 0, duration: 0.3 }); }
+    function tagShow(v) { if (autoTag) autoTag.classList.toggle('show', !!v); }
+    function ghostMoveTo(el, dur) {
+      return new Promise(function (res) {
+        if (aborted) return res();
+        if (!useGhost || !el) return void later(res, (dur || 0.6) * 1000);
+        var sr = stage.getBoundingClientRect(), er = el.getBoundingClientRect();
+        g.to(ghost, { x: er.left - sr.left + er.width / 2, y: er.top - sr.top + er.height / 2,
+          duration: dur || 0.6, ease: 'power2.inOut', onComplete: res });
+      });
+    }
+    function ghostPress(el) {
+      if (aborted) return;
+      if (useGhost && ghost) { ghost.classList.add('press'); later(function () { ghost.classList.remove('press'); }, 150); }
+      if (el) { el.classList.add('is-press'); later(function () { el.classList.remove('is-press'); }, 160); }
+    }
+    function wait(ms) { return new Promise(function (res) { if (aborted) return res(); later(res, ms); }); }
+
+    function autoplay() {
+      if (aborted || !inView || autoActive) return;
+      autoActive = true; tagShow(true);
+      resetLoop();
+      var step = (chosenIdx + 1) % SKILLS.length, card = cards[step];
+      if (useGhost) g.set(ghost, { x: stage.clientWidth / 2, y: 64 });
+      ghostShow(true);
+      wait(anim ? 850 : 400)
+        .then(function () { if (aborted) return; return ghostMoveTo(card, 0.8); })
+        .then(function () { if (aborted) return; ghostPress(card); pick(step, card); return wait(1180); })
+        .then(function () { if (aborted) return; return ghostMoveTo(gotIt, 0.6); })
+        .then(function () { if (aborted) return; ghostPress(gotIt); showQuiz(); return wait(980); })
+        .then(function () {
+          if (aborted) return;
+          var correct = null;
+          Array.prototype.forEach.call(optsEl.children, function (c, i) { if (chosen.opts[i].ok) correct = c; });
+          return ghostMoveTo(correct, 0.7).then(function () { return correct; });
+        })
+        .then(function (correct) {
+          if (aborted || !correct) return;
+          ghostPress(correct);
+          var i = Array.prototype.indexOf.call(optsEl.children, correct);
+          answer(correct, chosen.opts[i]);
+          return wait(2700);
+        })
+        .then(function () { if (aborted) return; ghostShow(false); return wait(950); })
+        .then(function () { autoActive = false; if (!aborted && inView) autoplay(); });
+    }
+
+    function userTouch() {
+      if (aborted) { scheduleRearm(); return; }
+      aborted = true; autoActive = false;
+      ghostShow(false); tagShow(false);
+      scheduleRearm();
+    }
+    function scheduleRearm() {
+      if (!useGhost && !(anim && !fine)) return; // only re-arm where autoplay runs
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(function () {
+        if (!inView || stage.dataset.state !== '1') { scheduleRearm(); return; }
+        aborted = false; autoActive = false; autoplay();
+      }, 12000);
+    }
+
+    if (anim) {
+      // demo is non-interactive (pointer-events:none) — it only autoplays, so it can't be clicked/broken.
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          inView = e.isIntersecting;
+          if (inView && !aborted && !autoActive) later(function () { if (inView) autoplay(); }, 500);
+        });
+      }, { threshold: 0.3 });
+      io.observe(stage);
+
+      // Fallback for environments that throttle/stub IntersectionObserver: drive inView from a
+      // cheap scroll+rect check too. Idempotent with the IO path (autoplay guards on autoActive).
+      function lkick(){
+        var vh = window.innerHeight || 0, r = stage.getBoundingClientRect();
+        inView = (r.top < vh * 0.8 && r.bottom > vh * 0.2);
+        if (inView && !aborted && !autoActive) later(function () { if (inView) autoplay(); }, 200);
+      }
+      window.addEventListener('scroll', lkick, { passive: true });
+      window.addEventListener('resize', lkick);
+      [600, 1400].forEach(function (d) { later(lkick, d); });
+    }
+  }
+
+/* ============================================================
+   PILLARS — SHARED LOOP CLOCK + VISIBILITY GATING
+   One rAF-free interval beats every BEAT_MS; all four cards
+   subscribe via PillarsLoop.onBeat(cb). A single
+   IntersectionObserver pauses the whole loop when the
+   pillars section is off-screen (battery-friendly), and a
+   single reduced-motion check flips every card to a static
+   finished state. Compositor-only (transform/opacity).
+   ============================================================ */
+(function(){
+  var BEAT_MS = 2000; // matches pillar 01's original 2s word cadence
+
+  // Global reduced-motion flag consumed by every pillar's IIFE.
+  window.__PILLARS_REDUCED =
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var beatCbs = [];
+  var sweepEls = [];      // .pillars-visual nodes to toggle .pl-sweep
+  var visibleCount = 0;   // how many observed targets are on screen
+  var timer = null;
+
+  function tick(){
+    for (var i=0;i<beatCbs.length;i++){
+      try { beatCbs[i](); } catch(e){}
+    }
+  }
+
+  function start(){
+    if (timer || window.__PILLARS_REDUCED) return;
+    tick();                       // fire immediately so nothing waits 2s
+    timer = setInterval(tick, BEAT_MS);
+    sweepEls.forEach(function(el){ el.classList.add('pl-sweep'); });
+  }
+  function stop(){
+    if (timer){ clearInterval(timer); timer = null; }
+    sweepEls.forEach(function(el){ el.classList.remove('pl-sweep'); });
+  }
+
+  // Shared visibility observer: run the loop only while >=1 pillar visual is in view.
+  var io = ('IntersectionObserver' in window)
+    ? new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          visibleCount += e.isIntersecting ? 1 : -1;
+        });
+        if (visibleCount < 0) visibleCount = 0;
+        if (visibleCount > 0) start(); else stop();
+      }, { threshold: 0.25 })
+    : null;
+
+  window.PillarsLoop = {
+    onBeat: function(cb){ if (typeof cb === 'function') beatCbs.push(cb); },
+    observe: function(node){
+      if (!node) return;
+      // register the card's .pillars-visual for the base sweep
+      var vis = node.closest ? node.closest('.pillars-visual') : null;
+      if (vis && sweepEls.indexOf(vis) === -1) sweepEls.push(vis);
+      if (window.__PILLARS_REDUCED){
+        if (vis) vis.classList.add('pl-sweep'); // static faint baseline via CSS
+        return;
+      }
+      if (io) io.observe(node); else { visibleCount++; start(); }
+    }
+  };
+
+  // Pause when the tab is hidden (don't burn cycles in background).
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) stop();
+    else if (visibleCount > 0) start();
+  });
+
+  // Fallback driver: some embedded webviews throttle/stub IntersectionObserver, so also
+  // start/stop from a cheap scroll+rect check. Idempotent with the IO path (start/stop guard
+  // themselves), so on normal browsers this is a no-op safety net.
+  function anyVisible(){
+    var vh = window.innerHeight || 0;
+    for (var i = 0; i < sweepEls.length; i++){
+      var r = sweepEls[i].getBoundingClientRect();
+      if (r.top < vh && r.bottom > 0) return true;
+    }
+    return false;
+  }
+  function kick(){ if (window.__PILLARS_REDUCED) return; if (anyVisible()) start(); else stop(); }
+  window.addEventListener('scroll', kick, { passive: true });
+  window.addEventListener('resize', kick);
+  [400, 1000, 2000].forEach(function(d){ setTimeout(kick, d); });
+})();
+
+/* 01 CREATE — hook word-cycle onto the shared loop. Words preserved from existing impl; edit to taste. */
+(function(){
+  var box = document.getElementById('pillarsInput');
+  var el  = document.getElementById('pillarsInputText');
+  if(!box || !el) return;
+  if(!box.querySelector('.pi-caret')){
+    var c=document.createElement('span'); c.className='pi-caret'; c.setAttribute('aria-hidden','true'); box.appendChild(c);
+  }
+  var words=['Quantum computing','Music theory','Spanish B2','Systems design','Watercolor','Options trading','Korean','Color grading'];
+  var i=0;
+  if(window.__PILLARS_REDUCED){ el.textContent=words[0]; return; }
+  // PillarsLoop is defined in sharedJs; register a per-beat callback.
+  window.PillarsLoop.onBeat(function(){
+    el.classList.add('is-swapping');
+    setTimeout(function(){
+      i=(i+1)%words.length;
+      el.textContent=words[i];
+      el.classList.remove('is-swapping');
+    },420);
+  });
+  // only animate while visible (handled centrally by PillarsLoop observer)
+  window.PillarsLoop.observe(box);
+})();
+
+/* 02 LEARN — auto-dealing stack synced to the shared loop. */
+(function(){
+  var stack=document.querySelector('.pillars-stack');
+  if(!stack) return;
+  // (Re)build 3 cards so we control slots cleanly.
+  stack.innerHTML='';
+  var labels=['Lesson 4 · Recursion','Lesson 5 · Big-O','Lesson 6 · Heaps','Lesson 7 · Graphs','Lesson 8 · Tries','Lesson 9 · DP basics'];
+  var cards=[];
+  for(var s=0;s<3;s++){
+    var card=document.createElement('div');
+    card.className='ps-card';
+    card.setAttribute('data-slot',String(s));
+    card.innerHTML="<span class='ps-dot' aria-hidden='true'></span><span class='ps-title'></span>";
+    card.querySelector('.ps-title').textContent=labels[s];
+    stack.appendChild(card); cards.push(card);
+  }
+  if(window.__PILLARS_REDUCED){
+    // finished/static: clean tidy pile, top card 'checked'
+    cards[0].querySelector('.ps-dot').textContent='✓';
+    cards[0].querySelector('.ps-dot').style.borderColor='var(--green)';
+    return;
+  }
+  var lblIdx=2;
+  // canonical front-to-back order [slot0, slot1, slot2] — driven from memory, not
+  // re-derived from DOM attributes each beat, so a throttled/late beat can never
+  // land mid-transition and strand two cards on the same slot.
+  var order=cards.slice();
+  var busy=false;
+  function deal(){
+    if(busy) return; // previous card hasn't finished landing — skip this beat rather than risk corrupting state
+    busy=true;
+    var top=order[0];
+    top.querySelector('.ps-dot').textContent='✓';
+    top.classList.add('ps-dealing');
+    // promote the other two forward by one slot immediately
+    order[1].setAttribute('data-slot','0');
+    order[2].setAttribute('data-slot','1');
+    order=[order[1],order[2],top];
+    setTimeout(function(){
+      // recycle dealt card to back slot=2 with a fresh label, rising in from below
+      top.classList.remove('ps-dealing');
+      top.querySelector('.ps-dot').textContent='';
+      lblIdx=(lblIdx+1)%labels.length;
+      top.querySelector('.ps-title').textContent=labels[lblIdx];
+      top.setAttribute('data-slot','2');
+      top.classList.add('ps-entering');
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ top.classList.remove('ps-entering'); }); });
+      busy=false;
+    },610);
+  }
+  window.PillarsLoop.onBeat(deal);
+  window.PillarsLoop.observe(stack);
+})();
+
+/* 03 TEST — looping tick + reward synced to shared loop. Each 2s beat = one full play. */
+(function(){
+  var wrap=document.getElementById('pillarsChecks');
+  if(!wrap) return;
+  wrap.innerHTML='';
+  var rows=[];
+  for(var r=0;r<3;r++){
+    var row=document.createElement('div'); row.className='pc-row';
+    row.innerHTML="<span class='pc-box'><svg viewBox='0 0 16 16'><path d='M3 8.5 L6.5 12 L13 4'/></svg></span><span class='pc-line'></span>";
+    wrap.appendChild(row); rows.push(row);
+  }
+  var xp=document.createElement('div'); xp.className='pc-xp'; xp.textContent='+25 XP'; wrap.appendChild(xp);
+  if(window.__PILLARS_REDUCED){
+    rows.forEach(function(r){ r.classList.add('is-on'); });
+    xp.classList.add('is-pop');
+    return;
+  }
+  var timers=[];
+  function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
+  function play(){
+    clearTimers();
+    rows.forEach(function(r){ r.classList.remove('is-on'); });
+    xp.classList.remove('is-pop');
+    // stagger the three ticks across the first ~1.05s of the 2s beat
+    rows.forEach(function(r,k){ timers.push(setTimeout(function(){ r.classList.add('is-on'); },120+k*330)); });
+    timers.push(setTimeout(function(){ xp.classList.add('is-pop'); },120+3*330)); // reward after 3rd tick
+    timers.push(setTimeout(function(){ // reset near end of beat
+      rows.forEach(function(r){ r.classList.remove('is-on'); });
+      xp.classList.remove('is-pop');
+    },1850));
+  }
+  window.PillarsLoop.onBeat(play);
+  window.PillarsLoop.observe(wrap);
+})();
+
+/* 04 LEVEL UP — looping fill + level ratchet synced to shared loop. */
+(function(){
+  var fill=document.getElementById('pillarsXpFill');
+  if(!fill) return;
+  // wrap into the level layout if not already structured
+  var host=fill.closest('.pillars-visual')||fill.parentElement;
+  var badge=host.querySelector('.pl-badge');
+  if(!badge){
+    var lvlWrap=document.createElement('div'); lvlWrap.className='pillars-lvl';
+    badge=document.createElement('div'); badge.className='pl-badge'; badge.textContent='Lv 6';
+    var track=document.createElement('div'); track.className='pl-track';
+    fill.parentNode.insertBefore(lvlWrap,fill);
+    track.appendChild(fill); lvlWrap.appendChild(badge); lvlWrap.appendChild(track);
+  }
+  var START_LEVEL=6, MAX_LEVEL=45, LEVEL_BEATS=4; // 4 beats (~8s) per level — a real climb to the cap, not instant
+  var START_W=12, END_W=100;
+  var level=START_LEVEL, beatInLevel=0;
+  if(window.__PILLARS_REDUCED){ fill.style.width='80%'; badge.textContent='Lv '+level; return; }
+  function widthAt(n){ return START_W + (END_W-START_W) * (n/LEVEL_BEATS); }
+  function fillTo(pct){
+    fill.classList.remove('is-reset');
+    requestAnimationFrame(function(){ fill.style.width=pct+'%'; });
+  }
+  function levelUp(){
+    // hard cap at 45 — once reached, loop back to the start rather than counting forever
+    level = (level>=MAX_LEVEL) ? START_LEVEL : level+1;
+    badge.textContent='Lv '+level;
+    badge.classList.remove('is-up'); void badge.offsetWidth; badge.classList.add('is-up');
+    fill.classList.add('is-reset');
+    fill.style.width=START_W+'%';
+    beatInLevel=0;
+  }
+  // each beat advances the bar one slice toward the next level; only every
+  // LEVEL_BEATS-th beat actually ticks the level, so the climb reads as slow and deliberate.
+  var started=false;
+  window.PillarsLoop.onBeat(function(){
+    if(!started){ started=true; beatInLevel=1; fillTo(widthAt(1)); return; }
+    beatInLevel++;
+    if(beatInLevel>=LEVEL_BEATS){ levelUp(); return; }
+    fillTo(widthAt(beatInLevel));
+  });
+  window.PillarsLoop.observe(fill);
+})();
+})();
+</script>
+
+<!-- ── CROSS-PAGE MOTION: reveals, scramble, tilt, magnetic, page-transition wipe ── -->
+<script>
+(function () {
+  'use strict';
+  var PM = window.PM; if (!PM) return;
+  var g = PM.gsap, ST = window.ScrollTrigger, reduce = PM.reduce, fine = PM.fine;
+
+  /* pointer-tilt on content cards (generalised from the beta card) */
+  function initTilt(root) {
+    if (!fine || reduce) return;
+    (root || document).querySelectorAll('.why-cell, .pf-cell, .contact-item').forEach(function (card) {
+      if (card.dataset.tiltInit) return; card.dataset.tiltInit = '1';
+      card.addEventListener('mousemove', function (e) {
+        var r = card.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
+        card.style.transform = 'perspective(800px) rotateY(' + (px * 5) + 'deg) rotateX(' + (-py * 5) + 'deg)';
+      });
+      card.addEventListener('mouseleave', function () { card.style.transform = ''; });
+    });
+  }
+
+  var REVEAL_SEL = '.about-headline, .product-headline, .contact-headline, .pw-heading, .streak-heading, .beta-heading, .loop-demo-heading, .pillars-heading, .why-headline';
+  var SCRAMBLE_SEL = '.section-label, .about-tag, .product-tag, .countdown-label-top, .fstat-lbl, .ci-label, .beta-tag, .streak-count-lbl, .pillars-eyebrow, .pillars-card-eyebrow, .skills-label, .loop-demo-sub';
+
+  function enhanceView(root) {
+    root = root || document;
+    if (g && ST && !reduce) {
+      root.querySelectorAll(REVEAL_SEL).forEach(function (el) {
+        if (el.children.length) return;            // keep <br>/inline-markup headings intact
+        if (!el.hasAttribute('data-reveal')) el.setAttribute('data-reveal', 'lines');
+      });
+      root.querySelectorAll(SCRAMBLE_SEL).forEach(function (el) {
+        if (!el.hasAttribute('data-scramble')) el.setAttribute('data-scramble', '');
+      });
+      PM.initReveals(root);
+    }
+    initTilt(root);
+    if (PM.magnetize) PM.magnetize('.beta-cta, .contact-item, .loop-demo-btn', root);
+  }
+  PM.enhanceView = enhanceView;
+
+  function boot() { enhanceView(document); }
+  if (document.readyState !== 'loading') boot(); else document.addEventListener('DOMContentLoaded', boot);
+
+  /* lime page-transition wipe on SPA view changes */
+  if (typeof window.navigate === 'function' && g && !reduce) {
+    var _nav = window.navigate;
+    var LABELS = { home: '01 / Home', about: '02 / About', product: '03 / Product', contact: '04 / Contact' };
+    window.navigate = function (view) {
+      var active = document.querySelector('.view.active');
+      if (active && active.id === 'view-' + view) { _nav(view); return; }
+      PM.wipe(LABELS[view] || view, function () {
+        _nav(view);
+        var v = document.getElementById('view-' + view);
+        if (v) enhanceView(v);
+        if (ST) setTimeout(function () { ST.refresh(); }, 60);
+      });
+    };
+  }
 })();
 </script>
 
