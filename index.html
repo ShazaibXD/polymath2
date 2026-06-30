@@ -343,11 +343,13 @@ nav {
    stage. Compositor-only (transform/opacity), 60fps.
    ============================================================ */
 
-/* shorter scroll: 220vh → 130vh */
-.rank-section { position: relative; height: 130vh; border-bottom: 1px solid var(--border); }
+/* auto-plays on view — no scroll-pin (the old sticky pin was dead anyway: an
+   ancestor's overflow-x:hidden breaks position:sticky). Just a normal in-flow,
+   ~full-height stage that fires its animation when it scrolls into view. */
+.rank-section { position: relative; height: auto; border-bottom: 1px solid var(--border); }
 
 .rank-pin {
-  position: sticky; top: 0; height: 100vh;
+  position: relative; min-height: 100vh;
   display: flex; align-items: center; justify-content: center;
   padding: var(--sp-4) 48px; overflow: hidden;
   background: radial-gradient(ellipse 70% 60% at 50% 60%, rgba(163,230,53,0.07) 0%, transparent 65%);
@@ -367,25 +369,31 @@ nav {
 
 /* ---------- THE HERO: the mastery radar — the dominant visual of the section ----------
    8 domains as spokes, 7 rank rings (Novice core → Polymath rim). buildRadar() lays the
-   SVG out once; paintRadar(p) grows the web outward and lights the ring for the live rank
-   as the section is scrubbed. Breadth across domains — not a single spike — reaches the rim. */
-/* sized off BOTH width and viewport height so the square + heading + readout
-   always fit inside the 100vh pin (no overflow pushing the web off-screen) */
+   SVG out once; the "Assemble, Prove, Breathe" show (runRadarShow) auto-plays on view.
+   Breadth across domains — not a single spike — is what reaches the rim. */
+/* sized off BOTH width and viewport height so the square + heading + readout fit on one screen */
 .rank-radar { position: relative; width: min(clamp(300px, 38vw, 460px), 40vh); margin: 0 auto; aspect-ratio: 1 / 1; }
 .rank-radar svg { width: 100%; height: 100%; overflow: visible; display: block; }
 
 .rr-axis  { stroke: rgba(255,255,255,0.05); stroke-width: 1; }
-.rr-ring  { fill: none; stroke: var(--border); stroke-width: 1; transition: stroke 0.45s var(--ease); }
-.rr-ring.is-done   { stroke: rgba(163,230,53,0.16); }
-.rr-ring.is-active { stroke: rgba(163,230,53,0.55); }
+/* rings are green from the start; "lighting" a rank = JS raising its stroke-opacity */
+.rr-ring  { fill: none; stroke: var(--green); stroke-opacity: 0.07; stroke-width: 1; }
 
-/* breathing under-layer — a touch of life while the web sits idle */
-.rr-poly-glow {
-  fill: rgba(163,230,53,0.06); stroke: none;
-  animation: rrPulse 5.5s ease-in-out infinite;
-}
-@keyframes rrPulse { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+/* soft core glow (radial-gradient circle) — only its OPACITY is tweened (cardiac beat);
+   the softness is baked into the gradient so there is no animated blur/filter */
+.rr-coreglow { pointer-events: none; }
 
+/* the Act-3 climb sweep + the Act-2 ignition pulse */
+.rr-climbring, .rr-pulse { fill: none; stroke: var(--green); }
+.rr-climbring { stroke-width: 1.4; opacity: 0; }
+.rr-pulse     { stroke-width: 2;   opacity: 0; }
+
+/* Act-1 sparks that streak inward along each spoke */
+.rr-spark { fill: var(--green); }
+.rr-comet { stroke: var(--green); stroke-width: 2; stroke-linecap: round; }
+
+/* faint fill under-layer + crisp web outline (points written by render() each frame) */
+.rr-poly-glow { fill: rgba(163,230,53,0.07); stroke: none; }
 .rr-poly {
   fill: rgba(163,230,53,0.10); stroke: var(--green); stroke-width: 2;
   stroke-linejoin: round;
@@ -395,9 +403,7 @@ nav {
 .rr-core { fill: var(--green); }
 
 .rr-domain { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .04em; fill: var(--muted); }
-.rr-tick   { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .1em; fill: var(--dim); transition: fill 0.45s var(--ease); }
-.rr-tick.is-done   { fill: rgba(163,230,53,0.5); }
-.rr-tick.is-active { fill: var(--green); }
+.rr-tick   { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .1em; fill: var(--green); opacity: 0.22; }
 
 /* ---------- readout + list: compact strip beneath the hero ---------- */
 .rank-stage { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; max-width: 760px; margin: 0 auto; }
@@ -430,9 +436,9 @@ nav {
 .rank-row.active .rank-row-name { color: var(--green); }
 .rank-row-xp { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); font-variant-numeric: tabular-nums; }
 
-/* ---------- reduced motion: web sits still, no idle breathing, no scrub ---------- */
+/* ---------- reduced motion: JS paints the final balanced web statically; kill any sweeps ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .rr-poly-glow { animation: none; opacity: 1; }
+  .rr-climbring, .rr-pulse, .rr-spark, .rr-comet { display: none !important; }
 }
 
 /* ---------- mobile/touch: no sticky pin — the full web shows once, statically ---------- */
@@ -1462,8 +1468,8 @@ footer {
             </div>
 
             <!-- HERO: the mastery radar. 8 real domains as spokes, 7 rank rings from
-                 Novice (core) to Polymath (rim). buildRadar() lays the SVG out once;
-                 paintRadar(p) grows the web and lights the live rank's ring as you scroll. -->
+                 Novice (core) to Polymath (rim). The "Assemble, Prove, Breathe" show
+                 (runRadarShow) auto-plays the moment this section scrolls into view. -->
             <div class="rank-radar" id="rankRadar" aria-hidden="true"></div>
 
             <!-- readout + list — these ids MUST stay so updateRankUI() keeps working -->
@@ -2149,17 +2155,21 @@ function updateRankUI(p) {
 /* ============================================================
    MASTERY RADAR — the section's hero visual.
    8 real domains as spokes, 7 rank rings (Novice core → Polymath rim).
-   buildRadar() lays the SVG out once; paintRadar(p) grows the web outward
-   and lights the ring matching the live rank as the section is scrubbed.
-   Per-domain weights keep the web balanced-but-organic — breadth across
-   domains, not one long spike, is what reaches the outer rim.
+   buildRadar() lays the SVG out once. State lives in RR.r[] (target radius
+   per axis) + RR.breath[] (additive idle drift); renderRadar() is the single
+   per-frame DOM write. The animation is authored in runRadarShow() below.
    ============================================================ */
 const RR = {
   C: 300, R: 232, AXES: 8, RINGS: 7,
   DOMAINS: ['Writing', 'Speaking', 'Design', 'Code', 'Math', 'Music', 'Health', 'Strategy'],
-  W: [0.97, 0.86, 1.0, 0.9, 0.83, 0.95, 0.88, 0.99], // fixed per-domain reach weights
-  built: false, poly: null, glow: null, verts: [], rings: [], ticks: [],
+  W: [0.97, 0.86, 1.0, 0.9, 0.83, 0.95, 0.88, 0.99], // per-domain reach → a balanced (not circular) web
+  MINR: 6, SPIKE_AXIS: 3, // "Code" is the lone spoke that spikes in Act 2
+  built: false, started: false,
+  poly: null, glow: null, coreGlow: null, climbRing: null, pulse: null, sparkLayer: null,
+  verts: [], rings: [], ticks: [], domains: [],
+  r: [], breath: [], xp: { v: 0 }, ambient: [],
 };
+const masteryTargets = () => RR.W.map(w => RR.R * w);
 function rrPoint(i, radius) {
   const a = (-90 + i * (360 / RR.AXES)) * Math.PI / 180;
   return [RR.C + radius * Math.cos(a), RR.C + radius * Math.sin(a)];
@@ -2176,6 +2186,18 @@ function buildRadar() {
   };
   const svg = mk('svg', { viewBox: '0 0 600 600' });
 
+  // defs: soft core-glow gradient (softness baked into the stops — no animated filter)
+  const defs = mk('defs', {});
+  const grad = mk('radialGradient', { id: 'rrCoreGlow', cx: '50%', cy: '50%', r: '50%' });
+  grad.appendChild(mk('stop', { offset: '0%',   'stop-color': '#a3e635', 'stop-opacity': '0.9' }));
+  grad.appendChild(mk('stop', { offset: '45%',  'stop-color': '#a3e635', 'stop-opacity': '0.22' }));
+  grad.appendChild(mk('stop', { offset: '100%', 'stop-color': '#a3e635', 'stop-opacity': '0' }));
+  defs.appendChild(grad); svg.appendChild(defs);
+
+  // core glow (behind everything) — only its opacity is tweened (cardiac beat)
+  RR.coreGlow = mk('circle', { cx: RR.C, cy: RR.C, r: 150, fill: 'url(#rrCoreGlow)', opacity: 0 }, 'rr-coreglow');
+  svg.appendChild(RR.coreGlow);
+
   // rings (inner → outer = Novice → Polymath)
   for (let r = 0; r < RR.RINGS; r++) {
     const rad = RR.R * (r + 1) / RR.RINGS;
@@ -2189,6 +2211,11 @@ function buildRadar() {
     const [x, y] = rrPoint(i, RR.R);
     svg.appendChild(mk('line', { x1: RR.C, y1: RR.C, x2: x.toFixed(1), y2: y.toFixed(1) }, 'rr-axis'));
   }
+  // Act-2 ignition pulse + Act-3 climb sweep
+  RR.pulse     = mk('circle', { cx: RR.C, cy: RR.C, r: 120 }, 'rr-pulse');
+  RR.climbRing = mk('circle', { cx: RR.C, cy: RR.C, r: 0 }, 'rr-climbring');
+  svg.appendChild(RR.pulse); svg.appendChild(RR.climbRing);
+
   // rank ticks (01..07) climbing the top spoke, one per ring
   for (let r = 0; r < RR.RINGS; r++) {
     const rad = RR.R * (r + 1) / RR.RINGS;
@@ -2203,81 +2230,233 @@ function buildRadar() {
     const dx = x - RR.C;
     lbl.setAttribute('text-anchor', Math.abs(dx) < 4 ? 'middle' : (dx > 0 ? 'start' : 'end'));
     lbl.textContent = RR.DOMAINS[i];
-    svg.appendChild(lbl);
+    svg.appendChild(lbl); RR.domains.push(lbl);
   }
-  // the web: breathing under-layer + crisp outline + per-domain vertices, drawn on top
+  // the web: faint fill under-layer + crisp outline + per-domain vertices
   RR.glow = mk('polygon', { points: '' }, 'rr-poly-glow');
   RR.poly = mk('polygon', { points: '' }, 'rr-poly');
   svg.appendChild(RR.glow); svg.appendChild(RR.poly);
   for (let i = 0; i < RR.AXES; i++) { RR.verts.push(svg.appendChild(mk('circle', { r: 3.5, cx: RR.C, cy: RR.C }, 'rr-vert'))); }
   svg.appendChild(mk('circle', { r: 3, cx: RR.C, cy: RR.C }, 'rr-core'));
 
+  // spark layer (Act-1 comets, created/removed per run) — on top
+  RR.sparkLayer = mk('g', {}, 'rr-sparks');
+  svg.appendChild(RR.sparkLayer);
+
   host.appendChild(svg);
+  RR.r = new Array(RR.AXES).fill(RR.MINR);
+  RR.breath = new Array(RR.AXES).fill(0);
   RR.built = true;
 }
-function paintRadar(p) {
-  if (!RR.built) buildRadar();
+
+// the ONE per-frame DOM write: vertex positions + the two web polygons
+function renderRadar() {
   if (!RR.poly) return;
-  p = Math.min(1, Math.max(0, p));
   const pts = [];
   for (let i = 0; i < RR.AXES; i++) {
-    const reach = Math.min(1, p * RR.W[i]);
-    const [x, y] = rrPoint(i, RR.R * reach);
+    let eff = RR.r[i] + RR.breath[i];
+    if (eff < 4) eff = 4; else if (eff > RR.R) eff = RR.R;
+    const [x, y] = rrPoint(i, eff);
     pts.push(x.toFixed(1) + ',' + y.toFixed(1));
     const v = RR.verts[i]; if (v) { v.setAttribute('cx', x.toFixed(1)); v.setAttribute('cy', y.toFixed(1)); }
   }
-  const str = pts.join(' ');
-  RR.poly.setAttribute('points', str);
-  RR.glow.setAttribute('points', str);
-  const active = Math.min(RR.RINGS - 1, Math.floor(p * RR.RINGS));
-  RR.rings.forEach((ring, i) => { ring.classList.toggle('is-done', i < active); ring.classList.toggle('is-active', i === active); });
-  RR.ticks.forEach((t, i) => { t.classList.toggle('is-done', i < active); t.classList.toggle('is-active', i === active); });
+  const s = pts.join(' ');
+  RR.poly.setAttribute('points', s);
+  RR.glow.setAttribute('points', s);
+}
+
+// paint the finished, fully-lit Polymath web in one shot (reduced-motion / mobile / no-gsap)
+function paintRadarFull() {
+  buildRadar();
+  RR.r = masteryTargets(); RR.breath = new Array(RR.AXES).fill(0);
+  renderRadar();
+  RR.rings.forEach(r => r.setAttribute('stroke-opacity', '0.85'));
+  RR.ticks.forEach(t => { t.style.opacity = '1'; });
+  if (RR.coreGlow) RR.coreGlow.setAttribute('opacity', '0.32');
+  updateRankUI(1);
+}
+
+/* ---- readout sync: snap the XP card / rank list to a given rank during the climb ---- */
+function setClimbRank(k) {
+  const G = window.gsap;
+  const r = RANKS[k];
+  const num = document.getElementById('rankXpNum');
+  const now = document.getElementById('rankNow');
+  const targetXp = (k === 6) ? 10000 : r.min;
+  if (G) {
+    G.to(RR.xp, { v: targetXp, duration: 0.5, ease: 'power2.out', onUpdate: () => {
+      num.textContent = (k === 6 ? '10,000+ XP' : Math.round(RR.xp.v).toLocaleString() + ' XP');
+    } });
+    now.textContent = r.n;
+    G.fromTo(now, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.34, ease: 'power3.out' }); // level-up flip
+    G.to(document.getElementById('rankBarFill'), { width: (k / 6 * 100) + '%', duration: 0.5, ease: 'power2.out' });
+  } else {
+    num.textContent = (k === 6 ? '10,000+ XP' : r.min.toLocaleString() + ' XP');
+    now.textContent = r.n;
+    document.getElementById('rankBarFill').style.width = (k / 6 * 100) + '%';
+  }
+  document.getElementById('rankStep').textContent = 'Rank ' + (k + 1) + ' of 7';
+  document.querySelectorAll('.rank-row').forEach((row, idx) => {
+    row.classList.toggle('done', idx < k); row.classList.toggle('active', idx === k);
+  });
+}
+function igniteRing(k) {
+  const G = window.gsap; const ring = RR.rings[k]; const tick = RR.ticks[k];
+  G.to(ring, { attr: { 'stroke-opacity': 0.85 }, duration: 0.4, ease: 'power2.out' });
+  G.fromTo(ring, { attr: { 'stroke-width': 2.4 } }, { attr: { 'stroke-width': 1.4 }, duration: 0.5, ease: 'power2.out' });
+  if (tick) G.to(tick, { opacity: 1, duration: 0.4 });
+}
+function flickerRing(k) {
+  window.gsap.fromTo(RR.rings[k], { attr: { 'stroke-opacity': 0.85 } }, { attr: { 'stroke-opacity': 1 }, duration: 0.28, yoyo: true, repeat: 1, ease: 'sine.inOut' });
+}
+
+/* ---- ambient: web breath (additive) + cardiac core glow — runs under Act 3 + the rest state ---- */
+function startAmbient() {
+  const G = window.gsap;
+  for (let i = 0; i < RR.AXES; i++) {
+    const amp = 2.4 + (i % 3) * 0.5;
+    RR.breath[i] = -amp;
+    RR.ambient.push(G.to(RR.breath, { [i]: amp, duration: 3.2 + i * 0.18, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
+  }
+  const beat = G.timeline({ repeat: -1 });
+  beat.to(RR.coreGlow, { attr: { opacity: 0.46 }, duration: 0.16, ease: 'power2.out' })
+      .to(RR.coreGlow, { attr: { opacity: 0.3 },  duration: 0.2 })
+      .to(RR.coreGlow, { attr: { opacity: 0.42 }, duration: 0.14, ease: 'power2.out' })
+      .to(RR.coreGlow, { attr: { opacity: 0.28 }, duration: 1.0 });
+  RR.ambient.push(beat);
+}
+
+/* ---- Act 3: a climb-ring sweeps Novice→Polymath, lighting each rank + ticking the readout ---- */
+function runClimb() {
+  const G = window.gsap;
+  const DUR = 3.4;
+  const tl = G.timeline();
+  RR.climbTl = tl;
+  G.set(RR.climbRing, { attr: { r: 0 }, opacity: 0.5 });
+  tl.to(RR.climbRing, { attr: { r: RR.R }, duration: DUR, ease: 'none' }, 0);
+  tl.to(RR.climbRing, { opacity: 0, duration: 0.7, ease: 'power1.in' }, DUR - 0.7);
+  for (let k = 0; k < RR.RINGS; k++) {
+    const at = ((k + 1) / RR.RINGS) * DUR;
+    tl.call(igniteRing, [k], at);
+    tl.call(setClimbRank, [k], at);
+  }
+  // after the meaningful climb: two slow shimmer sweeps, then rest on the full web
+  tl.call(() => {
+    const sh = G.timeline({ repeat: 1, repeatDelay: 2.6 });
+    sh.set(RR.climbRing, { attr: { r: 0 }, opacity: 0.3 });
+    sh.to(RR.climbRing, { attr: { r: RR.R }, duration: 4.4, ease: 'none' }, 0);
+    sh.to(RR.climbRing, { opacity: 0, duration: 0.9, ease: 'power1.in' }, 4.4 - 0.9);
+    for (let k = 0; k < RR.RINGS; k++) sh.call(flickerRing, [k], ((k + 1) / RR.RINGS) * 4.4);
+    RR.ambient.push(sh);
+  }, null, DUR + 0.6);
+}
+
+/* ---- the show: Assemble → Prove → Breathe ---- */
+function runRadarShow() {
+  if (RR.started) return; RR.started = true;
+  const G = window.gsap;
+  const NS = 'http://www.w3.org/2000/svg';
+
+  // reset to the dark "waiting" disc
+  RR.rings.forEach(r => G.set(r, { attr: { 'stroke-opacity': 0.07 } }));
+  RR.ticks.forEach(t => G.set(t, { opacity: 0 }));
+  RR.domains.forEach(d => G.set(d, { opacity: 0 }));
+  RR.verts.forEach(v => G.set(v, { opacity: 0 }));
+  G.set([RR.poly, RR.glow], { opacity: 0 });
+  G.set(RR.coreGlow, { attr: { opacity: 0 } });
+  RR.r = new Array(RR.AXES).fill(RR.MINR); renderRadar();
+
+  const tl = G.timeline();
+  RR.tl = tl;
+
+  // ---- ACT 1 — assemble: sparks streak in along each spoke ----
+  G.to(RR.coreGlow, { attr: { opacity: 0.22 }, duration: 0.5, ease: 'power2.out' });
+  RR.rings.forEach((ring, i) => tl.fromTo(ring, { attr: { 'stroke-opacity': 0 } }, { attr: { 'stroke-opacity': 0.07 }, duration: 0.4, ease: 'power2.out' }, 0.03 * i));
+  for (let i = 0; i < RR.AXES; i++) {
+    const [sx, sy] = rrPoint(i, RR.R + 16);
+    const [ex, ey] = rrPoint(i, RR.MINR);
+    const spark = document.createElementNS(NS, 'circle');
+    spark.setAttribute('class', 'rr-spark'); spark.setAttribute('r', '3.2');
+    spark.setAttribute('cx', sx.toFixed(1)); spark.setAttribute('cy', sy.toFixed(1));
+    const comet = document.createElementNS(NS, 'line');
+    comet.setAttribute('class', 'rr-comet');
+    comet.setAttribute('x1', sx.toFixed(1)); comet.setAttribute('y1', sy.toFixed(1));
+    comet.setAttribute('x2', sx.toFixed(1)); comet.setAttribute('y2', sy.toFixed(1));
+    RR.sparkLayer.appendChild(comet); RR.sparkLayer.appendChild(spark);
+    const pos = { x: sx, y: sy };
+    tl.to(pos, { x: ex, y: ey, duration: 0.7, ease: 'power3.inOut', onUpdate: () => {
+      spark.setAttribute('cx', pos.x.toFixed(1)); spark.setAttribute('cy', pos.y.toFixed(1));
+      comet.setAttribute('x2', pos.x.toFixed(1)); comet.setAttribute('y2', pos.y.toFixed(1));
+      const dx = pos.x - sx, dy = pos.y - sy, len = Math.hypot(dx, dy) || 1; // tail trails ~22px behind
+      comet.setAttribute('x1', (pos.x - dx / len * 22).toFixed(1));
+      comet.setAttribute('y1', (pos.y - dy / len * 22).toFixed(1));
+    }, onComplete: () => {
+      spark.remove(); comet.remove();
+      G.set(RR.verts[i], { opacity: 1 });
+      G.fromTo(RR.verts[i], { attr: { r: 0 } }, { attr: { r: 3.5 }, duration: 0.26, ease: 'back.out(2.4)' });
+    } }, 0.15 + i * 0.03);
+  }
+  RR.domains.forEach((d, i) => tl.to(d, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 0.55 + i * 0.03));
+
+  // ---- ACT 2 — prove: one spoke spikes, holds, then collapses as the seven rise into balance ----
+  tl.set([RR.poly, RR.glow], { opacity: 1 }, 1.0);
+  tl.to(RR.r, { [RR.SPIKE_AXIS]: RR.R, duration: 0.42, ease: 'power3.out' }, 1.0);                       // the spike shoots up
+  tl.to(RR.r, { [RR.SPIKE_AXIS]: RR.R - 5, duration: 0.09, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 1.5); // tremor → reads as intentional
+  const tg = masteryTargets();
+  for (let i = 0; i < RR.AXES; i++) {
+    if (i === RR.SPIKE_AXIS) {
+      tl.to(RR.r, { [i]: tg[i], duration: 0.9, ease: 'power3.out' }, 2.05);                              // spike eases DOWN, settles LAST
+    } else {
+      tl.to(RR.r, { [i]: tg[i], duration: 0.7, ease: 'back.out(1.25)' }, 1.95 + i * 0.03);               // the seven RISE, out of phase
+    }
+  }
+  tl.fromTo(RR.pulse, { attr: { r: 110 }, opacity: 0.55 }, { attr: { r: 250 }, opacity: 0, duration: 0.6, ease: 'power2.out' }, 2.9); // balance pulse
+
+  // ---- hand off to ambient breath + the climb ----
+  tl.call(() => { startAmbient(); runClimb(); }, null, 3.1);
 }
 
 /* ============================================================
-   RANK SCROLLER — drives the mastery radar + readout from scroll progress.
-   Keeps updateRankUI(p) untouched and pairs it with paintRadar(p): as progress
-   climbs 0 → 1 the web grows from the Novice core out toward the Polymath rim,
-   lighting the ring for the current rank. The pin height/scroll distance is
-   unchanged, so the climb itself isn't any longer.
+   RANK RADAR — auto-plays the "Assemble, Prove, Breathe" show when the
+   section scrolls into view (~35% on screen). No scroll-scrub, no sticky pin.
    ============================================================ */
-function initRankLadder() {
-  const sec = document.getElementById('rankLadder');
-  if (!sec) return;
+function initRankRadar() {
   buildRadar();
 
-  // No GSAP available → just show the maxed (Polymath) web.
-  if (!window.gsap || !window.ScrollTrigger) { updateRankUI(1); paintRadar(1); return; }
-
-  // ---- reduced motion: a settled mid-climb web, no scrub ----
-  if (window.__reducedMotion) { updateRankUI(0.5); paintRadar(0.5); return; }
-
-  // ---- mobile / touch: no pin, no scrub — the full web shows once ----
-  if (window.matchMedia('(max-width: 768px), (pointer: coarse)').matches) {
-    updateRankUI(1); paintRadar(1); return;
+  // no GSAP, reduced motion, or mobile/touch → straight to the finished web
+  if (!window.gsap || window.__reducedMotion ||
+      window.matchMedia('(max-width: 768px), (pointer: coarse)').matches) {
+    paintRadarFull();
+    return;
   }
 
-  // ---- desktop: heavy scrub (slow, smooth catch-up) drives readout + web growth ----
-  gsap.to({}, {
-    scrollTrigger: {
-      trigger: sec,
-      start: 'top top',
-      end: 'bottom bottom',
-      scrub: 1.1,
-      onUpdate: (self) => {
-        const p = self.progress;
-        updateRankUI(p);   // unchanged readout contract
-        paintRadar(p);
-      },
-    },
-  });
-
-  // initial paint
+  // prime the dark "waiting" disc: faint rings only, web + labels hidden until the show fires
   updateRankUI(0);
-  paintRadar(0);
+  RR.r = new Array(RR.AXES).fill(RR.MINR); RR.breath = new Array(RR.AXES).fill(0); renderRadar();
+  gsap.set([RR.poly, RR.glow], { opacity: 0 });
+  RR.verts.forEach(v => gsap.set(v, { opacity: 0 }));
+  RR.domains.forEach(d => gsap.set(d, { opacity: 0 }));
+  RR.ticks.forEach(t => gsap.set(t, { opacity: 0 }));
+  gsap.ticker.add(renderRadar); // one cheap DOM pass/frame; values come from RR.r + RR.breath
 
-  // re-measure once fonts/layout settle (matches old behaviour)
-  setTimeout(() => ScrollTrigger.refresh(), 300);
+  const sec = document.getElementById('rankLadder');
+  const playOnce = () => { if (!RR.started) runRadarShow(); };
+  if ('IntersectionObserver' in window && sec) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting && e.intersectionRatio >= 0.34) playOnce();
+        if (RR.started) RR.ambient.forEach(t => (e.isIntersecting ? t.play() : t.pause())); // zero idle cost off-screen
+      });
+    }, { threshold: [0, 0.34, 0.6] });
+    io.observe(sec);
+    // safety net for stubbed/throttled observers (some embedded webviews)
+    setTimeout(() => { if (!RR.started) { const r = sec.getBoundingClientRect(); if (r.top < window.innerHeight && r.bottom > 0) playOnce(); } }, 1600);
+  } else {
+    playOnce();
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (RR.started) RR.ambient.forEach(t => (document.hidden ? t.pause() : t.play()));
+  });
 }
 
 (function () {
@@ -2310,16 +2489,16 @@ function initRankLadder() {
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add((time) => lenis.raf(time * 1000));
       gsap.ticker.lagSmoothing(0);
-      initRankLadder();      // the one deliberate pinned scroll moment
+      initRankRadar();       // auto-plays the radar show when it scrolls into view
     } else {
       function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }
       requestAnimationFrame(raf);
-      updateRankUI(1); buildRadar(); paintRadar(1);
+      paintRadarFull();
     }
   } else {
-    // Reduced motion: native scroll, static web showing the full climb
+    // Reduced motion: native scroll, static full web
     window.addEventListener('scroll', () => { window.__scrollY = window.scrollY; updateHeroProgress(); updateScrollProg(); }, { passive: true });
-    updateRankUI(1); buildRadar(); paintRadar(1);
+    paintRadarFull();
   }
   window.addEventListener('resize', updateHeroProgress);
   updateHeroProgress();
