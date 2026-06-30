@@ -354,7 +354,7 @@ nav {
 }
 .rank-inner--hero {
   max-width: 1240px; width: 100%; margin: 0 auto;
-  display: flex; flex-direction: column; align-items: center; gap: var(--sp-3);
+  display: flex; flex-direction: column; align-items: center; gap: var(--sp-2);
 }
 .rank-inner--hero .rank-head { max-width: 640px; text-align: center; }
 .rank-inner--hero .rank-head .section-label { margin-bottom: var(--sp-3); display: block; }
@@ -365,83 +365,39 @@ nav {
 .rank-sub { font-family: 'Space Mono', monospace; font-size: var(--step-0); line-height: 1.9; color: var(--muted); max-width: 460px; margin: 0 auto; }
 .rank-inner--hero .rank-sub { margin-bottom: 0; }
 
-/* ---------- THE HERO: 7 cubes, one per rank — the dominant visual of the section ---------- */
-.rank-cubes-hero {
-  position: relative;
-  width: 100%; height: clamp(280px, 36vw, 440px);
-  display: flex; align-items: flex-end; justify-content: center;
-  gap: clamp(6px, 1.1vw, 16px);
-}
-/* perspective lives on each cube individually (not the shared row) — a single
-   shared vanishing point would rake the cubes far from center into a skewed
-   "staircase", since they'd all be viewed from one off-center angle. */
-.rank-cube-mini { position: relative; width: clamp(126px, 14.5vw, 190px); height: 100%; flex: 0 0 auto; perspective: 1000px; perspective-origin: 50% 70%; }
-/* faint floor socket — marks the slot even before its cube has landed */
-.rank-cube-mini::after {
-  content: ''; position: absolute; left: 50%; bottom: 8px; width: 70%; height: 10px;
-  margin-left: -35%; border-radius: 50%;
-  background: radial-gradient(ellipse 50% 100% at 50% 50%, rgba(163,230,53,0.14), transparent 72%);
-  opacity: .55; pointer-events: none;
-}
-/* --s = half the cube edge; one source of truth for sizing the faces */
-.rcm-box {
-  --s: clamp(54px, 7vw, 78px);
-  position: absolute; left: 50%; bottom: 18px;
-  width: calc(var(--s) * 2); height: calc(var(--s) * 2);
-  margin-left: calc(var(--s) * -1);
-  transform-style: preserve-3d;
-  /* resting state until JS flips data-state on the slot */
-  transform: translateY(96px) translateZ(calc(var(--s) * -1)) scale(.5) rotateX(40deg) rotateY(-54deg);
-  opacity: 0;
-  will-change: transform, opacity;
-  /* slow, deliberate landing — not a snappy pop */
-  transition: transform 1.15s cubic-bezier(.19,1,.22,1), opacity .9s var(--ease), filter .6s var(--ease);
-}
-.rcm-face {
-  position: absolute; inset: 0;
-  width: calc(var(--s) * 2); height: calc(var(--s) * 2);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 6px; padding: 0 6px; text-align: center;
-  border: 1px solid var(--border); border-radius: 12px;
-  background: linear-gradient(160deg, rgba(255,255,255,0.035), rgba(13,17,26,0.92));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-  backface-visibility: hidden; overflow: hidden;
-  transition: border-color .4s var(--ease), box-shadow .4s var(--ease);
-}
-.rcm-face--front { transform: translateZ(var(--s)); }
-.rcm-face--top    { transform: rotateX(90deg) translateZ(var(--s)); background: linear-gradient(160deg, rgba(255,255,255,0.05), rgba(6,8,12,0.96)); }
-.rcm-face--side   { transform: rotateY(90deg) translateZ(var(--s)); background: linear-gradient(200deg, rgba(255,255,255,0.02), rgba(6,8,12,0.97)); }
+/* ---------- THE HERO: the mastery radar — the dominant visual of the section ----------
+   8 domains as spokes, 7 rank rings (Novice core → Polymath rim). buildRadar() lays the
+   SVG out once; paintRadar(p) grows the web outward and lights the ring for the live rank
+   as the section is scrubbed. Breadth across domains — not a single spike — reaches the rim. */
+/* sized off BOTH width and viewport height so the square + heading + readout
+   always fit inside the 100vh pin (no overflow pushing the web off-screen) */
+.rank-radar { position: relative; width: min(clamp(300px, 38vw, 460px), 40vh); margin: 0 auto; aspect-ratio: 1 / 1; }
+.rank-radar svg { width: 100%; height: 100%; overflow: visible; display: block; }
 
-.rcm-tier { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .3em; text-transform: uppercase; color: var(--dim); }
-.rcm-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(16px, 2vw, 23px); letter-spacing: -0.01em; color: var(--text); line-height: 1.15; }
+.rr-axis  { stroke: rgba(255,255,255,0.05); stroke-width: 1; }
+.rr-ring  { fill: none; stroke: var(--border); stroke-width: 1; transition: stroke 0.45s var(--ease); }
+.rr-ring.is-done   { stroke: rgba(163,230,53,0.16); }
+.rr-ring.is-active { stroke: rgba(163,230,53,0.55); }
 
-/* PENDING (not yet reached) — stays off-stage, only the floor socket is visible */
-.rank-cube-mini[data-state="pending"] .rcm-box { opacity: 0; }
+/* breathing under-layer — a touch of life while the web sits idle */
+.rr-poly-glow {
+  fill: rgba(163,230,53,0.06); stroke: none;
+  animation: rrPulse 5.5s ease-in-out infinite;
+}
+@keyframes rrPulse { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
 
-/* DONE (already climbed past) — landed, settled, slightly dimmed */
-.rank-cube-mini[data-state="done"] .rcm-box,
-.rank-cube-mini[data-state="active"] .rcm-box {
-  opacity: 1;
-  transform: translateY(0) translateZ(calc(var(--s) * -1)) scale(1) rotateX(-16deg) rotateY(-28deg);
+.rr-poly {
+  fill: rgba(163,230,53,0.10); stroke: var(--green); stroke-width: 2;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 12px rgba(163,230,53,0.35));
 }
-.rank-cube-mini[data-state="done"] .rcm-box { filter: brightness(.72) saturate(.85); }
+.rr-vert { fill: var(--green); filter: drop-shadow(0 0 6px rgba(163,230,53,0.6)); }
+.rr-core { fill: var(--green); }
 
-/* ACTIVE (current rank) — the live cube: bigger, lit, gently swaying — never a fast spin */
-.rank-cube-mini[data-state="active"] .rcm-box {
-  transform: translateY(-6px) translateZ(calc(var(--s) * -1)) scale(1.18) rotateX(-16deg) rotateY(-28deg);
-  animation: rcmSway 6s ease-in-out infinite;
-  animation-delay: 1.15s; /* let the landing transition finish before the idle sway starts */
-}
-.rank-cube-mini[data-state="active"] .rcm-face--front {
-  border-color: rgba(163,230,53,0.55);
-  box-shadow: 0 0 26px rgba(163,230,53,0.3), inset 0 0 18px rgba(163,230,53,0.12);
-}
-.rank-cube-mini[data-state="active"] .rcm-tier { color: var(--green2); }
-.rank-cube-mini[data-state="active"] .rcm-name { color: var(--green); }
-@keyframes rcmSway {
-  0%, 100% { transform: translateY(-6px) translateZ(calc(var(--s) * -1)) scale(1.18) rotateX(-16deg) rotateY(-28deg); }
-  50%      { transform: translateY(-10px) translateZ(calc(var(--s) * -1)) scale(1.18) rotateX(-12deg) rotateY(-14deg); }
-}
+.rr-domain { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .04em; fill: var(--muted); }
+.rr-tick   { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .1em; fill: var(--dim); transition: fill 0.45s var(--ease); }
+.rr-tick.is-done   { fill: rgba(163,230,53,0.5); }
+.rr-tick.is-active { fill: var(--green); }
 
 /* ---------- readout + list: compact strip beneath the hero ---------- */
 .rank-stage { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; max-width: 760px; margin: 0 auto; }
@@ -474,21 +430,18 @@ nav {
 .rank-row.active .rank-row-name { color: var(--green); }
 .rank-row-xp { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); font-variant-numeric: tabular-nums; }
 
-/* ---------- reduced motion: cubes settle instantly, no sway, no scrub ---------- */
+/* ---------- reduced motion: web sits still, no idle breathing, no scrub ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .rcm-box { transition: none; }
-  .rank-cube-mini[data-state="active"] .rcm-box { animation: none; }
+  .rr-poly-glow { animation: none; opacity: 1; }
 }
 
-/* ---------- mobile/touch: no sticky pin — all 7 cubes wrap into a static hero grid ---------- */
+/* ---------- mobile/touch: no sticky pin — the full web shows once, statically ---------- */
 @media (max-width: 768px), (pointer: coarse) {
   .rank-section { height: auto; }
   .rank-pin { position: static; height: auto; padding: var(--sp-5) 20px; }
-  .rank-cubes-hero { height: auto; flex-wrap: wrap; row-gap: 28px; }
-  .rank-cube-mini { width: 104px; height: 148px; perspective: 700px; }
-  .rcm-box { --s: 46px; bottom: 14px; }
-  .rcm-name { font-size: 12px; white-space: normal; }
-  .rcm-tier { font-size: 7px; letter-spacing: .22em; }
+  .rank-radar { max-width: 320px; }
+  .rr-domain { font-size: 9px; }
+  .rr-tick { display: none; }
   .rank-stage { grid-template-columns: 1fr; max-width: 420px; }
 }
 
@@ -1503,63 +1456,15 @@ footer {
           <div class="rank-inner rank-inner--hero">
 
             <div class="rank-head">
-              <span class="section-label">The climb</span>
-              <h2 class="rank-heading">Every step earns XP. XP earns rank.</h2>
-              <p class="rank-sub">Roadmap steps, streaks, and challenges all feed one XP bar. Seven ranks to climb, from Novice up to Polymath — keep scrolling and watch them land.</p>
+              <span class="section-label">The shape of mastery</span>
+              <h2 class="rank-heading">A polymath grows in every direction.</h2>
+              <p class="rank-sub">Train any domain and your mastery web pushes outward — Novice at the core, Polymath at the rim. Your rank is how far the whole shape reaches, never just your strongest skill.</p>
             </div>
 
-            <!-- HERO: 7 individual 3D cubes, one per rank. JS toggles data-state (pending → active → done) as scroll progress crosses each rank's XP threshold. -->
-            <div class="rank-cubes-hero" id="rankCubesHero" aria-hidden="true">
-              <div class="rank-cube-mini" data-rank-index="0" data-state="active">
-                <div class="rcm-box">
-                  <span class="rcm-face rcm-face--front"><span class="rcm-tier">Rank 01</span><span class="rcm-name">Novice</span></span>
-                  <span class="rcm-face rcm-face--top"></span>
-                  <span class="rcm-face rcm-face--side"></span>
-                </div>
-              </div>
-              <div class="rank-cube-mini" data-rank-index="1" data-state="pending">
-                <div class="rcm-box">
-                  <span class="rcm-face rcm-face--front"><span class="rcm-tier">Rank 02</span><span class="rcm-name">Seeker</span></span>
-                  <span class="rcm-face rcm-face--top"></span>
-                  <span class="rcm-face rcm-face--side"></span>
-                </div>
-              </div>
-              <div class="rank-cube-mini" data-rank-index="2" data-state="pending">
-                <div class="rcm-box">
-                  <span class="rcm-face rcm-face--front"><span class="rcm-tier">Rank 03</span><span class="rcm-name">Initiate</span></span>
-                  <span class="rcm-face rcm-face--top"></span>
-                  <span class="rcm-face rcm-face--side"></span>
-                </div>
-              </div>
-              <div class="rank-cube-mini" data-rank-index="3" data-state="pending">
-                <div class="rcm-box">
-                  <span class="rcm-face rcm-face--front"><span class="rcm-tier">Rank 04</span><span class="rcm-name">Adept</span></span>
-                  <span class="rcm-face rcm-face--top"></span>
-                  <span class="rcm-face rcm-face--side"></span>
-                </div>
-              </div>
-              <div class="rank-cube-mini" data-rank-index="4" data-state="pending">
-                <div class="rcm-box">
-                  <span class="rcm-face rcm-face--front"><span class="rcm-tier">Rank 05</span><span class="rcm-name">Expert</span></span>
-                  <span class="rcm-face rcm-face--top"></span>
-                  <span class="rcm-face rcm-face--side"></span>
-                </div>
-              </div>
-              <div class="rank-cube-mini" data-rank-index="5" data-state="pending">
-                <div class="rcm-box">
-                  <span class="rcm-face rcm-face--front"><span class="rcm-tier">Rank 06</span><span class="rcm-name">Master</span></span>
-                  <span class="rcm-face rcm-face--top"></span>
-                  <span class="rcm-face rcm-face--side"></span>
-                </div>
-              </div>
-              <div class="rank-cube-mini" data-rank-index="6" data-state="pending">
-                <div class="rcm-box">
-                  <span class="rcm-face rcm-face--front"><span class="rcm-tier">Rank 07</span><span class="rcm-name">Polymath</span></span>
-                  <span class="rcm-face rcm-face--top"></span>
-                  <span class="rcm-face rcm-face--side"></span>
-                </div>
-              </div>
-            </div>
+            <!-- HERO: the mastery radar. 8 real domains as spokes, 7 rank rings from
+                 Novice (core) to Polymath (rim). buildRadar() lays the SVG out once;
+                 paintRadar(p) grows the web and lights the live rank's ring as you scroll. -->
+            <div class="rank-radar" id="rankRadar" aria-hidden="true"></div>
 
             <!-- readout + list — these ids MUST stay so updateRankUI() keeps working -->
             <div class="rank-stage">
@@ -2242,52 +2147,117 @@ function updateRankUI(p) {
 }
 
 /* ============================================================
-   RANK CUBE SCROLLER — 7 hero cubes, one per rank.
-   Keeps updateRankUI(p) untouched and keeps calling it with self.progress.
-   As progress crosses each rank's threshold, that cube's data-state flips
-   pending → active (lit, gently swaying) → done (settled, dimmed) — a slow,
-   deliberate "fly in and land" rather than a fast continuous spin. The pin
-   height/scroll distance is unchanged, so the climb itself isn't any longer.
+   MASTERY RADAR — the section's hero visual.
+   8 real domains as spokes, 7 rank rings (Novice core → Polymath rim).
+   buildRadar() lays the SVG out once; paintRadar(p) grows the web outward
+   and lights the ring matching the live rank as the section is scrubbed.
+   Per-domain weights keep the web balanced-but-organic — breadth across
+   domains, not one long spike, is what reaches the outer rim.
+   ============================================================ */
+const RR = {
+  C: 300, R: 232, AXES: 8, RINGS: 7,
+  DOMAINS: ['Writing', 'Speaking', 'Design', 'Code', 'Math', 'Music', 'Health', 'Strategy'],
+  W: [0.97, 0.86, 1.0, 0.9, 0.83, 0.95, 0.88, 0.99], // fixed per-domain reach weights
+  built: false, poly: null, glow: null, verts: [], rings: [], ticks: [],
+};
+function rrPoint(i, radius) {
+  const a = (-90 + i * (360 / RR.AXES)) * Math.PI / 180;
+  return [RR.C + radius * Math.cos(a), RR.C + radius * Math.sin(a)];
+}
+function buildRadar() {
+  const host = document.getElementById('rankRadar');
+  if (!host || RR.built) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (t, attrs, cls) => {
+    const e = document.createElementNS(NS, t);
+    if (cls) e.setAttribute('class', cls);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  };
+  const svg = mk('svg', { viewBox: '0 0 600 600' });
+
+  // rings (inner → outer = Novice → Polymath)
+  for (let r = 0; r < RR.RINGS; r++) {
+    const rad = RR.R * (r + 1) / RR.RINGS;
+    const pts = [];
+    for (let i = 0; i < RR.AXES; i++) { const [x, y] = rrPoint(i, rad); pts.push(x.toFixed(1) + ',' + y.toFixed(1)); }
+    const ring = mk('polygon', { points: pts.join(' ') }, 'rr-ring');
+    svg.appendChild(ring); RR.rings.push(ring);
+  }
+  // spokes
+  for (let i = 0; i < RR.AXES; i++) {
+    const [x, y] = rrPoint(i, RR.R);
+    svg.appendChild(mk('line', { x1: RR.C, y1: RR.C, x2: x.toFixed(1), y2: y.toFixed(1) }, 'rr-axis'));
+  }
+  // rank ticks (01..07) climbing the top spoke, one per ring
+  for (let r = 0; r < RR.RINGS; r++) {
+    const rad = RR.R * (r + 1) / RR.RINGS;
+    const t = mk('text', { x: RR.C + 8, y: (RR.C - rad + 3).toFixed(1) }, 'rr-tick');
+    t.textContent = String(r + 1).padStart(2, '0');
+    svg.appendChild(t); RR.ticks.push(t);
+  }
+  // domain labels around the rim
+  for (let i = 0; i < RR.AXES; i++) {
+    const [x, y] = rrPoint(i, RR.R + 26);
+    const lbl = mk('text', { x: x.toFixed(1), y: (y + 4).toFixed(1) }, 'rr-domain');
+    const dx = x - RR.C;
+    lbl.setAttribute('text-anchor', Math.abs(dx) < 4 ? 'middle' : (dx > 0 ? 'start' : 'end'));
+    lbl.textContent = RR.DOMAINS[i];
+    svg.appendChild(lbl);
+  }
+  // the web: breathing under-layer + crisp outline + per-domain vertices, drawn on top
+  RR.glow = mk('polygon', { points: '' }, 'rr-poly-glow');
+  RR.poly = mk('polygon', { points: '' }, 'rr-poly');
+  svg.appendChild(RR.glow); svg.appendChild(RR.poly);
+  for (let i = 0; i < RR.AXES; i++) { RR.verts.push(svg.appendChild(mk('circle', { r: 3.5, cx: RR.C, cy: RR.C }, 'rr-vert'))); }
+  svg.appendChild(mk('circle', { r: 3, cx: RR.C, cy: RR.C }, 'rr-core'));
+
+  host.appendChild(svg);
+  RR.built = true;
+}
+function paintRadar(p) {
+  if (!RR.built) buildRadar();
+  if (!RR.poly) return;
+  p = Math.min(1, Math.max(0, p));
+  const pts = [];
+  for (let i = 0; i < RR.AXES; i++) {
+    const reach = Math.min(1, p * RR.W[i]);
+    const [x, y] = rrPoint(i, RR.R * reach);
+    pts.push(x.toFixed(1) + ',' + y.toFixed(1));
+    const v = RR.verts[i]; if (v) { v.setAttribute('cx', x.toFixed(1)); v.setAttribute('cy', y.toFixed(1)); }
+  }
+  const str = pts.join(' ');
+  RR.poly.setAttribute('points', str);
+  RR.glow.setAttribute('points', str);
+  const active = Math.min(RR.RINGS - 1, Math.floor(p * RR.RINGS));
+  RR.rings.forEach((ring, i) => { ring.classList.toggle('is-done', i < active); ring.classList.toggle('is-active', i === active); });
+  RR.ticks.forEach((t, i) => { t.classList.toggle('is-done', i < active); t.classList.toggle('is-active', i === active); });
+}
+
+/* ============================================================
+   RANK SCROLLER — drives the mastery radar + readout from scroll progress.
+   Keeps updateRankUI(p) untouched and pairs it with paintRadar(p): as progress
+   climbs 0 → 1 the web grows from the Novice core out toward the Polymath rim,
+   lighting the ring for the current rank. The pin height/scroll distance is
+   unchanged, so the climb itself isn't any longer.
    ============================================================ */
 function initRankLadder() {
-  const sec   = document.getElementById('rankLadder');
-  const cubes = Array.from(document.querySelectorAll('.rank-cube-mini[data-rank-index]'))
-    .sort((a, b) => Number(a.dataset.rankIndex) - Number(b.dataset.rankIndex));
+  const sec = document.getElementById('rankLadder');
   if (!sec) return;
+  buildRadar();
 
-  // No GSAP available → just show the maxed state.
-  if (!window.gsap || !window.ScrollTrigger) { updateRankUI(1); return; }
+  // No GSAP available → just show the maxed (Polymath) web.
+  if (!window.gsap || !window.ScrollTrigger) { updateRankUI(1); paintRadar(1); return; }
 
-  // Flip each cube's slot state. Guarded so re-painting the same state never
-  // re-triggers the landing transition mid-scrub.
-  function paintCubes(progress) {
-    if (!cubes.length) return;
-    const rankPos = Math.min(6.9999, Math.max(0, progress) * 7); // matches updateRankUI
-    const rankIdx = Math.floor(rankPos);
-    cubes.forEach((el, i) => {
-      const state = i < rankIdx ? 'done' : (i === rankIdx ? 'active' : 'pending');
-      if (el.getAttribute('data-state') !== state) el.setAttribute('data-state', state);
-    });
-  }
+  // ---- reduced motion: a settled mid-climb web, no scrub ----
+  if (window.__reducedMotion) { updateRankUI(0.5); paintRadar(0.5); return; }
 
-  // ---- reduced motion: only Novice settled in, no scrub, no sway ----
-  if (window.__reducedMotion) {
-    updateRankUI(0);
-    paintCubes(0);
-    return;
-  }
-
-  // ---- mobile / touch: no pin, no scrub — all 7 cubes assemble once, statically ----
+  // ---- mobile / touch: no pin, no scrub — the full web shows once ----
   if (window.matchMedia('(max-width: 768px), (pointer: coarse)').matches) {
-    updateRankUI(1);
-    paintCubes(1);
-    return;
+    updateRankUI(1); paintRadar(1); return;
   }
 
-  // ---- desktop: scrub drives both the readout and which cubes have landed ----
-  // scrub is intentionally heavy (slow, smooth catch-up) so the cubes feel
-  // unhurried even on a fast scroll — the pin height (and so total scroll
-  // time) is untouched, so the climb overall still moves at a normal pace.
+  // ---- desktop: heavy scrub (slow, smooth catch-up) drives readout + web growth ----
   gsap.to({}, {
     scrollTrigger: {
       trigger: sec,
@@ -2296,15 +2266,15 @@ function initRankLadder() {
       scrub: 1.1,
       onUpdate: (self) => {
         const p = self.progress;
-        updateRankUI(p);     // unchanged readout contract
-        paintCubes(p);
+        updateRankUI(p);   // unchanged readout contract
+        paintRadar(p);
       },
     },
   });
 
   // initial paint
   updateRankUI(0);
-  paintCubes(0);
+  paintRadar(0);
 
   // re-measure once fonts/layout settle (matches old behaviour)
   setTimeout(() => ScrollTrigger.refresh(), 300);
@@ -2344,12 +2314,12 @@ function initRankLadder() {
     } else {
       function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }
       requestAnimationFrame(raf);
-      updateRankUI(1);
+      updateRankUI(1); buildRadar(); paintRadar(1);
     }
   } else {
-    // Reduced motion: native scroll, static ladder showing the full climb
+    // Reduced motion: native scroll, static web showing the full climb
     window.addEventListener('scroll', () => { window.__scrollY = window.scrollY; updateHeroProgress(); updateScrollProg(); }, { passive: true });
-    updateRankUI(1);
+    updateRankUI(1); buildRadar(); paintRadar(1);
   }
   window.addEventListener('resize', updateHeroProgress);
   updateHeroProgress();
