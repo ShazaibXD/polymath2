@@ -1450,7 +1450,7 @@ footer {
             <div class="rank-head">
               <span class="section-label">The shape of mastery</span>
               <h2 class="rank-heading">A spike is not a shape.</h2>
-              <p class="rank-sub">Eight domains, one skyline. Train any skill and that bar climbs. But your rank rises only as far as the whole field rises — not the height of your tallest tower.</p>
+              <p class="rank-sub">Any skill you track, a bar rises. Your rank is how high the whole skyline stands — not the height of your tallest tower.</p>
             </div>
 
             <!-- HERO: 8 domain bars. Code spikes first, trembles alone, then the seven
@@ -2178,7 +2178,7 @@ function buildBars() {
     return e;
   };
 
-  const svg = mk('svg', { viewBox: '0 0 488 300' });
+  const svg = mk('svg', { viewBox: '0 0 580 300' });
 
   // gradient: dark base → lime top (vertical, used by all fills)
   const defs = mk('defs', {});
@@ -2187,6 +2187,11 @@ function buildBars() {
   grad.appendChild(mk('stop', { offset: '50%',  'stop-color': '#1e4d07', 'stop-opacity': '1' }));
   grad.appendChild(mk('stop', { offset: '100%', 'stop-color': '#a3e635', 'stop-opacity': '1' }));
   defs.appendChild(grad);
+  // right-edge fade: masks ghost bars progressively into the background
+  const fadeGrad = mk('linearGradient', { id: 'rbFade', x1: '0', y1: '0', x2: '1', y2: '0' });
+  fadeGrad.appendChild(mk('stop', { offset: '0%',   'stop-color': '#06080C', 'stop-opacity': '0' }));
+  fadeGrad.appendChild(mk('stop', { offset: '100%', 'stop-color': '#06080C', 'stop-opacity': '1' }));
+  defs.appendChild(fadeGrad);
   svg.appendChild(defs);
 
   // background tracks (full-height dark columns — always visible, show the grid)
@@ -2238,6 +2243,19 @@ function buildBars() {
     svg.appendChild(lbl);
     RB.labels.push(lbl);
   }
+
+  // ghost bars — 3 faint columns past the real 8, suggesting infinite more domains
+  const ghostH = [RB.MAX_H * 0.44, RB.MAX_H * 0.67, RB.MAX_H * 0.28];
+  for (let g = 0; g < 3; g++) {
+    const x = RB.LEFT + (RB.COLS + g) * RB.COL_W;
+    const h = ghostH[g];
+    svg.appendChild(mk('rect', { x, y: RB.BASE_Y - h, width: RB.BAR_W, height: h, rx: 4,
+      fill: 'rgba(42,48,69,0.18)', stroke: 'rgba(163,230,53,0.07)', 'stroke-width': '1.5' }));
+  }
+
+  // fade overlay — wipes ghost bars into the background (infinite suggestion)
+  const fadeX = RB.LEFT + (RB.COLS - 0.2) * RB.COL_W;
+  svg.appendChild(mk('rect', { x: fadeX.toFixed(1), y: 0, width: (580 - fadeX).toFixed(1), height: 300, fill: 'url(#rbFade)' }));
 
   host.appendChild(svg);
   RB.built = true;
