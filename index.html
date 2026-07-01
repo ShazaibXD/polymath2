@@ -47,8 +47,10 @@
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-html { scroll-behavior: smooth; }
-html, body { height: 100%; }
+/* scroll-behavior: smooth is intentionally absent — Lenis owns smooth scroll;
+   native smooth on top causes double-smoothing and Chrome stutter */
+html { scroll-behavior: auto; overscroll-behavior: none; }
+html, body { height: 100%; overscroll-behavior: none; }
 
 /* visible keyboard focus — accessibility floor */
 :focus-visible {
@@ -84,13 +86,15 @@ body::before {
   mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
 }
 
-/* GLOW ORBS — will-change for GPU compositing */
+/* GLOW ORBS — translate3d forces GPU layer even with filter; blur capped at 80px
+   to stay on Chrome's fast compositor path (120px pushed it to software) */
 .orb {
-  position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0;
-  will-change: transform;
+  position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;
+  will-change: transform, filter;
+  transform: translate3d(0, 0, 0);
 }
 .orb-1 { width: 500px; height: 500px; background: rgba(255,255,255,0.03); top: -180px; left: -180px; }
-.orb-2 { width: 420px; height: 420px; background: rgba(163,230,53,0.04); bottom: -130px; right: -80px; }
+.orb-2 { width: 420px; height: 420px; background: rgba(163,230,53,0.05); bottom: -130px; right: -80px; }
 .orb-3 { display: none; }
 
 /* PAGE WRAPPER */
@@ -2316,25 +2320,25 @@ function startAmbient() {
   for (let i = 0; i < RR.AXES; i++) {
     const amp = 2.4 + (i % 3) * 0.5;
     RR.breath[i] = -amp;
-    RR.ambient.push(G.to(RR.breath, { [i]: amp, duration: 3.2 + i * 0.18, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
+    RR.ambient.push(G.to(RR.breath, { [i]: amp, duration: 4.4 + i * 0.22, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
   }
   const beat = G.timeline({ repeat: -1 });
-  beat.to(RR.coreGlow, { attr: { opacity: 0.46 }, duration: 0.16, ease: 'power2.out' })
-      .to(RR.coreGlow, { attr: { opacity: 0.3 },  duration: 0.2 })
-      .to(RR.coreGlow, { attr: { opacity: 0.42 }, duration: 0.14, ease: 'power2.out' })
-      .to(RR.coreGlow, { attr: { opacity: 0.28 }, duration: 1.0 });
+  beat.to(RR.coreGlow, { attr: { opacity: 0.46 }, duration: 0.22, ease: 'power2.out' })
+      .to(RR.coreGlow, { attr: { opacity: 0.3 },  duration: 0.28 })
+      .to(RR.coreGlow, { attr: { opacity: 0.42 }, duration: 0.2, ease: 'power2.out' })
+      .to(RR.coreGlow, { attr: { opacity: 0.28 }, duration: 1.4 });
   RR.ambient.push(beat);
 }
 
 /* ---- Act 3: a climb-ring sweeps Novice→Polymath, lighting each rank + ticking the readout ---- */
 function runClimb() {
   const G = window.gsap;
-  const DUR = 3.4;
+  const DUR = 4.8;
   const tl = G.timeline();
   RR.climbTl = tl;
   G.set(RR.climbRing, { attr: { r: 0 }, opacity: 0.5 });
   tl.to(RR.climbRing, { attr: { r: RR.R }, duration: DUR, ease: 'none' }, 0);
-  tl.to(RR.climbRing, { opacity: 0, duration: 0.7, ease: 'power1.in' }, DUR - 0.7);
+  tl.to(RR.climbRing, { opacity: 0, duration: 1.0, ease: 'power1.in' }, DUR - 1.0);
   for (let k = 0; k < RR.RINGS; k++) {
     const at = ((k + 1) / RR.RINGS) * DUR;
     tl.call(igniteRing, [k], at);
@@ -2342,13 +2346,13 @@ function runClimb() {
   }
   // after the meaningful climb: two slow shimmer sweeps, then rest on the full web
   tl.call(() => {
-    const sh = G.timeline({ repeat: 1, repeatDelay: 2.6 });
+    const sh = G.timeline({ repeat: 1, repeatDelay: 3.2 });
     sh.set(RR.climbRing, { attr: { r: 0 }, opacity: 0.3 });
-    sh.to(RR.climbRing, { attr: { r: RR.R }, duration: 4.4, ease: 'none' }, 0);
-    sh.to(RR.climbRing, { opacity: 0, duration: 0.9, ease: 'power1.in' }, 4.4 - 0.9);
-    for (let k = 0; k < RR.RINGS; k++) sh.call(flickerRing, [k], ((k + 1) / RR.RINGS) * 4.4);
+    sh.to(RR.climbRing, { attr: { r: RR.R }, duration: 6.0, ease: 'none' }, 0);
+    sh.to(RR.climbRing, { opacity: 0, duration: 1.2, ease: 'power1.in' }, 6.0 - 1.2);
+    for (let k = 0; k < RR.RINGS; k++) sh.call(flickerRing, [k], ((k + 1) / RR.RINGS) * 6.0);
     RR.ambient.push(sh);
-  }, null, DUR + 0.6);
+  }, null, DUR + 0.8);
 }
 
 /* ---- the show: Assemble → Prove → Breathe ---- */
@@ -2370,8 +2374,8 @@ function runRadarShow() {
   RR.tl = tl;
 
   // ---- ACT 1 — assemble: sparks streak in along each spoke ----
-  G.to(RR.coreGlow, { attr: { opacity: 0.22 }, duration: 0.5, ease: 'power2.out' });
-  RR.rings.forEach((ring, i) => tl.fromTo(ring, { attr: { 'stroke-opacity': 0 } }, { attr: { 'stroke-opacity': 0.07 }, duration: 0.4, ease: 'power2.out' }, 0.03 * i));
+  G.to(RR.coreGlow, { attr: { opacity: 0.22 }, duration: 0.8, ease: 'power2.out' });
+  RR.rings.forEach((ring, i) => tl.fromTo(ring, { attr: { 'stroke-opacity': 0 } }, { attr: { 'stroke-opacity': 0.07 }, duration: 0.55, ease: 'power2.out' }, 0.04 * i));
   for (let i = 0; i < RR.AXES; i++) {
     const [sx, sy] = rrPoint(i, RR.R + 16);
     const [ex, ey] = rrPoint(i, RR.MINR);
@@ -2384,7 +2388,7 @@ function runRadarShow() {
     comet.setAttribute('x2', sx.toFixed(1)); comet.setAttribute('y2', sy.toFixed(1));
     RR.sparkLayer.appendChild(comet); RR.sparkLayer.appendChild(spark);
     const pos = { x: sx, y: sy };
-    tl.to(pos, { x: ex, y: ey, duration: 0.7, ease: 'power3.inOut', onUpdate: () => {
+    tl.to(pos, { x: ex, y: ey, duration: 1.0, ease: 'power2.inOut', onUpdate: () => {
       spark.setAttribute('cx', pos.x.toFixed(1)); spark.setAttribute('cy', pos.y.toFixed(1));
       comet.setAttribute('x2', pos.x.toFixed(1)); comet.setAttribute('y2', pos.y.toFixed(1));
       const dx = pos.x - sx, dy = pos.y - sy, len = Math.hypot(dx, dy) || 1; // tail trails ~22px behind
@@ -2393,27 +2397,27 @@ function runRadarShow() {
     }, onComplete: () => {
       spark.remove(); comet.remove();
       G.set(RR.verts[i], { opacity: 1 });
-      G.fromTo(RR.verts[i], { attr: { r: 0 } }, { attr: { r: 3.5 }, duration: 0.26, ease: 'back.out(2.4)' });
-    } }, 0.15 + i * 0.03);
+      G.fromTo(RR.verts[i], { attr: { r: 0 } }, { attr: { r: 3.5 }, duration: 0.4, ease: 'back.out(1.6)' });
+    } }, 0.2 + i * 0.04);
   }
-  RR.domains.forEach((d, i) => tl.to(d, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 0.55 + i * 0.03));
+  RR.domains.forEach((d, i) => tl.to(d, { opacity: 1, duration: 0.65, ease: 'power2.out' }, 0.8 + i * 0.04));
 
   // ---- ACT 2 — prove: one spoke spikes, holds, then collapses as the seven rise into balance ----
-  tl.set([RR.poly, RR.glow], { opacity: 1 }, 1.0);
-  tl.to(RR.r, { [RR.SPIKE_AXIS]: RR.R, duration: 0.42, ease: 'power3.out' }, 1.0);                       // the spike shoots up
-  tl.to(RR.r, { [RR.SPIKE_AXIS]: RR.R - 5, duration: 0.09, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 1.5); // tremor → reads as intentional
+  tl.set([RR.poly, RR.glow], { opacity: 1 }, 1.5);
+  tl.to(RR.r, { [RR.SPIKE_AXIS]: RR.R, duration: 0.6, ease: 'power2.out' }, 1.5);                        // the spike shoots up
+  tl.to(RR.r, { [RR.SPIKE_AXIS]: RR.R - 5, duration: 0.12, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 2.2); // tremor → reads as intentional
   const tg = masteryTargets();
   for (let i = 0; i < RR.AXES; i++) {
     if (i === RR.SPIKE_AXIS) {
-      tl.to(RR.r, { [i]: tg[i], duration: 0.9, ease: 'power3.out' }, 2.05);                              // spike eases DOWN, settles LAST
+      tl.to(RR.r, { [i]: tg[i], duration: 1.2, ease: 'power2.out' }, 2.9);                               // spike eases DOWN, settles LAST
     } else {
-      tl.to(RR.r, { [i]: tg[i], duration: 0.7, ease: 'back.out(1.25)' }, 1.95 + i * 0.03);               // the seven RISE, out of phase
+      tl.to(RR.r, { [i]: tg[i], duration: 1.0, ease: 'back.out(0.8)' }, 2.75 + i * 0.04);               // the seven RISE, out of phase
     }
   }
-  tl.fromTo(RR.pulse, { attr: { r: 110 }, opacity: 0.55 }, { attr: { r: 250 }, opacity: 0, duration: 0.6, ease: 'power2.out' }, 2.9); // balance pulse
+  tl.fromTo(RR.pulse, { attr: { r: 110 }, opacity: 0.55 }, { attr: { r: 250 }, opacity: 0, duration: 0.8, ease: 'power2.out' }, 4.2); // balance pulse
 
   // ---- hand off to ambient breath + the climb ----
-  tl.call(() => { startAmbient(); runClimb(); }, null, 3.1);
+  tl.call(() => { startAmbient(); runClimb(); }, null, 4.5);
 }
 
 /* ============================================================
@@ -2467,8 +2471,8 @@ function initRankRadar() {
 
   if (!window.__reducedMotion && window.Lenis) {
     const lenis = new Lenis({
-      lerp: 0.13,            // snappy, 1:1-ish with input — not floaty
-      wheelMultiplier: 1,
+      lerp: 0.085,           // more inertia → silky glide (was 0.13 = too snappy on Chrome)
+      wheelMultiplier: 0.85, // calm per-tick distance so Chrome doesn't stutter under load
       smoothWheel: true,
       smoothTouch: false,
     });
