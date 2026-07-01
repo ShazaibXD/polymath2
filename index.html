@@ -378,16 +378,17 @@ nav {
 .rank-radar svg { width: 100%; height: auto; overflow: visible; display: block; }
 
 /* bar tracks (background columns — always visible) */
-.rb-bar-bg  { fill: rgba(13,17,26,0.75); }
-/* bar fills (animated, gradient from dark base → lime top) */
-.rb-bar-fill { } /* fill set via SVG gradient attr */
+.rb-bar-bg  { fill: rgba(7,10,16,0.92); }
 /* rank threshold lines (subtle dashes across all columns at each rank boundary) */
-.rb-threshold { stroke: rgba(163,230,53,0.13); stroke-width: 1; stroke-dasharray: 3 5; }
+.rb-threshold { stroke: rgba(163,230,53,0.22); stroke-width: 1; stroke-dasharray: 3 5; }
 /* baseline */
-.rb-baseline  { stroke: rgba(255,255,255,0.07); stroke-width: 1; }
-/* glowing top edge of each bar — the "laser line" at its crest */
-.rb-topedge   { stroke: var(--green); stroke-width: 2.5; stroke-linecap: round;
-                 filter: drop-shadow(0 0 5px rgba(163,230,53,0.75)); }
+.rb-baseline  { stroke: rgba(255,255,255,0.08); stroke-width: 1; }
+/* glowing top edge — "laser line" at each bar's crest */
+.rb-topedge   { stroke: var(--green); stroke-width: 3; stroke-linecap: round;
+                 filter: drop-shadow(0 0 7px rgba(163,230,53,0.95)) drop-shadow(0 0 18px rgba(163,230,53,0.45)); }
+/* spike column crest — even brighter */
+.rb-topedge-spike { stroke: #d0f55a; stroke-width: 3.5; stroke-linecap: round;
+                 filter: drop-shadow(0 0 9px rgba(208,245,90,1)) drop-shadow(0 0 22px rgba(163,230,53,0.6)); }
 /* domain labels below the baseline */
 .rb-label     { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.07em;
                  fill: var(--muted); text-transform: uppercase; }
@@ -2149,7 +2150,7 @@ function updateRankUI(p) {
 const RB = {
   COLS: 8, ROWS: 7,
   DOMAINS: ['Writing', 'Speaking', 'Design', 'Code', 'Math', 'Music', 'Health', 'Strategy'],
-  W: [0.97, 0.86, 1.0, 0.9, 0.83, 0.95, 0.88, 0.99],
+  W: [0.79, 0.61, 0.95, 0.83, 0.55, 0.90, 0.72, 0.92],
   SPIKE_COL: 3, // Code
   // Layout (SVG viewBox 0 0 488 300)
   LEFT: 4, COL_W: 60, BAR_W: 44, MAX_H: 220, BASE_Y: 252, LABEL_Y: 282,
@@ -2180,14 +2181,28 @@ function buildBars() {
 
   const svg = mk('svg', { viewBox: '0 0 580 300' });
 
-  // gradient: dark base → lime top (vertical, used by all fills)
   const defs = mk('defs', {});
+  // standard bar gradient: near-black base → deep green mid → lime crest
   const grad = mk('linearGradient', { id: 'rbGrad', x1: '0', y1: '1', x2: '0', y2: '0' });
-  grad.appendChild(mk('stop', { offset: '0%',   'stop-color': '#0d111a', 'stop-opacity': '1' }));
-  grad.appendChild(mk('stop', { offset: '50%',  'stop-color': '#1e4d07', 'stop-opacity': '1' }));
+  grad.appendChild(mk('stop', { offset: '0%',   'stop-color': '#060810', 'stop-opacity': '1' }));
+  grad.appendChild(mk('stop', { offset: '40%',  'stop-color': '#0d3205', 'stop-opacity': '1' }));
+  grad.appendChild(mk('stop', { offset: '78%',  'stop-color': '#4a8a10', 'stop-opacity': '1' }));
   grad.appendChild(mk('stop', { offset: '100%', 'stop-color': '#a3e635', 'stop-opacity': '1' }));
   defs.appendChild(grad);
-  // right-edge fade: masks ghost bars progressively into the background
+  // spike bar gradient: same shape but crest is brighter/warmer
+  const gradSpike = mk('linearGradient', { id: 'rbGradSpike', x1: '0', y1: '1', x2: '0', y2: '0' });
+  gradSpike.appendChild(mk('stop', { offset: '0%',   'stop-color': '#060810', 'stop-opacity': '1' }));
+  gradSpike.appendChild(mk('stop', { offset: '40%',  'stop-color': '#103d06', 'stop-opacity': '1' }));
+  gradSpike.appendChild(mk('stop', { offset: '78%',  'stop-color': '#5ea512', 'stop-opacity': '1' }));
+  gradSpike.appendChild(mk('stop', { offset: '100%', 'stop-color': '#d0f55a', 'stop-opacity': '1' }));
+  defs.appendChild(gradSpike);
+  // ghost bar gradient: same shape, very faint — looks like real bars fading into the distance
+  const gradGhost = mk('linearGradient', { id: 'rbGradGhost', x1: '0', y1: '1', x2: '0', y2: '0' });
+  gradGhost.appendChild(mk('stop', { offset: '0%',   'stop-color': '#060810', 'stop-opacity': '0.5' }));
+  gradGhost.appendChild(mk('stop', { offset: '55%',  'stop-color': '#0d3205', 'stop-opacity': '0.3' }));
+  gradGhost.appendChild(mk('stop', { offset: '100%', 'stop-color': '#a3e635', 'stop-opacity': '0.18' }));
+  defs.appendChild(gradGhost);
+  // right-edge fade: dissolves ghost bars into the background
   const fadeGrad = mk('linearGradient', { id: 'rbFade', x1: '0', y1: '0', x2: '1', y2: '0' });
   fadeGrad.appendChild(mk('stop', { offset: '0%',   'stop-color': '#06080C', 'stop-opacity': '0' }));
   fadeGrad.appendChild(mk('stop', { offset: '100%', 'stop-color': '#06080C', 'stop-opacity': '1' }));
@@ -2212,19 +2227,22 @@ function buildBars() {
   }
 
   // bar fills (height 0, grow upward via renderBars())
+  // spike column uses a brighter gradient to stay visually distinct after settling
   RB.fills = []; RB.barH = new Array(RB.COLS).fill(0);
   for (let c = 0; c < RB.COLS; c++) {
     const x = RB.LEFT + c * RB.COL_W;
-    const fill = mk('rect', { x, y: RB.BASE_Y, width: RB.BAR_W, height: 0, rx: 4, fill: 'url(#rbGrad)' });
+    const fillId = c === RB.SPIKE_COL ? 'url(#rbGradSpike)' : 'url(#rbGrad)';
+    const fill = mk('rect', { x, y: RB.BASE_Y, width: RB.BAR_W, height: 0, rx: 4, fill: fillId });
     svg.appendChild(fill);
     RB.fills.push(fill);
   }
 
-  // glowing top-edge lines (updated by renderBars() to sit at bar crest)
+  // glowing top-edge lines — spike column uses a stronger class
   RB.tops = [];
   for (let c = 0; c < RB.COLS; c++) {
     const x = RB.LEFT + c * RB.COL_W;
-    const top = mk('line', { x1: x + 3, y1: RB.BASE_Y, x2: x + RB.BAR_W - 3, y2: RB.BASE_Y }, 'rb-topedge');
+    const cls = c === RB.SPIKE_COL ? 'rb-topedge-spike' : 'rb-topedge';
+    const top = mk('line', { x1: x + 3, y1: RB.BASE_Y, x2: x + RB.BAR_W - 3, y2: RB.BASE_Y }, cls);
     top.style.opacity = '0';
     svg.appendChild(top);
     RB.tops.push(top);
@@ -2245,16 +2263,20 @@ function buildBars() {
   }
 
   // ghost bars — 3 faint columns past the real 8, suggesting infinite more domains
-  const ghostH = [RB.MAX_H * 0.44, RB.MAX_H * 0.67, RB.MAX_H * 0.28];
+  const ghostH = [RB.MAX_H * 0.68, RB.MAX_H * 0.44, RB.MAX_H * 0.82];
   for (let g = 0; g < 3; g++) {
     const x = RB.LEFT + (RB.COLS + g) * RB.COL_W;
     const h = ghostH[g];
-    svg.appendChild(mk('rect', { x, y: RB.BASE_Y - h, width: RB.BAR_W, height: h, rx: 4,
-      fill: 'rgba(42,48,69,0.18)', stroke: 'rgba(163,230,53,0.07)', 'stroke-width': '1.5' }));
+    svg.appendChild(mk('rect', { x, y: RB.BASE_Y - h, width: RB.BAR_W, height: h, rx: 4, fill: 'url(#rbGradGhost)' }));
+    svg.appendChild(mk('line', {
+      x1: x + 3, y1: (RB.BASE_Y - h).toFixed(1),
+      x2: x + RB.BAR_W - 3, y2: (RB.BASE_Y - h).toFixed(1),
+      stroke: 'rgba(163,230,53,0.18)', 'stroke-width': '1.5', 'stroke-linecap': 'round'
+    }));
   }
 
   // fade overlay — wipes ghost bars into the background (infinite suggestion)
-  const fadeX = RB.LEFT + (RB.COLS - 0.2) * RB.COL_W;
+  const fadeX = RB.LEFT + (RB.COLS + 0.1) * RB.COL_W;
   svg.appendChild(mk('rect', { x: fadeX.toFixed(1), y: 0, width: (580 - fadeX).toFixed(1), height: 300, fill: 'url(#rbFade)' }));
 
   host.appendChild(svg);
