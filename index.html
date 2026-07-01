@@ -371,43 +371,26 @@ nav {
 .rank-sub { font-family: 'Space Mono', monospace; font-size: var(--step-0); line-height: 1.9; color: var(--muted); max-width: 460px; margin: 0 auto; }
 .rank-inner--hero .rank-sub { margin-bottom: 0; }
 
-/* ---------- THE HERO: the mastery radar — the dominant visual of the section ----------
-   8 domains as spokes, 7 rank rings (Novice core → Polymath rim). buildRadar() lays the
-   SVG out once; the "Assemble, Prove, Breathe" show (runRadarShow) auto-plays on view.
-   Breadth across domains — not a single spike — is what reaches the rim. */
-/* sized off BOTH width and viewport height so the square + heading + readout fit on one screen */
-.rank-radar { position: relative; width: min(clamp(300px, 38vw, 460px), 40vh); margin: 0 auto; aspect-ratio: 1 / 1; }
-.rank-radar svg { width: 100%; height: 100%; overflow: visible; display: block; }
+/* ---------- THE HERO: domain bar chart — 8 vertical columns, one per skill domain ----------
+   Each column grows from 0 → target height. Code spikes first (Act 1), trembles alone,
+   then settles as the seven others rise (Act 2). "A spike is not a shape" — made literal. */
+.rank-radar { position: relative; width: min(clamp(380px, 68vw, 660px), 96vw); margin: 0 auto; }
+.rank-radar svg { width: 100%; height: auto; overflow: visible; display: block; }
 
-.rr-axis  { stroke: rgba(255,255,255,0.05); stroke-width: 1; }
-/* rings are green from the start; "lighting" a rank = JS raising its stroke-opacity */
-.rr-ring  { fill: none; stroke: var(--green); stroke-opacity: 0.07; stroke-width: 1; }
-
-/* soft core glow (radial-gradient circle) — only its OPACITY is tweened (cardiac beat);
-   the softness is baked into the gradient so there is no animated blur/filter */
-.rr-coreglow { pointer-events: none; }
-
-/* the Act-3 climb sweep + the Act-2 ignition pulse */
-.rr-climbring, .rr-pulse { fill: none; stroke: var(--green); }
-.rr-climbring { stroke-width: 1.4; opacity: 0; }
-.rr-pulse     { stroke-width: 2;   opacity: 0; }
-
-/* Act-1 sparks that streak inward along each spoke */
-.rr-spark { fill: var(--green); }
-.rr-comet { stroke: var(--green); stroke-width: 2; stroke-linecap: round; }
-
-/* faint fill under-layer + crisp web outline (points written by render() each frame) */
-.rr-poly-glow { fill: rgba(163,230,53,0.07); stroke: none; }
-.rr-poly {
-  fill: rgba(163,230,53,0.10); stroke: var(--green); stroke-width: 2;
-  stroke-linejoin: round;
-  filter: drop-shadow(0 0 12px rgba(163,230,53,0.35));
-}
-.rr-vert { fill: var(--green); filter: drop-shadow(0 0 6px rgba(163,230,53,0.6)); }
-.rr-core { fill: var(--green); }
-
-.rr-domain { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .04em; fill: var(--muted); }
-.rr-tick   { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .1em; fill: var(--green); opacity: 0.22; }
+/* bar tracks (background columns — always visible) */
+.rb-bar-bg  { fill: rgba(13,17,26,0.75); }
+/* bar fills (animated, gradient from dark base → lime top) */
+.rb-bar-fill { } /* fill set via SVG gradient attr */
+/* rank threshold lines (subtle dashes across all columns at each rank boundary) */
+.rb-threshold { stroke: rgba(163,230,53,0.13); stroke-width: 1; stroke-dasharray: 3 5; }
+/* baseline */
+.rb-baseline  { stroke: rgba(255,255,255,0.07); stroke-width: 1; }
+/* glowing top edge of each bar — the "laser line" at its crest */
+.rb-topedge   { stroke: var(--green); stroke-width: 2.5; stroke-linecap: round;
+                 filter: drop-shadow(0 0 5px rgba(163,230,53,0.75)); }
+/* domain labels below the baseline */
+.rb-label     { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.07em;
+                 fill: var(--muted); text-transform: uppercase; }
 
 /* ---------- readout + list: compact strip beneath the hero ---------- */
 .rank-stage { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; max-width: 760px; margin: 0 auto; }
@@ -440,18 +423,17 @@ nav {
 .rank-row.active .rank-row-name { color: var(--green); }
 .rank-row-xp { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); font-variant-numeric: tabular-nums; }
 
-/* ---------- reduced motion: JS paints the final balanced web statically; kill any sweeps ---------- */
+/* ---------- reduced motion: paint final bars statically ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .rr-climbring, .rr-pulse, .rr-spark, .rr-comet { display: none !important; }
+  .rb-topedge { filter: none !important; }
 }
 
-/* ---------- mobile/touch: no sticky pin — the full web shows once, statically ---------- */
+/* ---------- mobile/touch: bar chart narrows, readout stacks ---------- */
 @media (max-width: 768px), (pointer: coarse) {
   .rank-section { height: auto; }
   .rank-pin { position: static; height: auto; padding: var(--sp-5) 20px; }
-  .rank-radar { max-width: 320px; }
-  .rr-domain { font-size: 9px; }
-  .rr-tick { display: none; }
+  .rank-radar { max-width: 100%; }
+  .rb-label { font-size: 7.5px; }
   .rank-stage { grid-template-columns: 1fr; max-width: 420px; }
 }
 
@@ -1468,12 +1450,11 @@ footer {
             <div class="rank-head">
               <span class="section-label">The shape of mastery</span>
               <h2 class="rank-heading">A spike is not a shape.</h2>
-              <p class="rank-sub">Train any of the eight domains and your web pushes outward — Novice at the core, Polymath at the rim. Your rank is how far the whole shape reaches, never the length of your sharpest spoke.</p>
+              <p class="rank-sub">Eight domains, one skyline. Train any skill and that bar climbs. But your rank rises only as far as the whole field rises — not the height of your tallest tower.</p>
             </div>
 
-            <!-- HERO: the mastery radar. 8 real domains as spokes, 7 rank rings from
-                 Novice (core) to Polymath (rim). The "Assemble, Prove, Breathe" show
-                 (runRadarShow) auto-plays the moment this section scrolls into view. -->
+            <!-- HERO: 8 domain bars. Code spikes first, trembles alone, then the seven
+                 others rise — "Spike → Settle → Skyline". Auto-plays on scroll-into-view. -->
             <div class="rank-radar" id="rankRadar" aria-hidden="true"></div>
 
             <!-- readout + list — these ids MUST stay so updateRankUI() keeps working -->
@@ -2157,143 +2138,133 @@ function updateRankUI(p) {
 }
 
 /* ============================================================
-   MASTERY RADAR — the section's hero visual.
-   8 real domains as spokes, 7 rank rings (Novice core → Polymath rim).
-   buildRadar() lays the SVG out once. State lives in RR.r[] (target radius
-   per axis) + RR.breath[] (additive idle drift); renderRadar() is the single
-   per-frame DOM write. The animation is authored in runRadarShow() below.
+   DOMAIN BAR CHART — the section's hero visual.
+   8 vertical columns (one per skill domain), 7 rank-threshold lines.
+   RB.barH[] = current bar heights (tweened by GSAP each frame).
+   renderBars() is the single per-frame DOM write.
+   Story: Code spikes first (Act 1), trembles alone, then settles
+   as the other seven rise into a full skyline (Act 2).
+   "A spike is not a shape" — made literal.
    ============================================================ */
-const RR = {
-  C: 300, R: 232, AXES: 8, RINGS: 7,
+const RB = {
+  COLS: 8, ROWS: 7,
   DOMAINS: ['Writing', 'Speaking', 'Design', 'Code', 'Math', 'Music', 'Health', 'Strategy'],
-  W: [0.97, 0.86, 1.0, 0.9, 0.83, 0.95, 0.88, 0.99], // per-domain reach → a balanced (not circular) web
-  MINR: 6, SPIKE_AXIS: 3, // "Code" is the lone spoke that spikes in Act 2
+  W: [0.97, 0.86, 1.0, 0.9, 0.83, 0.95, 0.88, 0.99],
+  SPIKE_COL: 3, // Code
+  // Layout (SVG viewBox 0 0 488 300)
+  LEFT: 4, COL_W: 60, BAR_W: 44, MAX_H: 220, BASE_Y: 252, LABEL_Y: 282,
   built: false, started: false,
-  poly: null, glow: null, coreGlow: null, climbRing: null, pulse: null, sparkLayer: null,
-  verts: [], rings: [], ticks: [], domains: [],
-  r: [], breath: [], xp: { v: 0 }, ambient: [],
+  fills: [], tops: [], labels: [], threshLines: [],
+  barH: [], ambient: [], xp: { v: 0 },
 };
-const masteryTargets = () => RR.W.map(w => RR.R * w);
-function rrPoint(i, radius) {
-  const a = (-90 + i * (360 / RR.AXES)) * Math.PI / 180;
-  return [RR.C + radius * Math.cos(a), RR.C + radius * Math.sin(a)];
+function rbFinalH(col) { return RB.MAX_H * RB.W[col]; }
+
+function renderBars() {
+  for (let c = 0; c < RB.COLS; c++) {
+    const h = Math.max(0, Math.min(RB.MAX_H, RB.barH[c]));
+    const fill = RB.fills[c]; const top = RB.tops[c];
+    if (fill) { fill.setAttribute('height', h.toFixed(1)); fill.setAttribute('y', (RB.BASE_Y - h).toFixed(1)); }
+    if (top) { const ty = (RB.BASE_Y - h).toFixed(1); top.setAttribute('y1', ty); top.setAttribute('y2', ty); top.style.opacity = h > 3 ? '1' : '0'; }
+  }
 }
-function buildRadar() {
+function buildBars() {
   const host = document.getElementById('rankRadar');
-  if (!host || RR.built) return;
+  if (!host || RB.built) return;
   const NS = 'http://www.w3.org/2000/svg';
-  const mk = (t, attrs, cls) => {
+  const mk = (t, a, cls) => {
     const e = document.createElementNS(NS, t);
     if (cls) e.setAttribute('class', cls);
-    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    for (const k in a) e.setAttribute(k, a[k]);
     return e;
   };
-  const svg = mk('svg', { viewBox: '0 0 600 600' });
 
-  // defs: soft core-glow gradient (softness baked into the stops — no animated filter)
+  const svg = mk('svg', { viewBox: '0 0 488 300' });
+
+  // gradient: dark base → lime top (vertical, used by all fills)
   const defs = mk('defs', {});
-  const grad = mk('radialGradient', { id: 'rrCoreGlow', cx: '50%', cy: '50%', r: '50%' });
-  grad.appendChild(mk('stop', { offset: '0%',   'stop-color': '#a3e635', 'stop-opacity': '0.9' }));
-  grad.appendChild(mk('stop', { offset: '45%',  'stop-color': '#a3e635', 'stop-opacity': '0.22' }));
-  grad.appendChild(mk('stop', { offset: '100%', 'stop-color': '#a3e635', 'stop-opacity': '0' }));
-  defs.appendChild(grad); svg.appendChild(defs);
+  const grad = mk('linearGradient', { id: 'rbGrad', x1: '0', y1: '1', x2: '0', y2: '0' });
+  grad.appendChild(mk('stop', { offset: '0%',   'stop-color': '#0d111a', 'stop-opacity': '1' }));
+  grad.appendChild(mk('stop', { offset: '50%',  'stop-color': '#1e4d07', 'stop-opacity': '1' }));
+  grad.appendChild(mk('stop', { offset: '100%', 'stop-color': '#a3e635', 'stop-opacity': '1' }));
+  defs.appendChild(grad);
+  svg.appendChild(defs);
 
-  // core glow (behind everything) — only its opacity is tweened (cardiac beat)
-  RR.coreGlow = mk('circle', { cx: RR.C, cy: RR.C, r: 150, fill: 'url(#rrCoreGlow)', opacity: 0 }, 'rr-coreglow');
-  svg.appendChild(RR.coreGlow);
+  // background tracks (full-height dark columns — always visible, show the grid)
+  for (let c = 0; c < RB.COLS; c++) {
+    const x = RB.LEFT + c * RB.COL_W;
+    svg.appendChild(mk('rect', { x, y: RB.BASE_Y - RB.MAX_H, width: RB.BAR_W, height: RB.MAX_H, rx: 4, fill: 'rgba(13,17,26,0.75)' }, 'rb-bar-bg'));
+  }
 
-  // rings (inner → outer = Novice → Polymath)
-  for (let r = 0; r < RR.RINGS; r++) {
-    const rad = RR.R * (r + 1) / RR.RINGS;
-    const pts = [];
-    for (let i = 0; i < RR.AXES; i++) { const [x, y] = rrPoint(i, rad); pts.push(x.toFixed(1) + ',' + y.toFixed(1)); }
-    const ring = mk('polygon', { points: pts.join(' ') }, 'rr-ring');
-    svg.appendChild(ring); RR.rings.push(ring);
+  // rank threshold lines (one per boundary between ranks, dashed across all columns)
+  RB.threshLines = [];
+  const x2end = RB.LEFT + RB.COLS * RB.COL_W - (RB.COL_W - RB.BAR_W);
+  for (let r = 1; r < 7; r++) {
+    const ty = (RB.BASE_Y - (r / 7) * RB.MAX_H).toFixed(1);
+    const line = mk('line', { x1: RB.LEFT, y1: ty, x2: x2end, y2: ty }, 'rb-threshold');
+    line.style.opacity = '0';
+    svg.appendChild(line);
+    RB.threshLines.push(line);
   }
-  // spokes
-  for (let i = 0; i < RR.AXES; i++) {
-    const [x, y] = rrPoint(i, RR.R);
-    svg.appendChild(mk('line', { x1: RR.C, y1: RR.C, x2: x.toFixed(1), y2: y.toFixed(1) }, 'rr-axis'));
-  }
-  // Act-2 ignition pulse + Act-3 climb sweep
-  RR.pulse     = mk('circle', { cx: RR.C, cy: RR.C, r: 120 }, 'rr-pulse');
-  RR.climbRing = mk('circle', { cx: RR.C, cy: RR.C, r: 0 }, 'rr-climbring');
-  svg.appendChild(RR.pulse); svg.appendChild(RR.climbRing);
 
-  // rank ticks (01..07) climbing the top spoke, one per ring
-  for (let r = 0; r < RR.RINGS; r++) {
-    const rad = RR.R * (r + 1) / RR.RINGS;
-    const t = mk('text', { x: RR.C + 8, y: (RR.C - rad + 3).toFixed(1) }, 'rr-tick');
-    t.textContent = String(r + 1).padStart(2, '0');
-    svg.appendChild(t); RR.ticks.push(t);
+  // bar fills (height 0, grow upward via renderBars())
+  RB.fills = []; RB.barH = new Array(RB.COLS).fill(0);
+  for (let c = 0; c < RB.COLS; c++) {
+    const x = RB.LEFT + c * RB.COL_W;
+    const fill = mk('rect', { x, y: RB.BASE_Y, width: RB.BAR_W, height: 0, rx: 4, fill: 'url(#rbGrad)' });
+    svg.appendChild(fill);
+    RB.fills.push(fill);
   }
-  // domain labels around the rim
-  for (let i = 0; i < RR.AXES; i++) {
-    const [x, y] = rrPoint(i, RR.R + 26);
-    const lbl = mk('text', { x: x.toFixed(1), y: (y + 4).toFixed(1) }, 'rr-domain');
-    const dx = x - RR.C;
-    lbl.setAttribute('text-anchor', Math.abs(dx) < 4 ? 'middle' : (dx > 0 ? 'start' : 'end'));
-    lbl.textContent = RR.DOMAINS[i];
-    svg.appendChild(lbl); RR.domains.push(lbl);
-  }
-  // the web: faint fill under-layer + crisp outline + per-domain vertices
-  RR.glow = mk('polygon', { points: '' }, 'rr-poly-glow');
-  RR.poly = mk('polygon', { points: '' }, 'rr-poly');
-  svg.appendChild(RR.glow); svg.appendChild(RR.poly);
-  for (let i = 0; i < RR.AXES; i++) { RR.verts.push(svg.appendChild(mk('circle', { r: 3.5, cx: RR.C, cy: RR.C }, 'rr-vert'))); }
-  svg.appendChild(mk('circle', { r: 3, cx: RR.C, cy: RR.C }, 'rr-core'));
 
-  // spark layer (Act-1 comets, created/removed per run) — on top
-  RR.sparkLayer = mk('g', {}, 'rr-sparks');
-  svg.appendChild(RR.sparkLayer);
+  // glowing top-edge lines (updated by renderBars() to sit at bar crest)
+  RB.tops = [];
+  for (let c = 0; c < RB.COLS; c++) {
+    const x = RB.LEFT + c * RB.COL_W;
+    const top = mk('line', { x1: x + 3, y1: RB.BASE_Y, x2: x + RB.BAR_W - 3, y2: RB.BASE_Y }, 'rb-topedge');
+    top.style.opacity = '0';
+    svg.appendChild(top);
+    RB.tops.push(top);
+  }
+
+  // baseline
+  svg.appendChild(mk('line', { x1: RB.LEFT, y1: RB.BASE_Y, x2: x2end, y2: RB.BASE_Y }, 'rb-baseline'));
+
+  // domain labels below baseline
+  RB.labels = [];
+  for (let c = 0; c < RB.COLS; c++) {
+    const x = (RB.LEFT + c * RB.COL_W + RB.BAR_W / 2).toFixed(1);
+    const lbl = mk('text', { x, y: RB.LABEL_Y, 'text-anchor': 'middle' }, 'rb-label');
+    lbl.textContent = RB.DOMAINS[c];
+    lbl.style.opacity = '0';
+    svg.appendChild(lbl);
+    RB.labels.push(lbl);
+  }
 
   host.appendChild(svg);
-  RR.r = new Array(RR.AXES).fill(RR.MINR);
-  RR.breath = new Array(RR.AXES).fill(0);
-  RR.built = true;
+  RB.built = true;
 }
 
-// the ONE per-frame DOM write: vertex positions + the two web polygons
-function renderRadar() {
-  if (!RR.poly) return;
-  const pts = [];
-  for (let i = 0; i < RR.AXES; i++) {
-    let eff = RR.r[i] + RR.breath[i];
-    if (eff < 4) eff = 4; else if (eff > RR.R) eff = RR.R;
-    const [x, y] = rrPoint(i, eff);
-    pts.push(x.toFixed(1) + ',' + y.toFixed(1));
-    const v = RR.verts[i]; if (v) { v.setAttribute('cx', x.toFixed(1)); v.setAttribute('cy', y.toFixed(1)); }
-  }
-  const s = pts.join(' ');
-  RR.poly.setAttribute('points', s);
-  RR.glow.setAttribute('points', s);
-}
-
-// paint the finished, fully-lit Polymath web in one shot (reduced-motion / mobile / no-gsap)
-function paintRadarFull() {
-  buildRadar();
-  RR.r = masteryTargets(); RR.breath = new Array(RR.AXES).fill(0);
-  renderRadar();
-  RR.rings.forEach(r => r.setAttribute('stroke-opacity', '0.85'));
-  RR.ticks.forEach(t => { t.style.opacity = '1'; });
-  if (RR.coreGlow) RR.coreGlow.setAttribute('opacity', '0.32');
+function paintBarsFull() {
+  buildBars();
+  RB.barH = RB.W.map(w => RB.MAX_H * w);
+  renderBars();
+  RB.tops.forEach(t => { t.style.opacity = '1'; });
+  RB.labels.forEach(l => { l.style.opacity = '1'; });
+  RB.threshLines.forEach(l => { l.style.opacity = '1'; });
   updateRankUI(1);
 }
 
-/* ---- readout sync: snap the XP card / rank list to a given rank during the climb ---- */
-function setClimbRank(k) {
-  const G = window.gsap;
-  const r = RANKS[k];
+function setBarRank(k) {
+  const G = window.gsap; const r = RANKS[k];
   const num = document.getElementById('rankXpNum');
   const now = document.getElementById('rankNow');
   const targetXp = (k === 6) ? 10000 : r.min;
   if (G) {
-    G.to(RR.xp, { v: targetXp, duration: 0.5, ease: 'power2.out', onUpdate: () => {
-      num.textContent = (k === 6 ? '10,000+ XP' : Math.round(RR.xp.v).toLocaleString() + ' XP');
+    G.to(RB.xp, { v: targetXp, duration: 0.55, ease: 'power2.out', onUpdate: () => {
+      num.textContent = (k === 6 ? '10,000+ XP' : Math.round(RB.xp.v).toLocaleString() + ' XP');
     } });
     now.textContent = r.n;
-    G.fromTo(now, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.34, ease: 'power3.out' }); // level-up flip
-    G.to(document.getElementById('rankBarFill'), { width: (k / 6 * 100) + '%', duration: 0.5, ease: 'power2.out' });
+    G.fromTo(now, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: 'power3.out' });
+    G.to(document.getElementById('rankBarFill'), { width: (k / 6 * 100) + '%', duration: 0.55, ease: 'power2.out' });
   } else {
     num.textContent = (k === 6 ? '10,000+ XP' : r.min.toLocaleString() + ' XP');
     now.textContent = r.n;
@@ -2304,162 +2275,93 @@ function setClimbRank(k) {
     row.classList.toggle('done', idx < k); row.classList.toggle('active', idx === k);
   });
 }
-function igniteRing(k) {
-  const G = window.gsap; const ring = RR.rings[k]; const tick = RR.ticks[k];
-  G.to(ring, { attr: { 'stroke-opacity': 0.85 }, duration: 0.4, ease: 'power2.out' });
-  G.fromTo(ring, { attr: { 'stroke-width': 2.4 } }, { attr: { 'stroke-width': 1.4 }, duration: 0.5, ease: 'power2.out' });
-  if (tick) G.to(tick, { opacity: 1, duration: 0.4 });
-}
-function flickerRing(k) {
-  window.gsap.fromTo(RR.rings[k], { attr: { 'stroke-opacity': 0.85 } }, { attr: { 'stroke-opacity': 1 }, duration: 0.28, yoyo: true, repeat: 1, ease: 'sine.inOut' });
-}
 
-/* ---- ambient: web breath (additive) + cardiac core glow — runs under Act 3 + the rest state ---- */
-function startAmbient() {
+function startBarAmbient() {
   const G = window.gsap;
-  for (let i = 0; i < RR.AXES; i++) {
-    const amp = 2.4 + (i % 3) * 0.5;
-    RR.breath[i] = -amp;
-    RR.ambient.push(G.to(RR.breath, { [i]: amp, duration: 4.4 + i * 0.22, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
+  for (let c = 0; c < RB.COLS; c++) {
+    const amp = 3 + (c % 3);
+    RB.ambient.push(G.to(RB.barH, { [c]: rbFinalH(c) + amp, duration: 3.8 + c * 0.2, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
   }
-  const beat = G.timeline({ repeat: -1 });
-  beat.to(RR.coreGlow, { attr: { opacity: 0.46 }, duration: 0.22, ease: 'power2.out' })
-      .to(RR.coreGlow, { attr: { opacity: 0.3 },  duration: 0.28 })
-      .to(RR.coreGlow, { attr: { opacity: 0.42 }, duration: 0.2, ease: 'power2.out' })
-      .to(RR.coreGlow, { attr: { opacity: 0.28 }, duration: 1.4 });
-  RR.ambient.push(beat);
 }
 
-/* ---- Act 3: a climb-ring sweeps Novice→Polymath, lighting each rank + ticking the readout ---- */
-function runClimb() {
-  const G = window.gsap;
-  const DUR = 4.8;
+function runBarClimb() {
+  const G = window.gsap; const DUR = 5.0;
   const tl = G.timeline();
-  RR.climbTl = tl;
-  G.set(RR.climbRing, { attr: { r: 0 }, opacity: 0.5 });
-  tl.to(RR.climbRing, { attr: { r: RR.R }, duration: DUR, ease: 'none' }, 0);
-  tl.to(RR.climbRing, { opacity: 0, duration: 1.0, ease: 'power1.in' }, DUR - 1.0);
-  for (let k = 0; k < RR.RINGS; k++) {
-    const at = ((k + 1) / RR.RINGS) * DUR;
-    tl.call(igniteRing, [k], at);
-    tl.call(setClimbRank, [k], at);
-  }
-  // after the meaningful climb: two slow shimmer sweeps, then rest on the full web
+  for (let k = 0; k < RB.ROWS; k++) tl.call(setBarRank, [k], (k / RB.ROWS) * DUR);
   tl.call(() => {
-    const sh = G.timeline({ repeat: 1, repeatDelay: 3.2 });
-    sh.set(RR.climbRing, { attr: { r: 0 }, opacity: 0.3 });
-    sh.to(RR.climbRing, { attr: { r: RR.R }, duration: 6.0, ease: 'none' }, 0);
-    sh.to(RR.climbRing, { opacity: 0, duration: 1.2, ease: 'power1.in' }, 6.0 - 1.2);
-    for (let k = 0; k < RR.RINGS; k++) sh.call(flickerRing, [k], ((k + 1) / RR.RINGS) * 6.0);
-    RR.ambient.push(sh);
-  }, null, DUR + 0.8);
+    const loop = G.timeline({ repeat: -1, repeatDelay: 3.5 });
+    for (let k = 0; k < RB.ROWS; k++) loop.call(setBarRank, [k], (k / RB.ROWS) * 6.5);
+    RB.ambient.push(loop);
+  }, null, DUR + 1.2);
 }
 
-/* ---- the show: Assemble → Prove → Breathe ---- */
-function runRadarShow() {
-  if (RR.started) return; RR.started = true;
+/* ---- the show: Spike → Settle → Skyline ---- */
+function runBarShow() {
+  if (RB.started) return; RB.started = true;
   const G = window.gsap;
-  const NS = 'http://www.w3.org/2000/svg';
 
-  // reset to the dark "waiting" disc
-  RR.rings.forEach(r => G.set(r, { attr: { 'stroke-opacity': 0.07 } }));
-  RR.ticks.forEach(t => G.set(t, { opacity: 0 }));
-  RR.domains.forEach(d => G.set(d, { opacity: 0 }));
-  RR.verts.forEach(v => G.set(v, { opacity: 0 }));
-  G.set([RR.poly, RR.glow], { opacity: 0 });
-  G.set(RR.coreGlow, { attr: { opacity: 0 } });
-  RR.r = new Array(RR.AXES).fill(RR.MINR); renderRadar();
+  updateRankUI(0);
+  RB.barH = new Array(RB.COLS).fill(0);
 
   const tl = G.timeline();
-  RR.tl = tl;
+  RB.tl = tl;
 
-  // ---- ACT 1 — assemble: sparks streak in along each spoke ----
-  G.to(RR.coreGlow, { attr: { opacity: 0.22 }, duration: 0.8, ease: 'power2.out' });
-  RR.rings.forEach((ring, i) => tl.fromTo(ring, { attr: { 'stroke-opacity': 0 } }, { attr: { 'stroke-opacity': 0.07 }, duration: 0.55, ease: 'power2.out' }, 0.04 * i));
-  for (let i = 0; i < RR.AXES; i++) {
-    const [sx, sy] = rrPoint(i, RR.R + 16);
-    const [ex, ey] = rrPoint(i, RR.MINR);
-    const spark = document.createElementNS(NS, 'circle');
-    spark.setAttribute('class', 'rr-spark'); spark.setAttribute('r', '3.2');
-    spark.setAttribute('cx', sx.toFixed(1)); spark.setAttribute('cy', sy.toFixed(1));
-    const comet = document.createElementNS(NS, 'line');
-    comet.setAttribute('class', 'rr-comet');
-    comet.setAttribute('x1', sx.toFixed(1)); comet.setAttribute('y1', sy.toFixed(1));
-    comet.setAttribute('x2', sx.toFixed(1)); comet.setAttribute('y2', sy.toFixed(1));
-    RR.sparkLayer.appendChild(comet); RR.sparkLayer.appendChild(spark);
-    const pos = { x: sx, y: sy };
-    tl.to(pos, { x: ex, y: ey, duration: 1.0, ease: 'power2.inOut', onUpdate: () => {
-      spark.setAttribute('cx', pos.x.toFixed(1)); spark.setAttribute('cy', pos.y.toFixed(1));
-      comet.setAttribute('x2', pos.x.toFixed(1)); comet.setAttribute('y2', pos.y.toFixed(1));
-      const dx = pos.x - sx, dy = pos.y - sy, len = Math.hypot(dx, dy) || 1; // tail trails ~22px behind
-      comet.setAttribute('x1', (pos.x - dx / len * 22).toFixed(1));
-      comet.setAttribute('y1', (pos.y - dy / len * 22).toFixed(1));
-    }, onComplete: () => {
-      spark.remove(); comet.remove();
-      G.set(RR.verts[i], { opacity: 1 });
-      G.fromTo(RR.verts[i], { attr: { r: 0 } }, { attr: { r: 3.5 }, duration: 0.4, ease: 'back.out(1.6)' });
-    } }, 0.2 + i * 0.04);
+  // ACT 1 — Code bar shoots to 100%: one stark spike on an empty stage
+  tl.to(RB.barH, { [RB.SPIKE_COL]: RB.MAX_H, duration: 0.6, ease: 'power3.out' }, 0.5);
+
+  // tremor: holds and quivers — looks deliberate, not accidental
+  tl.to(RB.barH, { [RB.SPIKE_COL]: RB.MAX_H - 12, duration: 0.12, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 1.22);
+
+  // Code settles to its weighted final height
+  tl.to(RB.barH, { [RB.SPIKE_COL]: rbFinalH(RB.SPIKE_COL), duration: 0.55, ease: 'power2.inOut' }, 1.82);
+
+  // ACT 2 — all seven other bars rise, staggered, out of phase
+  for (let c = 0; c < RB.COLS; c++) {
+    if (c === RB.SPIKE_COL) continue;
+    tl.to(RB.barH, { [c]: rbFinalH(c), duration: 0.8, ease: 'power2.out' }, 2.2 + c * 0.07);
   }
-  RR.domains.forEach((d, i) => tl.to(d, { opacity: 1, duration: 0.65, ease: 'power2.out' }, 0.8 + i * 0.04));
 
-  // ---- ACT 2 — prove: one spoke spikes, holds, then collapses as the seven rise into balance ----
-  tl.set([RR.poly, RR.glow], { opacity: 1 }, 1.5);
-  tl.to(RR.r, { [RR.SPIKE_AXIS]: RR.R, duration: 0.6, ease: 'power2.out' }, 1.5);                        // the spike shoots up
-  tl.to(RR.r, { [RR.SPIKE_AXIS]: RR.R - 5, duration: 0.12, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 2.2); // tremor → reads as intentional
-  const tg = masteryTargets();
-  for (let i = 0; i < RR.AXES; i++) {
-    if (i === RR.SPIKE_AXIS) {
-      tl.to(RR.r, { [i]: tg[i], duration: 1.2, ease: 'power2.out' }, 2.9);                               // spike eases DOWN, settles LAST
-    } else {
-      tl.to(RR.r, { [i]: tg[i], duration: 1.0, ease: 'back.out(0.8)' }, 2.75 + i * 0.04);               // the seven RISE, out of phase
-    }
-  }
-  tl.fromTo(RR.pulse, { attr: { r: 110 }, opacity: 0.55 }, { attr: { r: 250 }, opacity: 0, duration: 0.8, ease: 'power2.out' }, 4.2); // balance pulse
+  // threshold lines materialise once the skyline is set
+  RB.threshLines.forEach((l, i) => tl.to(l, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 2.8 + i * 0.07));
 
-  // ---- hand off to ambient breath + the climb ----
-  tl.call(() => { startAmbient(); runClimb(); }, null, 4.5);
+  // domain labels fade in last
+  RB.labels.forEach((l, i) => tl.to(l, { opacity: 1, duration: 0.45, ease: 'power2.out' }, 3.1 + i * 0.05));
+
+  // hand off to breath + rank climb
+  tl.call(() => { startBarAmbient(); runBarClimb(); }, null, 3.8);
 }
 
 /* ============================================================
-   RANK RADAR — auto-plays the "Assemble, Prove, Breathe" show when the
-   section scrolls into view (~35% on screen). No scroll-scrub, no sticky pin.
+   DOMAIN BARS — auto-plays "Spike → Settle → Skyline" when the
+   section scrolls into view (~35% on screen). No scroll-scrub.
    ============================================================ */
-function initRankRadar() {
-  buildRadar();
-
-  // no GSAP, reduced motion, or mobile/touch → straight to the finished web
+function initRankBars() {
+  buildBars();
   if (!window.gsap || window.__reducedMotion ||
       window.matchMedia('(max-width: 768px), (pointer: coarse)').matches) {
-    paintRadarFull();
-    return;
+    paintBarsFull(); return;
   }
-
-  // prime the dark "waiting" disc: faint rings only, web + labels hidden until the show fires
   updateRankUI(0);
-  RR.r = new Array(RR.AXES).fill(RR.MINR); RR.breath = new Array(RR.AXES).fill(0); renderRadar();
-  gsap.set([RR.poly, RR.glow], { opacity: 0 });
-  RR.verts.forEach(v => gsap.set(v, { opacity: 0 }));
-  RR.domains.forEach(d => gsap.set(d, { opacity: 0 }));
-  RR.ticks.forEach(t => gsap.set(t, { opacity: 0 }));
-  gsap.ticker.add(renderRadar); // one cheap DOM pass/frame; values come from RR.r + RR.breath
+  RB.barH = new Array(RB.COLS).fill(0);
+  renderBars();
+  gsap.ticker.add(renderBars);
 
   const sec = document.getElementById('rankLadder');
-  const playOnce = () => { if (!RR.started) runRadarShow(); };
+  const playOnce = () => { if (!RB.started) runBarShow(); };
   if ('IntersectionObserver' in window && sec) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         if (e.isIntersecting && e.intersectionRatio >= 0.34) playOnce();
-        if (RR.started) RR.ambient.forEach(t => (e.isIntersecting ? t.play() : t.pause())); // zero idle cost off-screen
+        if (RB.started) RB.ambient.forEach(t => (e.isIntersecting ? t.play() : t.pause()));
       });
     }, { threshold: [0, 0.34, 0.6] });
     io.observe(sec);
-    // safety net for stubbed/throttled observers (some embedded webviews)
-    setTimeout(() => { if (!RR.started) { const r = sec.getBoundingClientRect(); if (r.top < window.innerHeight && r.bottom > 0) playOnce(); } }, 1600);
+    setTimeout(() => { if (!RB.started) { const r = sec.getBoundingClientRect(); if (r.top < window.innerHeight && r.bottom > 0) playOnce(); } }, 1600);
   } else {
     playOnce();
   }
   document.addEventListener('visibilitychange', () => {
-    if (RR.started) RR.ambient.forEach(t => (document.hidden ? t.pause() : t.play()));
+    if (RB.started) RB.ambient.forEach(t => (document.hidden ? t.pause() : t.play()));
   });
 }
 
@@ -2493,16 +2395,16 @@ function initRankRadar() {
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add((time) => lenis.raf(time * 1000));
       gsap.ticker.lagSmoothing(0);
-      initRankRadar();       // auto-plays the radar show when it scrolls into view
+      initRankBars();        // auto-plays bar show when it scrolls into view
     } else {
       function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }
       requestAnimationFrame(raf);
-      paintRadarFull();
+      paintBarsFull();
     }
   } else {
-    // Reduced motion: native scroll, static full web
+    // Reduced motion: native scroll, static full bars
     window.addEventListener('scroll', () => { window.__scrollY = window.scrollY; updateHeroProgress(); updateScrollProg(); }, { passive: true });
-    paintRadarFull();
+    paintBarsFull();
   }
   window.addEventListener('resize', updateHeroProgress);
   updateHeroProgress();
