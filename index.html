@@ -339,103 +339,205 @@ nav {
 .skill-chip-more { color: var(--green); border-color: rgba(163,230,53,0.3); }
 
 /* ============================================================
-   RANK LADDER → 7 HERO CUBES
-   Seven independent 3D-CSS cubes (one per rank) fly in and land
-   into their slot as scroll/XP progress crosses each threshold.
-   The cube row is the dominant visual of the section — not a
-   small side element. Single lime accent (var(--green)); dark
-   stage. Compositor-only (transform/opacity), 60fps.
+   SHAPE OF MASTERY — Skyline section
    ============================================================ */
-
-/* auto-plays on view — no scroll-pin (the old sticky pin was dead anyway: an
-   ancestor's overflow-x:hidden breaks position:sticky). Just a normal in-flow,
-   ~full-height stage that fires its animation when it scrolls into view. */
-.rank-section { position: relative; height: auto; border-bottom: 1px solid var(--border); }
-
-.rank-pin {
-  position: relative; min-height: 100vh;
-  display: flex; align-items: center; justify-content: center;
-  padding: var(--sp-4) 48px; overflow: hidden;
-  background: radial-gradient(ellipse 70% 60% at 50% 60%, rgba(163,230,53,0.07) 0%, transparent 65%);
+.mastery-section {
+  position: relative;
+  border-bottom: 1px solid var(--border);
 }
-.rank-inner--hero {
-  max-width: 1240px; width: 100%; margin: 0 auto;
-  display: flex; flex-direction: column; align-items: center; gap: var(--sp-2);
+.mastery-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: clamp(120px, 18vh, 200px) clamp(24px, 5vw, 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
-.rank-inner--hero .rank-head { max-width: 640px; text-align: center; }
-.rank-inner--hero .rank-head .section-label { margin-bottom: var(--sp-3); display: block; }
-.rank-heading {
-  font-family: 'Instrument Serif', serif; font-size: var(--step-3);
-  line-height: 1.05; letter-spacing: -0.02em; margin-bottom: var(--sp-2);
+.mastery-kicker {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  color: #00FF87;
+  opacity: 0;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  transform: translateY(12px);
 }
-.rank-sub { font-family: 'Space Mono', monospace; font-size: var(--step-0); line-height: 1.9; color: var(--muted); max-width: 460px; margin: 0 auto; }
-.rank-inner--hero .rank-sub { margin-bottom: 0; }
-
-/* ---------- THE HERO: domain bar chart — 8 vertical columns, one per skill domain ----------
-   Each column grows from 0 → target height. Code spikes first (Act 1), trembles alone,
-   then settles as the seven others rise (Act 2). "A spike is not a shape" — made literal. */
-.rank-radar { position: relative; width: min(clamp(380px, 68vw, 660px), 96vw); margin: 0 auto; }
-.rank-radar svg { width: 100%; height: auto; overflow: visible; display: block; }
-
-/* bar tracks (background columns — always visible) */
-.rb-bar-bg  { fill: rgba(7,10,16,0.92); }
-/* rank threshold lines (subtle dashes across all columns at each rank boundary) */
-.rb-threshold { stroke: rgba(163,230,53,0.22); stroke-width: 1; stroke-dasharray: 3 5; }
-/* baseline */
-.rb-baseline  { stroke: rgba(255,255,255,0.08); stroke-width: 1; }
-/* glowing top edge — "laser line" at each bar's crest */
-.rb-topedge   { stroke: var(--green); stroke-width: 3; stroke-linecap: round;
-                 filter: drop-shadow(0 0 7px rgba(163,230,53,0.95)) drop-shadow(0 0 18px rgba(163,230,53,0.45)); }
-/* spike column crest — even brighter */
-.rb-topedge-spike { stroke: #d0f55a; stroke-width: 3.5; stroke-linecap: round;
-                 filter: drop-shadow(0 0 9px rgba(208,245,90,1)) drop-shadow(0 0 22px rgba(163,230,53,0.6)); }
-/* domain labels below the baseline */
-.rb-label     { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.07em;
-                 fill: var(--muted); text-transform: uppercase; }
-
-/* ---------- readout + list: compact strip beneath the hero ---------- */
-.rank-stage { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; max-width: 760px; margin: 0 auto; }
-.rank-readout {
-  border: 1px solid var(--border); border-radius: 14px; padding: 22px 26px;
-  background: linear-gradient(160deg, rgba(255,255,255,0.03), rgba(13,17,26,0.5));
+.mastery-headline {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(3.5rem, 9vw, 8rem);
+  line-height: 1.05;
+  color: #F4F6FA;
+  margin-bottom: 48px;
+  overflow: hidden;
 }
-.rank-xp-num {
-  font-family: 'Space Mono', monospace; font-size: clamp(28px, 3.6vw, 38px);
-  font-weight: 700; color: var(--green); letter-spacing: -0.02em; line-height: 1;
-  font-variant-numeric: tabular-nums;
+.mastery-headline-inner {
+  display: block;
+  clip-path: inset(100% 0 0 0);
 }
-.rank-now { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--text); margin-top: 8px; }
-.rank-bar { height: 6px; border-radius: 100px; background: var(--surface); border: 1px solid var(--border); overflow: hidden; margin: 14px 0 8px; }
-.rank-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green2), var(--green)); box-shadow: 0 0 12px rgba(163,230,53,0.5); transition: width 0.1s linear; }
-.rank-step { font-family: 'Space Mono', monospace; font-size: var(--step--1); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-
-.rank-list { list-style: none; border: 1px solid var(--border); border-radius: 14px; padding: 8px; background: linear-gradient(160deg, rgba(255,255,255,0.02), rgba(13,17,26,0.4)); }
-.rank-row {
-  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px;
-  padding: 7px 12px; border-radius: 8px; opacity: 0.38;
-  border: 1px solid transparent;
-  transition: opacity 0.3s var(--ease), background 0.3s var(--ease), border-color 0.3s var(--ease);
+.mastery-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #8A93AB;
+  max-width: 520px;
+  margin-bottom: 80px;
+  opacity: 0;
+  transform: translateY(12px);
 }
-.rank-row.done { opacity: 0.66; }
-.rank-row.active { opacity: 1; background: rgba(163,230,53,0.06); border-color: rgba(163,230,53,0.28); }
-.rank-row-lvl { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); letter-spacing: 0.1em; }
-.rank-row.done .rank-row-lvl, .rank-row.active .rank-row-lvl { color: var(--green); }
-.rank-row-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
-.rank-row.active .rank-row-name { color: var(--green); }
-.rank-row-xp { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.mastery-skyline {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(28px, 4vw, 56px);
+  margin-bottom: 80px;
+  position: relative;
+  opacity: 0;
+}
+.mastery-skyline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -8px;
+  right: -8px;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+}
+.sky-stroke-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: default;
+}
+.sky-stroke {
+  width: 2px;
+  background: #00FF87;
+  position: relative;
+  transform-origin: bottom center;
+  transform: scaleY(0);
+  transition: opacity 300ms ease;
+}
+.sky-stroke::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -1px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #00FF87;
+}
+.sky-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #4E576E;
+  text-transform: uppercase;
+  margin-top: 20px;
+  white-space: nowrap;
+  transition: color 300ms ease;
+}
+.sky-stroke-wrap:hover .sky-label { color: #00FF87; }
+.sky-stroke-wrap:hover .sky-stroke { opacity: 1 !important; }
+.mastery-rank-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 72px;
+  opacity: 0;
+}
+.rank-line-track {
+  position: relative;
+  width: 520px;
+  max-width: calc(100vw - 48px);
+  height: 1px;
+  background: #4E576E;
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+.rank-line-ticks {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.rank-tick-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #4E576E;
+  margin-top: -2px;
+  opacity: 0;
+}
+.rank-tick-dot.active {
+  width: 6px;
+  height: 6px;
+  background: #00FF87;
+  margin-top: -2.5px;
+}
+.rank-tick-labels {
+  display: flex;
+  width: 520px;
+  max-width: calc(100vw - 48px);
+  justify-content: space-between;
+  margin-top: 14px;
+}
+.rank-tick-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: #4E576E;
+  text-transform: uppercase;
+  text-align: center;
+  opacity: 0;
+}
+.rank-tick-name.active { color: #00FF87; }
+.rank-xp-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: #00FF87;
+  margin-top: 6px;
+  opacity: 0;
+}
+.mastery-cta {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: #06080F;
+  background: #00FF87;
+  padding: 14px 28px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  letter-spacing: 0.08em;
+  transition: background 200ms ease, transform 200ms ease;
+  opacity: 0;
+  transform: translateY(12px);
+}
+.mastery-cta:hover { background: #33FFA1; transform: translateY(-1px); }
 
-/* ---------- reduced motion: paint final bars statically ---------- */
+/* Reduced motion — everything visible immediately, no transforms */
 @media (prefers-reduced-motion: reduce) {
-  .rb-topedge { filter: none !important; }
+  .mastery-kicker,
+  .mastery-sub,
+  .mastery-cta { opacity: 1 !important; transform: none !important; }
+  .mastery-headline-inner { clip-path: none !important; }
+  .mastery-skyline,
+  .mastery-rank-line { opacity: 1 !important; }
+  .sky-stroke { transform: scaleY(1) !important; transition: none !important; }
+  .rank-line-track { transform: scaleX(1) !important; }
+  .rank-tick-dot,
+  .rank-tick-name,
+  .rank-xp-badge { opacity: 1 !important; }
 }
 
-/* ---------- mobile/touch: bar chart narrows, readout stacks ---------- */
-@media (max-width: 768px), (pointer: coarse) {
-  .rank-section { height: auto; }
-  .rank-pin { position: static; height: auto; padding: var(--sp-5) 20px; }
-  .rank-radar { max-width: 100%; }
-  .rb-label { font-size: 7.5px; }
-  .rank-stage { grid-template-columns: 1fr; max-width: 420px; }
+/* Mobile */
+@media (max-width: 719px) {
+  .mastery-inner { padding: 80px clamp(20px, 4vw, 24px); }
+  .mastery-skyline { gap: 16px; }
+  .sky-stroke-wrap:nth-child(even) .sky-label { visibility: hidden; }
 }
 
 /* SCROLL PROGRESS BAR */
@@ -897,9 +999,6 @@ footer {
   .nav-waitlist-mobile { display: inline-flex; justify-content: center; margin-top: 8px; }
 
   .why-grid { grid-template-columns: 1fr; }
-  .rank-section { height: auto; }
-  .rank-pin { position: static; height: auto; padding: var(--sp-5) 20px; }
-  .rank-inner { grid-template-columns: 1fr; gap: 32px; }
   .founder-inner { grid-template-columns: 1fr; gap: 24px; }
   .pf-grid { grid-template-columns: 1fr 1fr; }
   .faq-section, .waitlist-strip, .about-hero, .why-section, .founder-section, .product-hero, .countdown-section, .product-features, .product-waitlist, .contact-page, .beta-section, .donate-section { padding-left: 20px; padding-right: 20px; }
@@ -1444,40 +1543,30 @@ footer {
 
       <!-- RANK LADDER → 7 HERO CUBES, fly in + land as scroll/XP progress crosses each rank threshold -->
       <!-- height reduced 220vh → 130vh; ids #rankXpNum #rankNow #rankBarFill #rankStep #rankList preserved -->
-      <section class="rank-section" id="rankLadder">
-        <div class="rank-pin">
-          <div class="rank-inner rank-inner--hero">
+      <section class="mastery-section" id="rankLadder" aria-label="The shape of mastery">
+        <div class="mastery-inner">
 
-            <div class="rank-head">
-              <span class="section-label">The shape of mastery</span>
-              <h2 class="rank-heading">A spike is not a shape.</h2>
-              <p class="rank-sub">Any skill you track, a bar rises. Your rank is how high the whole skyline stands — not the height of your tallest tower.</p>
-            </div>
+          <span class="mastery-kicker">The Shape of Mastery</span>
 
-            <!-- HERO: 8 domain bars. Code spikes first, trembles alone, then the seven
-                 others rise — "Spike → Settle → Skyline". Auto-plays on scroll-into-view. -->
-            <div class="rank-radar" id="rankRadar" aria-hidden="true"></div>
+          <h2 class="mastery-headline">
+            <span class="mastery-headline-inner">A spike is not a shape.</span>
+          </h2>
 
-            <!-- readout + list — these ids MUST stay so updateRankUI() keeps working -->
-            <div class="rank-stage">
-              <div class="rank-readout">
-                <div class="rank-xp-num" id="rankXpNum">0 XP</div>
-                <div class="rank-now" id="rankNow">Novice</div>
-                <div class="rank-bar"><div class="rank-bar-fill" id="rankBarFill"></div></div>
-                <div class="rank-step" id="rankStep">Rank 1 of 7</div>
-              </div>
-              <ol class="rank-list" id="rankList">
-                <li class="rank-row" data-i="0"><span class="rank-row-lvl">01</span><span class="rank-row-name">Novice</span><span class="rank-row-xp">0 XP</span></li>
-                <li class="rank-row" data-i="1"><span class="rank-row-lvl">02</span><span class="rank-row-name">Seeker</span><span class="rank-row-xp">100 XP</span></li>
-                <li class="rank-row" data-i="2"><span class="rank-row-lvl">03</span><span class="rank-row-name">Initiate</span><span class="rank-row-xp">400 XP</span></li>
-                <li class="rank-row" data-i="3"><span class="rank-row-lvl">04</span><span class="rank-row-name">Adept</span><span class="rank-row-xp">1,000 XP</span></li>
-                <li class="rank-row" data-i="4"><span class="rank-row-lvl">05</span><span class="rank-row-name">Expert</span><span class="rank-row-xp">2,400 XP</span></li>
-                <li class="rank-row" data-i="5"><span class="rank-row-lvl">06</span><span class="rank-row-name">Master</span><span class="rank-row-xp">5,000 XP</span></li>
-                <li class="rank-row" data-i="6"><span class="rank-row-lvl">07</span><span class="rank-row-name">Polymath</span><span class="rank-row-xp">10,000 XP</span></li>
-              </ol>
-            </div>
+          <p class="mastery-sub">Any skill you track, a bar rises. Your rank is how high the whole skyline stands — not the height of your tallest tower.</p>
 
+          <div class="mastery-skyline" id="masterySkying" aria-hidden="true">
+            <!-- 8 strokes built by JS -->
           </div>
+
+          <div class="mastery-rank-line" aria-label="Rank progression">
+            <div class="rank-line-track" id="rankLineTrack">
+              <div class="rank-line-ticks" id="rankLineTicks"></div>
+            </div>
+            <div class="rank-tick-labels" id="rankTickLabels"></div>
+          </div>
+
+          <a href="#waitlist" class="mastery-cta">JOIN WAITLIST →</a>
+
         </div>
       </section>
 
@@ -2108,7 +2197,7 @@ window.__reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').m
 window.__scrollY = 0;
 window.__heroProgress = 0; // 0 at top of hero, 1 once scrolled one viewport
 
-// ── RANK LADDER (scroll-driven product demo) ──
+// ── SHAPE OF MASTERY — Skyline section ──
 const RANKS = [
   { n: 'Novice',   min: 0,     max: 100 },
   { n: 'Seeker',   min: 100,   max: 400 },
@@ -2119,290 +2208,187 @@ const RANKS = [
   { n: 'Polymath', min: 10000, max: 10000 },
 ];
 
-function updateRankUI(p) {
-  const num = document.getElementById('rankXpNum');
-  if (!num) return;
-  const pos = Math.min(6.9999, Math.max(0, p) * 7);
-  const i = Math.floor(pos);
-  const frac = pos - i;
-  const r = RANKS[i];
-  const xp = (i === 6) ? '10,000+ XP'
-    : Math.round(r.min + (r.max - r.min) * frac).toLocaleString() + ' XP';
-  num.textContent = xp;
-  document.getElementById('rankNow').textContent = r.n;
-  document.getElementById('rankStep').textContent = 'Rank ' + (i + 1) + ' of 7';
-  document.getElementById('rankBarFill').style.width = (i === 6 ? 100 : frac * 100) + '%';
-  document.querySelectorAll('.rank-row').forEach((row, idx) => {
-    row.classList.toggle('done', idx < i);
-    row.classList.toggle('active', idx === i);
-  });
-}
+function initSkyline() {
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ============================================================
-   DOMAIN BAR CHART — the section's hero visual.
-   8 vertical columns (one per skill domain), 7 rank-threshold lines.
-   RB.barH[] = current bar heights (tweened by GSAP each frame).
-   renderBars() is the single per-frame DOM write.
-   Story: Code spikes first (Act 1), trembles alone, then settles
-   as the other seven rise into a full skyline (Act 2).
-   "A spike is not a shape" — made literal.
-   ============================================================ */
-const RB = {
-  COLS: 8, ROWS: 7,
-  DOMAINS: ['Writing', 'Speaking', 'Design', 'Code', 'Math', 'Music', 'Health', 'Strategy'],
-  W: [0.79, 0.61, 0.95, 0.83, 0.55, 0.90, 0.72, 0.92],
-  SPIKE_COL: 3, // Code
-  // Layout (SVG viewBox 0 0 488 300)
-  LEFT: 4, COL_W: 60, BAR_W: 44, MAX_H: 220, BASE_Y: 252, LABEL_Y: 282,
-  built: false, started: false,
-  fills: [], tops: [], labels: [], threshLines: [],
-  barH: [], ambient: [], xp: { v: 0 },
-};
-function rbFinalH(col) { return RB.MAX_H * RB.W[col]; }
+  var STROKES = [
+    { label: 'WRITING',  h: 160, opacity: 0.75 },
+    { label: 'SPEAKING', h: 200, opacity: 0.55 },
+    { label: 'DESIGN',   h: 240, opacity: 1.00 },
+    { label: 'CODE',     h: 260, opacity: 0.90 },
+    { label: 'MATH',     h: 130, opacity: 0.45 },
+    { label: 'MUSIC',    h: 180, opacity: 0.65 },
+    { label: 'HEALTH',   h: 80,  opacity: 0.50 },
+    { label: 'STRATEGY', h: 220, opacity: 0.80 },
+  ];
 
-function renderBars() {
-  for (let c = 0; c < RB.COLS; c++) {
-    const h = Math.max(0, Math.min(RB.MAX_H, RB.barH[c]));
-    const fill = RB.fills[c]; const top = RB.tops[c];
-    if (fill) { fill.setAttribute('height', h.toFixed(1)); fill.setAttribute('y', (RB.BASE_Y - h).toFixed(1)); }
-    if (top) { const ty = (RB.BASE_Y - h).toFixed(1); top.setAttribute('y1', ty); top.setAttribute('y2', ty); top.style.opacity = h > 3 ? '1' : '0'; }
-  }
-}
-function buildBars() {
-  const host = document.getElementById('rankRadar');
-  if (!host || RB.built) return;
-  const NS = 'http://www.w3.org/2000/svg';
-  const mk = (t, a, cls) => {
-    const e = document.createElementNS(NS, t);
-    if (cls) e.setAttribute('class', cls);
-    for (const k in a) e.setAttribute(k, a[k]);
-    return e;
-  };
+  var RANK_NAMES = ['NOVICE','SEEKER','INITIATE','ADEPT','EXPERT','MASTER','POLYMATH'];
+  var ACTIVE_IDX = 6; // 07 POLYMATH
 
-  const svg = mk('svg', { viewBox: '0 0 580 300' });
+  // Build skyline strokes
+  var skyEl = document.getElementById('masterySkying');
+  if (skyEl) {
+    skyEl.innerHTML = '';
+    STROKES.forEach(function(s) {
+      var wrap = document.createElement('div');
+      wrap.className = 'sky-stroke-wrap';
 
-  const defs = mk('defs', {});
-  // standard bar gradient: near-black base → deep green mid → lime crest
-  const grad = mk('linearGradient', { id: 'rbGrad', x1: '0', y1: '1', x2: '0', y2: '0' });
-  grad.appendChild(mk('stop', { offset: '0%',   'stop-color': '#060810', 'stop-opacity': '1' }));
-  grad.appendChild(mk('stop', { offset: '40%',  'stop-color': '#0d3205', 'stop-opacity': '1' }));
-  grad.appendChild(mk('stop', { offset: '78%',  'stop-color': '#4a8a10', 'stop-opacity': '1' }));
-  grad.appendChild(mk('stop', { offset: '100%', 'stop-color': '#a3e635', 'stop-opacity': '1' }));
-  defs.appendChild(grad);
-  // spike bar gradient: same shape but crest is brighter/warmer
-  const gradSpike = mk('linearGradient', { id: 'rbGradSpike', x1: '0', y1: '1', x2: '0', y2: '0' });
-  gradSpike.appendChild(mk('stop', { offset: '0%',   'stop-color': '#060810', 'stop-opacity': '1' }));
-  gradSpike.appendChild(mk('stop', { offset: '40%',  'stop-color': '#103d06', 'stop-opacity': '1' }));
-  gradSpike.appendChild(mk('stop', { offset: '78%',  'stop-color': '#5ea512', 'stop-opacity': '1' }));
-  gradSpike.appendChild(mk('stop', { offset: '100%', 'stop-color': '#d0f55a', 'stop-opacity': '1' }));
-  defs.appendChild(gradSpike);
-  // ghost bar gradient: same shape, very faint — looks like real bars fading into the distance
-  const gradGhost = mk('linearGradient', { id: 'rbGradGhost', x1: '0', y1: '1', x2: '0', y2: '0' });
-  gradGhost.appendChild(mk('stop', { offset: '0%',   'stop-color': '#060810', 'stop-opacity': '0.5' }));
-  gradGhost.appendChild(mk('stop', { offset: '55%',  'stop-color': '#0d3205', 'stop-opacity': '0.3' }));
-  gradGhost.appendChild(mk('stop', { offset: '100%', 'stop-color': '#a3e635', 'stop-opacity': '0.18' }));
-  defs.appendChild(gradGhost);
-  // right-edge fade: dissolves ghost bars into the background
-  const fadeGrad = mk('linearGradient', { id: 'rbFade', x1: '0', y1: '0', x2: '1', y2: '0' });
-  fadeGrad.appendChild(mk('stop', { offset: '0%',   'stop-color': '#06080C', 'stop-opacity': '0' }));
-  fadeGrad.appendChild(mk('stop', { offset: '100%', 'stop-color': '#06080C', 'stop-opacity': '1' }));
-  defs.appendChild(fadeGrad);
-  svg.appendChild(defs);
+      var stroke = document.createElement('div');
+      stroke.className = 'sky-stroke';
+      stroke.style.height = s.h + 'px';
+      stroke.style.opacity = s.opacity;
 
-  // background tracks (full-height dark columns — always visible, show the grid)
-  for (let c = 0; c < RB.COLS; c++) {
-    const x = RB.LEFT + c * RB.COL_W;
-    svg.appendChild(mk('rect', { x, y: RB.BASE_Y - RB.MAX_H, width: RB.BAR_W, height: RB.MAX_H, rx: 4, fill: 'rgba(13,17,26,0.75)' }, 'rb-bar-bg'));
+      var label = document.createElement('span');
+      label.className = 'sky-label';
+      label.textContent = s.label;
+
+      wrap.appendChild(stroke);
+      wrap.appendChild(label);
+      skyEl.appendChild(wrap);
+    });
   }
 
-  // rank threshold lines (one per boundary between ranks, dashed across all columns)
-  RB.threshLines = [];
-  const x2end = RB.LEFT + RB.COLS * RB.COL_W - (RB.COL_W - RB.BAR_W);
-  for (let r = 1; r < 7; r++) {
-    const ty = (RB.BASE_Y - (r / 7) * RB.MAX_H).toFixed(1);
-    const line = mk('line', { x1: RB.LEFT, y1: ty, x2: x2end, y2: ty }, 'rb-threshold');
-    line.style.opacity = '0';
-    svg.appendChild(line);
-    RB.threshLines.push(line);
+  // Build rank line ticks
+  var ticksEl = document.getElementById('rankLineTicks');
+  var labelsEl = document.getElementById('rankTickLabels');
+  if (ticksEl && labelsEl) {
+    RANK_NAMES.forEach(function(name, i) {
+      var dot = document.createElement('div');
+      dot.className = 'rank-tick-dot' + (i === ACTIVE_IDX ? ' active' : '');
+      ticksEl.appendChild(dot);
+
+      var lbl = document.createElement('div');
+      lbl.className = 'rank-tick-name' + (i === ACTIVE_IDX ? ' active' : '');
+      lbl.textContent = (i === ACTIVE_IDX ? '07 ' : '') + name;
+      labelsEl.appendChild(lbl);
+    });
+
+    // XP badge below rank line (right-aligned to match POLYMATH tick)
+    var rankLineEl = document.getElementById('rankLineTrack');
+    if (rankLineEl && rankLineEl.parentElement) {
+      var badge = document.createElement('div');
+      badge.className = 'rank-xp-badge';
+      badge.textContent = '10,000 XP';
+      rankLineEl.parentElement.appendChild(badge);
+    }
   }
 
-  // bar fills (height 0, grow upward via renderBars())
-  // spike column uses a brighter gradient to stay visually distinct after settling
-  RB.fills = []; RB.barH = new Array(RB.COLS).fill(0);
-  for (let c = 0; c < RB.COLS; c++) {
-    const x = RB.LEFT + c * RB.COL_W;
-    const fillId = c === RB.SPIKE_COL ? 'url(#rbGradSpike)' : 'url(#rbGrad)';
-    const fill = mk('rect', { x, y: RB.BASE_Y, width: RB.BAR_W, height: 0, rx: 4, fill: fillId });
-    svg.appendChild(fill);
-    RB.fills.push(fill);
+  if (reducedMotion) return;
+
+  var section = document.getElementById('rankLadder');
+  if (!section) return;
+
+  var triggered = false;
+  var easing = 'cubic-bezier(0.16, 1, 0.3, 1)';
+
+  function runEntrance() {
+    if (triggered) return;
+    triggered = true;
+
+    var kicker  = section.querySelector('.mastery-kicker');
+    var headInner = section.querySelector('.mastery-headline-inner');
+    var sub     = section.querySelector('.mastery-sub');
+    var skyEl2  = section.querySelector('.mastery-skyline');
+    var rankLine = section.querySelector('.mastery-rank-line');
+    var track   = section.querySelector('.rank-line-track');
+    var cta     = section.querySelector('.mastery-cta');
+    var strokes = section.querySelectorAll('.sky-stroke');
+    var dots    = section.querySelectorAll('.rank-tick-dot');
+    var tickNames = section.querySelectorAll('.rank-tick-name');
+    var xpBadge = section.querySelector('.rank-xp-badge');
+
+    // 1. Kicker (0ms)
+    if (kicker) {
+      kicker.style.transition = 'opacity 700ms ' + easing + ' 0ms, transform 700ms ' + easing + ' 0ms';
+      kicker.style.opacity = '0.85';
+      kicker.style.transform = 'translateY(0)';
+    }
+
+    // 2. Headline clip-path (100ms)
+    if (headInner) {
+      headInner.style.transition = 'clip-path 900ms ' + easing + ' 100ms';
+      headInner.style.clipPath = 'inset(0 0 0 0)';
+    }
+
+    // 3. Subline (300ms)
+    if (sub) {
+      sub.style.transition = 'opacity 700ms ' + easing + ' 300ms, transform 700ms ' + easing + ' 300ms';
+      sub.style.opacity = '1';
+      sub.style.transform = 'translateY(0)';
+    }
+
+    // 4. Skyline: show container then animate strokes staggered from 500ms
+    if (skyEl2) {
+      skyEl2.style.transition = 'opacity 200ms ease 480ms';
+      skyEl2.style.opacity = '1';
+    }
+    strokes.forEach(function(stroke, i) {
+      var delay = 500 + i * 60;
+      stroke.style.transition = 'transform 700ms ' + easing + ' ' + delay + 'ms, opacity 300ms ease';
+      stroke.style.transform = 'scaleY(1)';
+    });
+
+    // 5. Rank line (1100ms)
+    if (rankLine) {
+      rankLine.style.transition = 'opacity 200ms ease 1080ms';
+      rankLine.style.opacity = '1';
+    }
+    if (track) {
+      track.style.transition = 'transform 700ms ' + easing + ' 1100ms';
+      track.style.transform = 'scaleX(1)';
+    }
+    dots.forEach(function(dot, i) {
+      dot.style.transition = 'opacity 300ms ease ' + (1200 + i * 60) + 'ms';
+      dot.style.opacity = '1';
+    });
+    tickNames.forEach(function(name, i) {
+      name.style.transition = 'opacity 300ms ease ' + (1220 + i * 60) + 'ms';
+      name.style.opacity = '1';
+    });
+    if (xpBadge) {
+      xpBadge.style.transition = 'opacity 300ms ease 1650ms';
+      xpBadge.style.opacity = '1';
+    }
+
+    // 6. CTA (1600ms)
+    if (cta) {
+      cta.style.transition = 'opacity 700ms ' + easing + ' 1600ms, transform 700ms ' + easing + ' 1600ms, background 200ms ease, translateY 200ms ease';
+      cta.style.opacity = '1';
+      cta.style.transform = 'translateY(0)';
+    }
+
+    // Sine drift after entrance settles
+    startDrift(strokes);
   }
 
-  // glowing top-edge lines — spike column uses a stronger class
-  RB.tops = [];
-  for (let c = 0; c < RB.COLS; c++) {
-    const x = RB.LEFT + c * RB.COL_W;
-    const cls = c === RB.SPIKE_COL ? 'rb-topedge-spike' : 'rb-topedge';
-    const top = mk('line', { x1: x + 3, y1: RB.BASE_Y, x2: x + RB.BAR_W - 3, y2: RB.BASE_Y }, cls);
-    top.style.opacity = '0';
-    svg.appendChild(top);
-    RB.tops.push(top);
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting && e.intersectionRatio >= 0.3) runEntrance();
+    });
+  }, { threshold: 0.3 });
+  io.observe(section);
+
+  // Fire immediately if already in view
+  var r = section.getBoundingClientRect();
+  if (r.top < window.innerHeight && r.bottom > 0) {
+    setTimeout(function() { runEntrance(); }, 200);
   }
 
-  // baseline
-  svg.appendChild(mk('line', { x1: RB.LEFT, y1: RB.BASE_Y, x2: x2end, y2: RB.BASE_Y }, 'rb-baseline'));
+  function startDrift(strokes) {
+    var HEIGHTS = STROKES.map(function(s) { return s.h; });
+    var phases  = STROKES.map(function() { return Math.random() * Math.PI * 2; });
+    var speeds  = STROKES.map(function() { return 6000 + Math.random() * 2000; });
 
-  // domain labels below baseline
-  RB.labels = [];
-  for (let c = 0; c < RB.COLS; c++) {
-    const x = (RB.LEFT + c * RB.COL_W + RB.BAR_W / 2).toFixed(1);
-    const lbl = mk('text', { x, y: RB.LABEL_Y, 'text-anchor': 'middle' }, 'rb-label');
-    lbl.textContent = RB.DOMAINS[c];
-    lbl.style.opacity = '0';
-    svg.appendChild(lbl);
-    RB.labels.push(lbl);
-  }
-
-  // ghost bars — 3 faint columns past the real 8, suggesting infinite more domains
-  const ghostH = [RB.MAX_H * 0.68, RB.MAX_H * 0.44, RB.MAX_H * 0.82];
-  for (let g = 0; g < 3; g++) {
-    const x = RB.LEFT + (RB.COLS + g) * RB.COL_W;
-    const h = ghostH[g];
-    svg.appendChild(mk('rect', { x, y: RB.BASE_Y - h, width: RB.BAR_W, height: h, rx: 4, fill: 'url(#rbGradGhost)' }));
-    svg.appendChild(mk('line', {
-      x1: x + 3, y1: (RB.BASE_Y - h).toFixed(1),
-      x2: x + RB.BAR_W - 3, y2: (RB.BASE_Y - h).toFixed(1),
-      stroke: 'rgba(163,230,53,0.18)', 'stroke-width': '1.5', 'stroke-linecap': 'round'
-    }));
-  }
-
-  // fade overlay — wipes ghost bars into the background (infinite suggestion)
-  const fadeX = RB.LEFT + (RB.COLS + 0.1) * RB.COL_W;
-  svg.appendChild(mk('rect', { x: fadeX.toFixed(1), y: 0, width: (580 - fadeX).toFixed(1), height: 300, fill: 'url(#rbFade)' }));
-
-  host.appendChild(svg);
-  RB.built = true;
-}
-
-function paintBarsFull() {
-  buildBars();
-  RB.barH = RB.W.map(w => RB.MAX_H * w);
-  renderBars();
-  RB.tops.forEach(t => { t.style.opacity = '1'; });
-  RB.labels.forEach(l => { l.style.opacity = '1'; });
-  RB.threshLines.forEach(l => { l.style.opacity = '1'; });
-  updateRankUI(1);
-}
-
-function setBarRank(k) {
-  const G = window.gsap; const r = RANKS[k];
-  const num = document.getElementById('rankXpNum');
-  const now = document.getElementById('rankNow');
-  const targetXp = (k === 6) ? 10000 : r.min;
-  if (G) {
-    G.to(RB.xp, { v: targetXp, duration: 0.55, ease: 'power2.out', onUpdate: () => {
-      num.textContent = (k === 6 ? '10,000+ XP' : Math.round(RB.xp.v).toLocaleString() + ' XP');
-    } });
-    now.textContent = r.n;
-    G.fromTo(now, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: 'power3.out' });
-    G.to(document.getElementById('rankBarFill'), { width: (k / 6 * 100) + '%', duration: 0.55, ease: 'power2.out' });
-  } else {
-    num.textContent = (k === 6 ? '10,000+ XP' : r.min.toLocaleString() + ' XP');
-    now.textContent = r.n;
-    document.getElementById('rankBarFill').style.width = (k / 6 * 100) + '%';
-  }
-  document.getElementById('rankStep').textContent = 'Rank ' + (k + 1) + ' of 7';
-  document.querySelectorAll('.rank-row').forEach((row, idx) => {
-    row.classList.toggle('done', idx < k); row.classList.toggle('active', idx === k);
-  });
-}
-
-function startBarAmbient() {
-  const G = window.gsap;
-  for (let c = 0; c < RB.COLS; c++) {
-    const amp = 3 + (c % 3);
-    RB.ambient.push(G.to(RB.barH, { [c]: rbFinalH(c) + amp, duration: 3.8 + c * 0.2, ease: 'sine.inOut', yoyo: true, repeat: -1 }));
-  }
-}
-
-function runBarClimb() {
-  const G = window.gsap; const DUR = 5.0;
-  const tl = G.timeline();
-  for (let k = 0; k < RB.ROWS; k++) tl.call(setBarRank, [k], (k / RB.ROWS) * DUR);
-  tl.call(() => {
-    const loop = G.timeline({ repeat: -1, repeatDelay: 3.5 });
-    for (let k = 0; k < RB.ROWS; k++) loop.call(setBarRank, [k], (k / RB.ROWS) * 6.5);
-    RB.ambient.push(loop);
-  }, null, DUR + 1.2);
-}
-
-/* ---- the show: Spike → Settle → Skyline ---- */
-function runBarShow() {
-  if (RB.started) return; RB.started = true;
-  const G = window.gsap;
-
-  updateRankUI(0);
-  RB.barH = new Array(RB.COLS).fill(0);
-
-  const tl = G.timeline();
-  RB.tl = tl;
-
-  // ACT 1 — Code bar shoots to 100%: one stark spike on an empty stage
-  tl.to(RB.barH, { [RB.SPIKE_COL]: RB.MAX_H, duration: 0.6, ease: 'power3.out' }, 0.5);
-
-  // tremor: holds and quivers — looks deliberate, not accidental
-  tl.to(RB.barH, { [RB.SPIKE_COL]: RB.MAX_H - 12, duration: 0.12, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 1.22);
-
-  // Code settles to its weighted final height
-  tl.to(RB.barH, { [RB.SPIKE_COL]: rbFinalH(RB.SPIKE_COL), duration: 0.55, ease: 'power2.inOut' }, 1.82);
-
-  // ACT 2 — all seven other bars rise, staggered, out of phase
-  for (let c = 0; c < RB.COLS; c++) {
-    if (c === RB.SPIKE_COL) continue;
-    tl.to(RB.barH, { [c]: rbFinalH(c), duration: 0.8, ease: 'power2.out' }, 2.2 + c * 0.07);
-  }
-
-  // threshold lines materialise once the skyline is set
-  RB.threshLines.forEach((l, i) => tl.to(l, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 2.8 + i * 0.07));
-
-  // domain labels fade in last
-  RB.labels.forEach((l, i) => tl.to(l, { opacity: 1, duration: 0.45, ease: 'power2.out' }, 3.1 + i * 0.05));
-
-  // hand off to breath + rank climb
-  tl.call(() => { startBarAmbient(); runBarClimb(); }, null, 3.8);
-}
-
-/* ============================================================
-   DOMAIN BARS — auto-plays "Spike → Settle → Skyline" when the
-   section scrolls into view (~35% on screen). No scroll-scrub.
-   ============================================================ */
-function initRankBars() {
-  buildBars();
-  if (!window.gsap || window.__reducedMotion ||
-      window.matchMedia('(max-width: 768px), (pointer: coarse)').matches) {
-    paintBarsFull(); return;
-  }
-  updateRankUI(0);
-  RB.barH = new Array(RB.COLS).fill(0);
-  renderBars();
-  gsap.ticker.add(renderBars);
-
-  const sec = document.getElementById('rankLadder');
-  const playOnce = () => { if (!RB.started) runBarShow(); };
-  if ('IntersectionObserver' in window && sec) {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting && e.intersectionRatio >= 0.34) playOnce();
-        if (RB.started) RB.ambient.forEach(t => (e.isIntersecting ? t.play() : t.pause()));
+    function tick(ts) {
+      strokes.forEach(function(stroke, i) {
+        var period = speeds[i];
+        var offset = Math.sin((ts / period) * Math.PI * 2 + phases[i]) * 6;
+        stroke.style.height = (HEIGHTS[i] + offset) + 'px';
       });
-    }, { threshold: [0, 0.34, 0.6] });
-    io.observe(sec);
-    setTimeout(() => { if (!RB.started) { const r = sec.getBoundingClientRect(); if (r.top < window.innerHeight && r.bottom > 0) playOnce(); } }, 1600);
-  } else {
-    playOnce();
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
   }
-  document.addEventListener('visibilitychange', () => {
-    if (RB.started) RB.ambient.forEach(t => (document.hidden ? t.pause() : t.play()));
-  });
 }
 
 (function () {
@@ -2435,19 +2421,17 @@ function initRankBars() {
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add((time) => lenis.raf(time * 1000));
       gsap.ticker.lagSmoothing(0);
-      initRankBars();        // auto-plays bar show when it scrolls into view
     } else {
       function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }
       requestAnimationFrame(raf);
-      paintBarsFull();
     }
   } else {
-    // Reduced motion: native scroll, static full bars
+    // Reduced motion: native scroll
     window.addEventListener('scroll', () => { window.__scrollY = window.scrollY; updateHeroProgress(); updateScrollProg(); }, { passive: true });
-    paintBarsFull();
   }
   window.addEventListener('resize', updateHeroProgress);
   updateHeroProgress();
+  initSkyline();
 })();
 </script>
 
