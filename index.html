@@ -433,67 +433,36 @@ nav {
   border-radius: 50%;
   background: #00FF87;
 }
-.mastery-rank-line {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 72px;
-  opacity: 0;
+.rank-stage { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; max-width: 760px; margin: 0 auto 72px; opacity: 0; transform: translateY(12px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+.rank-stage.revealed { opacity: 1; transform: translateY(0); }
+.rank-readout {
+  border: 1px solid var(--border); border-radius: 14px; padding: 22px 26px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.03), rgba(13,17,26,0.5));
 }
-.rank-line-track {
-  position: relative;
-  width: 520px;
-  max-width: calc(100vw - 48px);
-  height: 1px;
-  background: #4E576E;
-  transform-origin: left center;
-  transform: scaleX(0);
+.rank-xp-num {
+  font-family: 'Space Mono', monospace; font-size: clamp(22px, 3.2vw, 34px);
+  font-weight: 700; color: var(--green); letter-spacing: -0.02em; line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
-.rank-line-ticks {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.rank-now { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--text); margin-top: 8px; }
+.rank-bar { height: 6px; border-radius: 100px; background: var(--surface); border: 1px solid var(--border); overflow: hidden; margin: 14px 0 8px; }
+.rank-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green2), var(--green)); box-shadow: 0 0 12px rgba(163,230,53,0.5); transition: width 0.55s cubic-bezier(0.16,1,0.3,1); }
+.rank-step { font-family: 'Space Mono', monospace; font-size: var(--step--1); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.rank-list { list-style: none; border: 1px solid var(--border); border-radius: 14px; padding: 8px; background: linear-gradient(160deg, rgba(255,255,255,0.02), rgba(13,17,26,0.4)); }
+.rank-row {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px;
+  padding: 7px 12px; border-radius: 8px; opacity: 0.38;
+  border: 1px solid transparent;
+  transition: opacity 0.3s var(--ease), background 0.3s var(--ease), border-color 0.3s var(--ease);
 }
-.rank-tick-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #4E576E;
-  margin-top: -2px;
-  opacity: 0;
-}
-.rank-tick-dot.active {
-  width: 6px;
-  height: 6px;
-  background: #00FF87;
-  margin-top: -2.5px;
-}
-.rank-tick-labels {
-  display: flex;
-  width: 520px;
-  max-width: calc(100vw - 48px);
-  justify-content: space-between;
-  margin-top: 14px;
-}
-.rank-tick-name {
-  font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 0.12em;
-  color: #4E576E;
-  text-transform: uppercase;
-  text-align: center;
-  opacity: 0;
-}
-.rank-tick-name.active { color: #00FF87; }
-.rank-xp-badge {
-  font-family: 'Space Mono', monospace;
-  font-size: 11px;
-  color: #00FF87;
-  margin-top: 6px;
-  opacity: 0;
-}
+.rank-row.done { opacity: 0.66; }
+.rank-row.active { opacity: 1; background: rgba(163,230,53,0.06); border-color: rgba(163,230,53,0.28); }
+.rank-row-lvl { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); letter-spacing: 0.1em; }
+.rank-row.done .rank-row-lvl, .rank-row.active .rank-row-lvl { color: var(--green); }
+.rank-row-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
+.rank-row.active .rank-row-name { color: var(--green); }
+.rank-row-xp { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); font-variant-numeric: tabular-nums; }
+@media (max-width: 600px) { .rank-stage { grid-template-columns: 1fr; max-width: 420px; } }
 .mastery-cta {
   font-family: 'Space Mono', monospace;
   font-size: 12px;
@@ -518,14 +487,11 @@ nav {
   .mastery-sub,
   .mastery-cta { opacity: 1 !important; transform: none !important; }
   .mastery-headline-inner { clip-path: none !important; }
-  .mastery-skyline,
-  .mastery-rank-line { opacity: 1 !important; }
+  .mastery-skyline { opacity: 1 !important; }
   .sky-stroke { transform: scaleY(1) !important; transition: none !important; }
   .sky-track.scrolling { animation: none !important; }
-  .rank-line-track { transform: scaleX(1) !important; }
-  .rank-tick-dot,
-  .rank-tick-name,
-  .rank-xp-badge { opacity: 1 !important; }
+  .rank-stage { opacity: 1 !important; transform: none !important; }
+  .rank-bar-fill { transition: none !important; }
 }
 
 /* Mobile */
@@ -1550,11 +1516,22 @@ footer {
             <!-- 8 strokes built by JS -->
           </div>
 
-          <div class="mastery-rank-line" aria-label="Rank progression">
-            <div class="rank-line-track" id="rankLineTrack">
-              <div class="rank-line-ticks" id="rankLineTicks"></div>
+          <div class="rank-stage" id="rankStage" aria-label="Rank progression">
+            <div class="rank-readout">
+              <div class="rank-xp-num" id="rankXpNum">0 XP</div>
+              <div class="rank-now" id="rankNow">Novice</div>
+              <div class="rank-bar"><div class="rank-bar-fill" id="rankBarFill"></div></div>
+              <div class="rank-step" id="rankStep">RANK 1 OF 7</div>
             </div>
-            <div class="rank-tick-labels" id="rankTickLabels"></div>
+            <ol class="rank-list" id="rankList">
+              <li class="rank-row" data-i="0"><span class="rank-row-lvl">01</span><span class="rank-row-name">Novice</span><span class="rank-row-xp">0 XP</span></li>
+              <li class="rank-row" data-i="1"><span class="rank-row-lvl">02</span><span class="rank-row-name">Seeker</span><span class="rank-row-xp">100 XP</span></li>
+              <li class="rank-row" data-i="2"><span class="rank-row-lvl">03</span><span class="rank-row-name">Initiate</span><span class="rank-row-xp">400 XP</span></li>
+              <li class="rank-row" data-i="3"><span class="rank-row-lvl">04</span><span class="rank-row-name">Adept</span><span class="rank-row-xp">1,000 XP</span></li>
+              <li class="rank-row" data-i="4"><span class="rank-row-lvl">05</span><span class="rank-row-name">Expert</span><span class="rank-row-xp">2,400 XP</span></li>
+              <li class="rank-row" data-i="5"><span class="rank-row-lvl">06</span><span class="rank-row-name">Master</span><span class="rank-row-xp">5,000 XP</span></li>
+              <li class="rank-row" data-i="6"><span class="rank-row-lvl">07</span><span class="rank-row-name">Polymath</span><span class="rank-row-xp">10,000 XP</span></li>
+            </ol>
           </div>
 
           <a href="#waitlist" class="mastery-cta">JOIN WAITLIST →</a>
@@ -2200,6 +2177,66 @@ const RANKS = [
   { n: 'Polymath', min: 10000, max: 10000 },
 ];
 
+// ── Rank readout helpers ──────────────────────────────────────
+function updateRankUI(k) {
+  const num  = document.getElementById('rankXpNum');
+  const now  = document.getElementById('rankNow');
+  const fill = document.getElementById('rankBarFill');
+  const step = document.getElementById('rankStep');
+  if (!num) return;
+  const r = RANKS[k];
+  num.textContent  = k === 6 ? '10,000+ XP' : r.min.toLocaleString() + ' XP';
+  now.textContent  = r.n;
+  step.textContent = 'RANK ' + (k + 1) + ' OF 7';
+  fill.style.width = (k / 6 * 100) + '%';
+  document.querySelectorAll('.rank-row').forEach(function(row, idx) {
+    row.classList.toggle('done',   idx < k);
+    row.classList.toggle('active', idx === k);
+  });
+}
+
+function animRankTo(k) {
+  const G = window.gsap;
+  const num  = document.getElementById('rankXpNum');
+  const now  = document.getElementById('rankNow');
+  const fill = document.getElementById('rankBarFill');
+  const step = document.getElementById('rankStep');
+  if (!num) return;
+  const r = RANKS[k];
+  const targetXp = k === 6 ? 10000 : r.min;
+  const obj = { v: parseFloat(num.textContent.replace(/[^0-9]/g, '')) || 0 };
+  if (G) {
+    G.to(obj, { v: targetXp, duration: 0.6, ease: 'power2.out', onUpdate: function() {
+      num.textContent = k === 6 ? '10,000+ XP' : Math.round(obj.v).toLocaleString() + ' XP';
+    }});
+    G.fromTo(now, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: 'power3.out' });
+    G.to(fill, { width: (k / 6 * 100) + '%', duration: 0.6, ease: 'power2.out' });
+  } else {
+    num.textContent  = k === 6 ? '10,000+ XP' : r.min.toLocaleString() + ' XP';
+    if (fill) fill.style.width = (k / 6 * 100) + '%';
+  }
+  if (now) now.textContent = r.n;
+  if (step) step.textContent = 'RANK ' + (k + 1) + ' OF 7';
+  document.querySelectorAll('.rank-row').forEach(function(row, idx) {
+    row.classList.toggle('done',   idx < k);
+    row.classList.toggle('active', idx === k);
+  });
+}
+
+var __rankClimbStarted = false;
+function startRankClimb() {
+  if (__rankClimbStarted) return;
+  __rankClimbStarted = true;
+  updateRankUI(0);
+  var k = 0;
+  function step() {
+    animRankTo(k);
+    k = (k + 1) % 7;
+    setTimeout(step, k === 0 ? 3500 : 900);
+  }
+  setTimeout(step, 400);
+}
+
 function initSkyline() {
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -2226,8 +2263,6 @@ function initSkyline() {
     { h: 155, opacity: 0.65 },
   ];
 
-  var RANK_NAMES = ['NOVICE','SEEKER','INITIATE','ADEPT','EXPERT','MASTER','POLYMATH'];
-  var ACTIVE_IDX = 6; // 07 POLYMATH
 
   // Build skyline strokes — two copies inside a scrolling track for seamless loop
   var skyEl = document.getElementById('masterySkying');
@@ -2251,32 +2286,8 @@ function initSkyline() {
     skyEl.appendChild(trackEl);
   }
 
-  // Build rank line ticks
-  var ticksEl = document.getElementById('rankLineTicks');
-  var labelsEl = document.getElementById('rankTickLabels');
-  if (ticksEl && labelsEl) {
-    RANK_NAMES.forEach(function(name, i) {
-      var dot = document.createElement('div');
-      dot.className = 'rank-tick-dot' + (i === ACTIVE_IDX ? ' active' : '');
-      ticksEl.appendChild(dot);
-
-      var lbl = document.createElement('div');
-      lbl.className = 'rank-tick-name' + (i === ACTIVE_IDX ? ' active' : '');
-      lbl.textContent = (i === ACTIVE_IDX ? '07 ' : '') + name;
-      labelsEl.appendChild(lbl);
-    });
-
-    // XP badge below rank line (right-aligned to match POLYMATH tick)
-    var rankLineEl = document.getElementById('rankLineTrack');
-    if (rankLineEl && rankLineEl.parentElement) {
-      var badge = document.createElement('div');
-      badge.className = 'rank-xp-badge';
-      badge.textContent = '10,000 XP';
-      rankLineEl.parentElement.appendChild(badge);
-    }
-  }
-
-  if (reducedMotion) return;
+  // Set rank readout to Polymath for reduced-motion / no-JS-animation fallback
+  if (reducedMotion) { updateRankUI(6); return; }
 
   var section = document.getElementById('rankLadder');
   if (!section) return;
@@ -2292,13 +2303,8 @@ function initSkyline() {
     var headInner = section.querySelector('.mastery-headline-inner');
     var sub     = section.querySelector('.mastery-sub');
     var skyEl2  = section.querySelector('.mastery-skyline');
-    var rankLine = section.querySelector('.mastery-rank-line');
-    var track   = section.querySelector('.rank-line-track');
     var cta     = section.querySelector('.mastery-cta');
     var strokes = section.querySelectorAll('.sky-stroke');
-    var dots    = section.querySelectorAll('.rank-tick-dot');
-    var tickNames = section.querySelectorAll('.rank-tick-name');
-    var xpBadge = section.querySelector('.rank-xp-badge');
 
     // 1. Kicker (0ms)
     if (kicker) {
@@ -2339,31 +2345,16 @@ function initSkyline() {
       if (track) track.classList.add('scrolling');
     }, scrollDelay);
 
-    // 5. Rank line (1100ms)
-    if (rankLine) {
-      rankLine.style.transition = 'opacity 200ms ease 1080ms';
-      rankLine.style.opacity = '1';
-    }
-    if (track) {
-      track.style.transition = 'transform 700ms ' + easing + ' 1100ms';
-      track.style.transform = 'scaleX(1)';
-    }
-    dots.forEach(function(dot, i) {
-      dot.style.transition = 'opacity 300ms ease ' + (1200 + i * 60) + 'ms';
-      dot.style.opacity = '1';
-    });
-    tickNames.forEach(function(name, i) {
-      name.style.transition = 'opacity 300ms ease ' + (1220 + i * 60) + 'ms';
-      name.style.opacity = '1';
-    });
-    if (xpBadge) {
-      xpBadge.style.transition = 'opacity 300ms ease 1650ms';
-      xpBadge.style.opacity = '1';
-    }
+    // 5. Rank stage reveal (1100ms) then start the rank climb
+    setTimeout(function() {
+      var stage = section.querySelector('.rank-stage');
+      if (stage) stage.classList.add('revealed');
+      startRankClimb();
+    }, 1100);
 
-    // 6. CTA (1600ms)
+    // 6. CTA (1700ms)
     if (cta) {
-      cta.style.transition = 'opacity 700ms ' + easing + ' 1600ms, transform 700ms ' + easing + ' 1600ms, background 200ms ease, translateY 200ms ease';
+      cta.style.transition = 'opacity 700ms ' + easing + ' 1700ms, transform 700ms ' + easing + ' 1700ms, background 200ms ease';
       cta.style.opacity = '1';
       cta.style.transform = 'translateY(0)';
     }
