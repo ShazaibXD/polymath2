@@ -90,7 +90,7 @@ body::before {
    to stay on Chrome's fast compositor path (120px pushed it to software) */
 .orb {
   position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;
-  will-change: transform, filter;
+  will-change: transform;
   transform: translate3d(0, 0, 0);
 }
 .orb-1 { width: 500px; height: 500px; background: rgba(255,255,255,0.03); top: -180px; left: -180px; }
@@ -392,6 +392,7 @@ nav {
   margin-bottom: 80px;
   position: relative;
   opacity: 0;
+  contain: layout paint;
   border-bottom: 1px solid rgba(255,255,255,0.06);
   mask-image: linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%);
@@ -2673,15 +2674,15 @@ function initSkyline() {
       if (String(n) === stage.dataset.state) return;
       var cur = stage.querySelector('.loop-demo-panel-' + stage.dataset.state);
       if (!anim || !cur) { stage.dataset.state = String(n); return; }
-      g.to(cur, { autoAlpha: 0, y: -14, filter: 'blur(5px)', duration: 0.28, ease: 'power2.in', onComplete: function () {
-        g.set(cur, { clearProps: 'opacity,visibility,transform,filter' });
+      g.to(cur, { autoAlpha: 0, y: -14, duration: 0.28, ease: 'power2.in', onComplete: function () {
+        g.set(cur, { clearProps: 'opacity,visibility,transform' });
         stage.dataset.state = String(n);
         var nxt = stage.querySelector('.loop-demo-panel-' + n);
         var host = nxt.querySelector('.loop-demo-active, .loop-demo-result, .loop-demo-cards');
         var targets = host ? host.children : [nxt];
-        g.fromTo(targets, { y: 16, autoAlpha: 0, filter: 'blur(4px)' },
-          { y: 0, autoAlpha: 1, filter: 'blur(0px)', duration: 0.5, ease: 'expo.out', stagger: 0.05,
-            onComplete: function () { g.set(targets, { clearProps: 'filter,transform' }); } });
+        g.fromTo(targets, { y: 16, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: 0.5, ease: 'expo.out', stagger: 0.05,
+            onComplete: function () { g.set(targets, { clearProps: 'transform' }); } });
       } });
     }
 
@@ -3217,8 +3218,8 @@ if (canvas && host) {
   }
   const tex = dot();
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setClearColor(0x000000, 0);
 
   const scene = new THREE.Scene();
