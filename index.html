@@ -441,12 +441,12 @@ nav {
 }
 .rank-xp-num {
   font-family: 'Space Mono', monospace; font-size: clamp(22px, 3.2vw, 34px);
-  font-weight: 700; color: var(--green); letter-spacing: -0.02em; line-height: 1;
+  font-weight: 700; color: #00FF87; letter-spacing: -0.02em; line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 .rank-now { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--text); margin-top: 8px; }
 .rank-bar { height: 6px; border-radius: 100px; background: var(--surface); border: 1px solid var(--border); overflow: hidden; margin: 14px 0 8px; }
-.rank-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green2), var(--green)); box-shadow: 0 0 12px rgba(163,230,53,0.5); transition: width 0.55s cubic-bezier(0.16,1,0.3,1); }
+.rank-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, rgba(0,255,135,0.6), #00FF87); box-shadow: 0 0 12px rgba(0,255,135,0.4); transition: width 0.55s cubic-bezier(0.16,1,0.3,1); }
 .rank-step { font-family: 'Space Mono', monospace; font-size: var(--step--1); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 .rank-list { list-style: none; border: 1px solid var(--border); border-radius: 14px; padding: 8px; background: linear-gradient(160deg, rgba(255,255,255,0.02), rgba(13,17,26,0.4)); }
 .rank-row {
@@ -456,11 +456,11 @@ nav {
   transition: opacity 0.3s var(--ease), background 0.3s var(--ease), border-color 0.3s var(--ease);
 }
 .rank-row.done { opacity: 0.66; }
-.rank-row.active { opacity: 1; background: rgba(163,230,53,0.06); border-color: rgba(163,230,53,0.28); }
+.rank-row.active { opacity: 1; background: rgba(0,255,135,0.06); border-color: rgba(0,255,135,0.28); }
 .rank-row-lvl { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); letter-spacing: 0.1em; }
-.rank-row.done .rank-row-lvl, .rank-row.active .rank-row-lvl { color: var(--green); }
+.rank-row.done .rank-row-lvl, .rank-row.active .rank-row-lvl { color: #00FF87; }
 .rank-row-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
-.rank-row.active .rank-row-name { color: var(--green); }
+.rank-row.active .rank-row-name { color: #00FF87; }
 .rank-row-xp { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--muted); font-variant-numeric: tabular-nums; }
 @media (max-width: 600px) { .rank-stage { grid-template-columns: 1fr; max-width: 420px; } }
 .mastery-cta {
