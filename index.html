@@ -386,54 +386,38 @@ nav {
   opacity: 0;
   transform: translateY(12px);
 }
+/* Waterline skyline — wide windowed towers + a level line at the mean height.
+   One tall spike barely lifts the line; a balanced skyline floods it high. */
 .mastery-skyline {
-  overflow: hidden;
   width: 100%;
-  margin-bottom: 80px;
+  max-width: 720px;
+  margin: 0 auto 80px;
   position: relative;
   opacity: 0;
   contain: layout paint;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  mask-image: linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%);
 }
-.sky-track {
-  display: flex;
-  align-items: flex-end;
-  gap: clamp(18px, 2.5vw, 28px);
-  padding: 4px 0 0;
-  width: max-content;
+.msky-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.msky-line { filter: drop-shadow(0 0 7px rgba(163,230,53,0.55)); }
+.msky-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  fill: #A3E635;
 }
-.sky-track.scrolling {
-  animation: skyScroll 36s linear infinite;
-}
-@keyframes skyScroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-.sky-stroke-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.sky-stroke {
-  width: 1px;
-  background: linear-gradient(to top, #A3E635 65%, rgba(163,230,53,0.12));
-  position: relative;
-  transform-origin: bottom center;
-  transform: scaleY(0);
-  transition: opacity 300ms ease;
-}
-.sky-stroke::after {
-  content: '';
+.msky-caption {
   position: absolute;
-  top: -2px;
-  left: -1px;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: #A3E635;
+  left: 6px;
+  bottom: 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8A93AB;
+  opacity: 0;
+  transition: opacity 500ms ease;
+  pointer-events: none;
 }
+.msky-caption .lead { color: #A3E635; }
 .rank-stage { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; max-width: 760px; margin: 0 auto 72px; opacity: 0; transform: translateY(12px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
 .rank-stage.revealed { opacity: 1; transform: translateY(0); }
 .rank-readout {
@@ -489,8 +473,6 @@ nav {
   .mastery-cta { opacity: 1 !important; transform: none !important; }
   .mastery-headline-inner { clip-path: none !important; }
   .mastery-skyline { opacity: 1 !important; }
-  .sky-stroke { transform: scaleY(1) !important; transition: none !important; }
-  .sky-track.scrolling { animation: none !important; }
   .rank-stage { opacity: 1 !important; transform: none !important; }
   .rank-bar-fill { transition: none !important; }
 }
@@ -498,7 +480,6 @@ nav {
 /* Mobile */
 @media (max-width: 719px) {
   .mastery-inner { padding: 80px clamp(20px, 4vw, 24px); }
-  .sky-track { gap: 14px; }
 }
 
 /* SCROLL PROGRESS BAR */
@@ -1396,10 +1377,9 @@ footer {
       <!-- THE PROBLEM — app graveyard -->
       <section class="problem-section sr" aria-label="The problem Polymath OS solves">
         <div class="problem-inner">
-          <div class="problem-eyebrow">The problem</div>
-          <h2 class="problem-heading">Five apps. Zero interconnectivity.</h2>
+          <div class="problem-eyebrow">The fix</div>
+          <h2 class="problem-heading">One app that talks to everyone.</h2>
           <p class="problem-body">Notion for notes. A habit app for streaks. GitHub for code. A spreadsheet for money. A language app, ignored for six days straight. Five logins, five scoreboards, and none of them ever talk to each other. That's not a discipline problem — it's an infrastructure problem. Working memory holds about 4–7 things at once, so five disconnected systems were always going to collapse. Polymath OS is the one system built for someone trying to grow in more than one direction at once.</p>
-          <span class="problem-stat-pill">Working memory: 4–7 items</span>
         </div>
       </section>
 
@@ -1538,7 +1518,6 @@ footer {
           <div class="soon-head">
             <div class="pillars-eyebrow">Building next</div>
             <h2 class="pillars-heading" style="font-size: clamp(28px, 4vw, 44px);">Where this is headed.</h2>
-            <p class="pillars-sub">Two things in active development. Not live yet — this is the plan, labeled honestly.</p>
           </div>
           <div class="soon-grid">
             <div class="soon-cell">
@@ -1560,14 +1539,14 @@ footer {
         <div class="freeze-card">
           <span class="freeze-badge"><span class="freeze-badge-dot"></span> Built and live</span>
           <h2 class="freeze-heading">Miss a day without losing everything.</h2>
-          <p class="freeze-body">Break your streak and it resets — that's the point, quitting should cost you something. But some days you genuinely can't show up. Freeze a streak for a small one-time fee (<span class="freeze-price">₹49 / $2 / €2</span>) and your XP and rank stay exactly where you left them.</p>
+          <p class="freeze-body">Break your streak and it resets — that's the point, quitting should cost you something. But some days you genuinely can't show up. Freeze a streak for a small one-time fee and your XP and rank stay exactly where you left them.</p>
         </div>
       </section>
 
       <!-- SKILL GRID (static, replaces scrolling marquee) -->
       <section class="skills-section sr">
         <div class="skills-inner">
-          <div class="skills-label">27 roadmaps · one XP system</div>
+          <div class="skills-label">∞ roadmaps · one XP system</div>
           <div class="skills-grid stagger">
             <span class="skill-chip">Coding</span>
             <span class="skill-chip">AI / ML</span>
@@ -2356,58 +2335,144 @@ function startRankClimb() {
 
 function initSkyline() {
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sky = document.getElementById('masterySkying');
 
-  var STROKES = [
-    { h: 180, opacity: 0.80 },
-    { h: 260, opacity: 0.60 },
-    { h: 310, opacity: 1.00 },
-    { h: 140, opacity: 0.50 },
-    { h: 230, opacity: 0.90 },
-    { h: 95,  opacity: 0.55 },
-    { h: 290, opacity: 0.85 },
-    { h: 170, opacity: 0.70 },
-    { h: 215, opacity: 0.65 },
-    { h: 340, opacity: 0.95 },
-    { h: 120, opacity: 0.45 },
-    { h: 275, opacity: 0.80 },
-    { h: 195, opacity: 0.70 },
-    { h: 150, opacity: 0.55 },
-    { h: 320, opacity: 0.90 },
-    { h: 165, opacity: 0.60 },
-    { h: 245, opacity: 0.75 },
-    { h: 110, opacity: 0.40 },
-    { h: 285, opacity: 0.85 },
-    { h: 155, opacity: 0.65 },
-  ];
+  // ── Geometry ──
+  var FLOOR = 290, TOP = 34, TANK = FLOOR - TOP, W = 58, N = 7;
+  function centerX(i) { return 66 + i * 98; }
+  var STUBBY  = [0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10];
+  var SKYLINE = [0.66, 0.78, 0.70, 0.82, 0.68, 0.76, 0.72]; // balanced, slightly irregular
 
-
-  // Build skyline strokes — two copies inside a scrolling track for seamless loop
-  var skyEl = document.getElementById('masterySkying');
-  if (skyEl) {
-    skyEl.innerHTML = '';
-    var trackEl = document.createElement('div');
-    trackEl.className = 'sky-track';
-    // render each stroke twice so CSS -50% translate loops seamlessly
-    [0, 1].forEach(function() {
-      STROKES.forEach(function(s) {
-        var wrap = document.createElement('div');
-        wrap.className = 'sky-stroke-wrap';
-        var stroke = document.createElement('div');
-        stroke.className = 'sky-stroke';
-        stroke.style.height = s.h + 'px';
-        stroke.style.opacity = s.opacity;
-        wrap.appendChild(stroke);
-        trackEl.appendChild(wrap);
-      });
-    });
-    skyEl.appendChild(trackEl);
+  // ── Build the SVG: wide windowed towers + a waterline pinned at the mean ──
+  if (sky) {
+    var towers = '';
+    for (var t = 0; t < N; t++) {
+      var lx = centerX(t) - W / 2;
+      towers +=
+        '<g class="msky-tower">' +
+          '<rect class="msky-tower-fill" x="' + lx + '" y="' + FLOOR + '" width="' + W + '" height="0" fill="url(#mskyGrad)"/>' +
+          '<rect class="msky-tower-win"  x="' + lx + '" y="' + FLOOR + '" width="' + W + '" height="0" fill="url(#mskyWin)"/>' +
+          '<line class="msky-tower-edge" x1="' + lx + '" y1="' + FLOOR + '" x2="' + lx + '" y2="' + FLOOR + '" stroke="#B6F24D" stroke-width="1" opacity="0.6"/>' +
+        '</g>';
+    }
+    sky.innerHTML =
+      '<svg class="msky-svg" viewBox="0 0 720 320" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' +
+        '<defs>' +
+          '<linearGradient id="mskyGrad" x1="0" y1="0" x2="0" y2="1">' +
+            '<stop offset="0" stop-color="#B6F24D"/><stop offset="1" stop-color="#4E7C17"/>' +
+          '</linearGradient>' +
+          '<pattern id="mskyWin" patternUnits="userSpaceOnUse" width="14" height="20">' +
+            '<rect x="0" y="15" width="14" height="3" fill="rgba(6,8,12,0.5)"/>' +
+          '</pattern>' +
+          '<radialGradient id="mskyGlow" cx="0.5" cy="0.95" r="0.75">' +
+            '<stop offset="0" stop-color="rgba(163,230,53,0.12)"/><stop offset="1" stop-color="rgba(163,230,53,0)"/>' +
+          '</radialGradient>' +
+        '</defs>' +
+        '<rect x="0" y="40" width="720" height="260" fill="url(#mskyGlow)"/>' +
+        '<line x1="28" y1="' + FLOOR + '" x2="692" y2="' + FLOOR + '" stroke="rgba(163,230,53,0.22)" stroke-width="1"/>' +
+        towers +
+        // veil dims everything ABOVE the waterline, so tower tops that poke over read as "dry / above your level"
+        '<rect class="msky-veil" x="0" y="' + TOP + '" width="720" height="' + TANK + '" fill="#06080C" opacity="0.5"/>' +
+        '<rect class="msky-flood" x="28" y="' + FLOOR + '" width="664" height="0" fill="#A3E635" opacity="0.1"/>' +
+        '<line class="msky-line" x1="28" y1="' + FLOOR + '" x2="692" y2="' + FLOOR + '" stroke="#C6F76A" stroke-width="2"/>' +
+        '<text class="msky-tag" x="688" y="' + (FLOOR - 9) + '" text-anchor="end">NOVICE · 0%</text>' +
+      '</svg>' +
+      '<div class="msky-caption" aria-hidden="true"></div>';
   }
 
-  // Set rank readout to Polymath for reduced-motion / no-JS-animation fallback
-  if (reducedMotion) { updateRankUI(6); return; }
+  var fillR = sky ? sky.querySelectorAll('.msky-tower-fill') : [];
+  var winR  = sky ? sky.querySelectorAll('.msky-tower-win')  : [];
+  var edgeR = sky ? sky.querySelectorAll('.msky-tower-edge') : [];
+  var veil  = sky ? sky.querySelector('.msky-veil') : null;
+  var flood = sky ? sky.querySelector('.msky-flood') : null;
+  var lvl   = sky ? sky.querySelector('.msky-line') : null;
+  var tag   = sky ? sky.querySelector('.msky-tag') : null;
+  var cap   = sky ? sky.querySelector('.msky-caption') : null;
+
+  // Paint one frame from an array of 7 fills (0..1). The level line is ALWAYS
+  // the mean of the fills — so one tall spike can't fake a high rank.
+  function render(f) {
+    var sum = 0;
+    for (var i = 0; i < N; i++) {
+      var v = f[i] < 0 ? 0 : f[i] > 1 ? 1 : f[i];
+      sum += v;
+      var h = v * TANK, y = FLOOR - h;
+      if (fillR[i]) { fillR[i].setAttribute('y', y); fillR[i].setAttribute('height', h); }
+      if (winR[i])  { winR[i].setAttribute('y', y);  winR[i].setAttribute('height', h); }
+      if (edgeR[i]) { edgeR[i].setAttribute('y1', y); }
+    }
+    var L = sum / N, ly = FLOOR - L * TANK;
+    if (veil)  { veil.setAttribute('height', Math.max(0, ly - TOP)); }
+    if (flood) { flood.setAttribute('y', ly); flood.setAttribute('height', FLOOR - ly); }
+    if (lvl)   { lvl.setAttribute('y1', ly); lvl.setAttribute('y2', ly); }
+    if (tag)   { tag.setAttribute('y', Math.max(TOP + 2, ly - 9)); tag.textContent = 'SKYLINE · ' + Math.round(L * 100) + '%'; }
+  }
+  function setCap(html) { if (cap) { cap.innerHTML = html; cap.style.opacity = html ? '1' : '0'; } }
+
+  render([0, 0, 0, 0, 0, 0, 0]);
+
+  // ── Reduced motion: paint the final on-message frame, no loop ──
+  if (reducedMotion) {
+    render([0.66, 0.78, 0.70, 0.95, 0.68, 0.76, 0.72]); // one tower pokes above the line
+    setCap('<span class="lead">The whole skyline stands</span> — not your tallest tower.');
+    if (sky) sky.style.opacity = '1';
+    updateRankUI(6);
+    return;
+  }
+
+  // ── Animation: draw-in → lone spike (line barely lifts) → flood → settle → drain ──
+  var easeIO  = function(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; };
+  var easeOut = function(p) { return 1 - Math.pow(1 - p, 3); };
+  var CAP_SPIKE = '<span class="lead">One tall tower.</span> Still low.';
+  var CAP_SKY   = '<span class="lead">The whole skyline stands.</span>';
+  var ZERO = [0, 0, 0, 0, 0, 0, 0];
+
+  function buildSegs(spikeIdx) {
+    var SPIKE = [];
+    for (var i = 0; i < N; i++) SPIKE.push(i === spikeIdx ? 0.98 : 0.10);
+    return [
+      { dur: 1.0, from: ZERO,    to: STUBBY,  stagger: true, cap: ''      },
+      { dur: 0.6, from: STUBBY,  to: STUBBY,                 cap: ''      },
+      { dur: 1.5, from: STUBBY,  to: SPIKE,                  cap: 'spike' },
+      { dur: 1.2, from: SPIKE,   to: SPIKE,                  cap: 'spike' },
+      { dur: 3.0, from: SPIKE,   to: SKYLINE, stagger: true, cap: 'sky'   },
+      { dur: 2.0, from: SKYLINE, to: SKYLINE, breathe: true, cap: 'sky'   },
+      { dur: 0.9, from: SKYLINE, to: STUBBY,                 cap: ''      },
+    ];
+  }
+
+  var segs = buildSegs(3), segi = 0, segStart = null, curCap = null, cyc = 0;
+  var running = false, rafId = null;
+
+  function frame(ts) {
+    if (segStart === null) segStart = ts;
+    var seg = segs[segi];
+    var p = Math.min(1, (ts - segStart) / (seg.dur * 1000));
+    var f = [];
+    for (var i = 0; i < N; i++) {
+      var tp;
+      if (seg.stagger) {
+        var span = 1 - (N - 1) * 0.06;
+        tp = easeOut(Math.max(0, Math.min(1, (p - i * 0.06) / span)));
+      } else tp = easeIO(p);
+      var v = seg.from[i] + (seg.to[i] - seg.from[i]) * tp;
+      if (seg.breathe) v += Math.sin(ts / 650 + i) * 0.015;
+      f.push(v);
+    }
+    render(f);
+    var want = seg.cap === 'spike' ? CAP_SPIKE : seg.cap === 'sky' ? CAP_SKY : '';
+    if (want !== curCap) { setCap(want); curCap = want; }
+    if (p >= 1) {
+      segi++; segStart = ts;
+      if (segi >= segs.length) { segi = 0; cyc++; segs = buildSegs(cyc % N); }
+    }
+    if (running) rafId = requestAnimationFrame(frame);
+  }
+  function startAnim() { if (running || !sky) return; running = true; segStart = null; segi = 0; curCap = null; segs = buildSegs(3); rafId = requestAnimationFrame(frame); }
+  function stopAnim()  { running = false; if (rafId) cancelAnimationFrame(rafId); }
 
   var section = document.getElementById('rankLadder');
-  if (!section) return;
+  if (!section) { startAnim(); return; }
 
   var triggered = false;
   var easing = 'cubic-bezier(0.16, 1, 0.3, 1)';
@@ -2416,66 +2481,45 @@ function initSkyline() {
     if (triggered) return;
     triggered = true;
 
-    var kicker  = section.querySelector('.mastery-kicker');
+    var kicker    = section.querySelector('.mastery-kicker');
     var headInner = section.querySelector('.mastery-headline-inner');
-    var sub     = section.querySelector('.mastery-sub');
-    var skyEl2  = section.querySelector('.mastery-skyline');
-    var cta     = section.querySelector('.mastery-cta');
-    var strokes = section.querySelectorAll('.sky-stroke');
+    var sub       = section.querySelector('.mastery-sub');
+    var skyEl2    = section.querySelector('.mastery-skyline');
+    var cta       = section.querySelector('.mastery-cta');
 
-    // 1. Kicker (0ms)
     if (kicker) {
       kicker.style.transition = 'opacity 700ms ' + easing + ' 0ms, transform 700ms ' + easing + ' 0ms';
       kicker.style.opacity = '0.85';
       kicker.style.transform = 'translateY(0)';
     }
-
-    // 2. Headline clip-path (100ms)
     if (headInner) {
       headInner.style.transition = 'clip-path 900ms ' + easing + ' 100ms';
       headInner.style.clipPath = 'inset(0 0 0 0)';
     }
-
-    // 3. Subline (300ms)
     if (sub) {
       sub.style.transition = 'opacity 700ms ' + easing + ' 300ms, transform 700ms ' + easing + ' 300ms';
       sub.style.opacity = '1';
       sub.style.transform = 'translateY(0)';
     }
-
-    // 4. Skyline: show container then animate strokes staggered from 500ms
+    // Reveal the skyline container; its own rAF loop drives the visual.
     if (skyEl2) {
-      skyEl2.style.transition = 'opacity 200ms ease 480ms';
+      skyEl2.style.transition = 'opacity 600ms ease 460ms';
       skyEl2.style.opacity = '1';
     }
-    var N = STROKES.length;
-    strokes.forEach(function(stroke, i) {
-      // first set staggers in; second set (duplicates) appear instantly after first finishes
-      var delay = i < N ? (500 + i * 60) : (500 + (N - 1) * 60);
-      stroke.style.transition = 'transform 700ms ' + easing + ' ' + delay + 'ms, opacity 300ms ease';
-      stroke.style.transform = 'scaleY(1)';
-    });
-    // start seamless horizontal scroll once entrance settles
-    var scrollDelay = 500 + (N - 1) * 60 + 750;
-    setTimeout(function() {
-      var track = skyEl2 && skyEl2.querySelector('.sky-track');
-      if (track) track.classList.add('scrolling');
-    }, scrollDelay);
+    startAnim();
 
-    // 5. Rank stage reveal (1100ms) then start the rank climb
+    // Rank stage reveal + auto-climb.
     setTimeout(function() {
       var stage = section.querySelector('.rank-stage');
       if (stage) stage.classList.add('revealed');
       startRankClimb();
     }, 1100);
 
-    // 6. CTA (1700ms)
     if (cta) {
       cta.style.transition = 'opacity 700ms ' + easing + ' 1700ms, transform 700ms ' + easing + ' 1700ms, background 200ms ease';
       cta.style.opacity = '1';
       cta.style.transform = 'translateY(0)';
     }
-
   }
 
   var io = new IntersectionObserver(function(entries) {
@@ -2485,12 +2529,20 @@ function initSkyline() {
   }, { threshold: 0.3 });
   io.observe(section);
 
+  // Pause the loop while off-screen; resume (after the entrance has run) when back.
+  var visIO = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { if (triggered) startAnim(); }
+      else stopAnim();
+    });
+  }, { threshold: 0 });
+  visIO.observe(section);
+
   // Fire immediately if already in view
   var r = section.getBoundingClientRect();
   if (r.top < window.innerHeight && r.bottom > 0) {
     setTimeout(function() { runEntrance(); }, 200);
   }
-
 }
 
 (function () {
