@@ -1,0 +1,23 @@
+{
+  "name": "Polymath OS",
+  "short_name": "Polymath OS",
+  "description": "One system to master every skill. Build roadmaps, take quizzes, earn XP, and level up from Novice to Polymath.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#06080C",
+  "theme_color": "#06080C",
+  "icons": [
+    {
+      "src": "assets/logo-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/favicon.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    }
+  ]
+}

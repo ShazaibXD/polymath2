@@ -1,0 +1,53 @@
+# Polymath OS
+
+> Polymath OS is one gamified learning system for people mastering several skills at once. Instead of scattering progress across Notion, habit apps, courses, and spreadsheets, everything lives on one screen: build a custom roadmap for any skill, learn in bite-sized lessons, prove it with quizzes, earn XP, and climb seven ranks from Novice to Polymath.
+
+## What it is
+
+- **Category:** Gamified, multi-skill learning app (educational software / self-education OS).
+- **Core loop:** Learn → Quiz → Earn XP → Level up. It is a loop, not just a tracker.
+- **The problem it solves:** Progress on different skills normally lives in five disconnected apps that never talk to each other. Polymath OS unifies them into a single XP system and rank, so someone growing in more than one direction at once has one honest picture of whether they actually improved.
+- **Who it's for:** People who refuse to specialize — juggling things like coding, fitness, finance, languages, chess, writing, and public speaking at the same time.
+
+## What it does (four pillars)
+
+1. **Create** — Build your own curriculum. Add any skill (coding, languages, music, finance, anything), define milestones, set depth and pace.
+2. **Learn** — Bite-sized micro-lessons, most finishable in under 5 minutes. No 4-hour videos or 600-page textbooks.
+3. **Test** — Every lesson ends with a quiz; spaced repetition surfaces what you're forgetting. Reading something is not the same as knowing it.
+4. **Level up** — Every correct answer earns XP. Every skill has levels. Your dashboard becomes a real map of what you actually know.
+
+## Ranks
+
+Seven ranks, earned by total XP across all skills (rank reflects the whole skyline, not your single tallest skill):
+Novice (0 XP) → Seeker (100) → Initiate (400) → Adept (1,000) → Expert (2,400) → Master (5,000) → Polymath (10,000).
+
+## Streak freeze
+
+Break a streak and it resets — quitting is meant to cost something. But for days you genuinely can't show up, you can freeze a streak for a small one-time fee and keep your XP and rank intact. (Built and live.)
+
+## Coming next
+
+- Auto-XP from apps you already use (e.g. a GitHub commit → Coding XP; a logged workout → Fitness XP).
+- AI Skill Auditor: adaptive questions that score you 0–100 on a skill and generate a real milestone plan.
+
+## Key facts
+
+- **Price:** Free. An optional Pro tier is planned later, but the core app never requires payment.
+- **Full launch:** September 1, 2026.
+- **Beta:** Live now at https://web.polymathos.xyz (rough in places; early users get founding-member perks).
+- **Waitlist:** https://polymathos.xyz/ (waitlist members get early access and founding-member perks).
+- **Maker:** Built solo by Shaz (Instagram @mdshaz_) under The Verge Studio. No investors, no team.
+
+## How it compares
+
+- Unlike Duolingo (languages only) or Coursera (courses only), Polymath OS sits on top of everything you're working on at once, feeding one shared rank across all skills.
+
+## Links
+
+- Home / waitlist: https://polymathos.xyz/
+- Beta app: https://web.polymathos.xyz
+- Hiring: https://polymathos.xyz/hiring.html
+- Privacy: https://polymathos.xyz/privacy.html
+- Terms: https://polymathos.xyz/terms.html
+- Maker (Instagram): https://www.instagram.com/mdshaz_/
+- The Verge Studio: https://verges.pages.dev
